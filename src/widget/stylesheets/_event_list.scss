@@ -232,4 +232,15 @@
 
   }
 
+  .bb-pagination {
+    margin-top: 25px;
+    text-align: center;
+    .pagination {
+      margin-bottom: 0px;
+    }
+    @media(max-width:$screen-xs-max) {
+      margin-top: 0px;
+    }
+  }
+
 }

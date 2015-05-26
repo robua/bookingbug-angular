@@ -165,7 +165,17 @@
       </div>
     </div>
 
-    <pagination total-items="pagination.num_items" ng-model="pagination.current_page" items-per-page="pagination.page_size" max-size="pagination.max_size" boundary-links="true" rotate="false" num-pages="pagination.num_pages" ng-show="items" ng-change="pageChanged()"></pagination>
+    <div ng-show="filtered_items.length > 9" class="bb-pagination">
+      <pagination total-items="pagination.num_items" ng-model="pagination.current_page" items-per-page="pagination.page_size" max-size="pagination.max_size" boundary-links="true" rotate="false" num-pages="pagination.num_pages" ng-show="items" ng-change="pageChanged()"></pagination>
+    </div>
+
+    <div class="bb-step-navigation">
+      <div class="row">
+        <div class="col-sm-6 text-left">
+          <button type="button" class="btn btn-default" bb-debounce ng-click="loadPreviousStep()" ng-show="bb.current_step > 1">Back</button>
+        </div>
+      </div>
+    </div>
 
   </div>
 
