@@ -128,6 +128,11 @@ angular.module('BB.Controllers').controller 'ServiceList',($scope,  $rootScope, 
   setServiceItem = (items) ->
     $scope.items = items
     $scope.filtered_items = $scope.items
+    $scope.items_free = 0
+    for item in $scope.items
+      $scope.items_free = $scope.items_free + item.price
+    if $scope.items_free != 0
+      $scope.some_free = true
     if $scope.service
         _.each items, (item) ->
           if item.id is $scope.service.id
