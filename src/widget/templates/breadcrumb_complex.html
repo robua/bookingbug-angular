@@ -1,10 +1,10 @@
-<div class="container breadcrumbs" ng-init="setRoute([
+<div class="breadcrumbs" ng-init="setRoute([
   {page:'service_list', title: 'Set a Service'},
   {page:'person_list', title: 'Pick a Person'},
   {page:'day', title: 'Select a Date'}
   ])">
 
-  <div class="row">
+<!--   <div class="row">
     <tabset>
       <tab ng-repeat="step in allSteps" heading="{{step.title}}" active="step.active" disabled="!step.passed" select="loadStep(step.number)">
       </tab>
@@ -17,5 +17,15 @@
         <div ng-if="$last" class="step">{{step.number}}. {{step.title}}</div>
       <span>
     </div>
-  </div>
+  </div> -->
+
+  <ol class="breadcrumb"> 
+    <li ng-repeat="step in bb.allSteps" ng-class="{'active': step.active, 'passed': step.passed, 'disabled': isDisabledStep(step)}">
+      <button type="button" ng-click="loadStep(step.number)" ng-class="{'active': step.active, 'passed': step.passed}" ng-disabled="isDisabledStep(step)">
+        <span class="step-num">{{step.number}}.</span>
+        <span class="step-title">{{step.title}}</span>
+      </button>
+    </li>
+  </ol>
+  
 </div>

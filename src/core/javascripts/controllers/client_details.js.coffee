@@ -32,6 +32,7 @@ angular.module('BB.Controllers').controller 'ClientDetails', ($scope,  $rootScop
     else 
       ClientDetailsService.query($scope.bb.company).then (details) =>
         $scope.client_details = details
+        $scope.client.pre_fill_answers($scope.client_details) if $scope.client
         QuestionService.checkConditionalQuestions($scope.client_details.questions) if $scope.client_details.questions
         $scope.setLoaded $scope
       , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')

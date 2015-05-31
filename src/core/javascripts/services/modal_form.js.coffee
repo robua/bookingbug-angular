@@ -6,11 +6,14 @@ angular.module('BB.Services').factory 'ModalForm', ($modal, $log) ->
     $scope.loading = true
     $scope.title = title
     $scope.company = company
-    $scope.company.$get(new_rel).then (schema) ->
-      $scope.form = _.reject schema.form, (x) -> x.type == 'submit'
-      $scope.schema = schema.schema
-      $scope.form_model = {}
-      $scope.loading = false
+    if $scope.company.$has(new_rel)
+      $scope.company.$get(new_rel).then (schema) ->
+        $scope.form = _.reject schema.form, (x) -> x.type == 'submit'
+        $scope.schema = schema.schema
+        $scope.form_model = {}
+        $scope.loading = false
+    else
+      $log.warn("company does not have '#{new_rel}' rel")
 
     $scope.submit = (form) ->
       $scope.$broadcast('schemaFormValidate')
@@ -34,11 +37,14 @@ angular.module('BB.Services').factory 'ModalForm', ($modal, $log) ->
     $scope.loading = true
     $scope.title = title
     $scope.model = model
-    $scope.model.$get('edit').then (schema) ->
-      $scope.form = _.reject schema.form, (x) -> x.type == 'submit'
-      $scope.schema = schema.schema
-      $scope.form_model = $scope.model
-      $scope.loading = false
+    if $scope.model.$has('edit')
+      $scope.model.$get('edit').then (schema) ->
+        $scope.form = _.reject schema.form, (x) -> x.type == 'submit'
+        $scope.schema = schema.schema
+        $scope.form_model = $scope.model
+        $scope.loading = false
+    else
+      $log.warn("model does not have 'edit' rel")
 
     $scope.submit = (form) ->
       $scope.$broadcast('schemaFormValidate')

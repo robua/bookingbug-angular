@@ -1,6 +1,7 @@
 
 
-angular.module('BBAdmin.Services').factory 'AdminClientService',  ($q, $window, $rootScope, halClient, ClientCollections, BBModel) ->  
+angular.module('BBAdmin.Services').factory 'AdminClientService',  ($q, $window,
+    $rootScope, halClient, ClientCollections, BBModel, UriTemplate) ->
 
   query: (prms) ->
     if prms.company
@@ -9,7 +10,7 @@ angular.module('BBAdmin.Services').factory 'AdminClientService',  ($q, $window, 
     url = $rootScope.bb.api_url if $rootScope.bb.api_url
     href = url + "/api/v1/admin/{company_id}/client{/id}{?page,per_page,filter_by,filter_by_fields,order_by,order_by_reverse}"
 
-    uri = new $window.UriTemplate.parse(href).expand(prms || {})
+    uri = new UriTemplate(href).fillFromObject(prms || {})
     deferred = $q.defer()
     halClient.$get(uri, {}).then  (resource) =>
       if resource.$has('clients')
@@ -39,4 +40,3 @@ angular.module('BBAdmin.Services').factory 'AdminClientService',  ($q, $window, 
     deferred.promise
 
 
-  

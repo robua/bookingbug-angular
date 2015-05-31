@@ -330,6 +330,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
     $scope.range_limit = Infinity
     $scope.searchAddress($scope.search_prms)
 
+
   # look for change in display size to determine if the map needs to be refreshed
   $scope.$watch 'display.xs', (new_value, old_value) =>
     if new_value != old_value && $scope.loc

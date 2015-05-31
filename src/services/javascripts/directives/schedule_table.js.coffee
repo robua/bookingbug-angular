@@ -3,13 +3,13 @@ angular.module('BBAdminServices').directive 'scheduleTable', (AdminCompanyServic
 
   controller = ($scope) ->
 
+    $scope.fields = ['id', 'name', 'mobile']
+
     $scope.getSchedules = () ->
       params =
         company: $scope.company
       AdminScheduleService.query(params).then (schedules) ->
-        $scope.schedules_models = schedules
-        $scope.schedules = _.map schedules, (schedule) ->
-          _.pick schedule, 'id', 'name', 'mobile'
+        $scope.schedules = schedules
 
     $scope.newSchedule = () ->
       ModalForm.new
@@ -21,15 +21,13 @@ angular.module('BBAdminServices').directive 'scheduleTable', (AdminCompanyServic
         success: (schedule) ->
           $scope.schedules.push(schedule)
 
-    $scope.delete = (id) ->
-      schedule = _.find $scope.schedules_models, (p) -> p.id == id
+    $scope.delete = (schedule) ->
       schedule.$del('self').then () ->
-        $scope.schedules = _.reject $scope.schedules, (p) -> p.id == id
+        $scope.schedules = _.reject $scope.schedules, schedule
       , (err) ->
         $log.error "Failed to delete schedule"
 
-    $scope.edit = (id) ->
-      schedule = _.find $scope.schedules_models, (p) -> p.id == id
+    $scope.edit = (schedule) ->
       ModalForm.edit
         model: schedule
         title: 'Edit Schedule'

@@ -1,7 +1,7 @@
 
 
-angular.module('BBAdmin.Services').factory 'AdminSlotService',
-($q, $window, halClient, SlotCollections, BBModel) ->
+angular.module('BBAdmin.Services').factory 'AdminSlotService', ($q, $window,
+    halClient, SlotCollections, BBModel, UriTemplate) ->
 
   query: (prms) ->
     deferred = $q.defer()
@@ -22,7 +22,7 @@ angular.module('BBAdmin.Services').factory 'AdminSlotService',
       url = ""
       url = prms.url if prms.url
       href = url + "/api/v1/admin/{company_id}/slots{?start_date,end_date,date,service_id,resource_id,person_id,page,per_page}"
-      uri = new $window.UriTemplate.parse(href).expand(prms || {})
+      uri = new UriTemplate(href).fillFromObject(prms || {})
 
       halClient.$get(uri, {}).then  (found) =>
         found.$get('slots').then (items) =>
@@ -43,7 +43,7 @@ angular.module('BBAdmin.Services').factory 'AdminSlotService',
     url = ""
     url = prms.url if prms.url
     href = url + "/api/v1/admin/{company_id}/slots"
-    uri = new $window.UriTemplate.parse(href).expand(prms || {})
+    uri = new UriTemplate(href).fillFromObject(prms || {})
 
     deferred = $q.defer()
 

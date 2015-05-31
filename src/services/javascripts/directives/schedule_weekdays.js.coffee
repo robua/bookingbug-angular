@@ -2,13 +2,15 @@ angular.module('BBAdminServices').directive 'scheduleWeekdays', (uiCalendarConfi
 
   controller = ($scope, $attrs) ->
 
+    $scope.calendarName = 'scheduleWeekdays'
+
     $scope.eventSources = [
       events: (start, end, timezone, callback) ->
         callback($scope.getEvents())
     ]
 
     $scope.getCalendarEvents = (start, end) ->
-      events = $scope.$$childTail.scheduleCal.fullCalendar('clientEvents',
+      events = uiCalendarConfig.calendars.scheduleWeekdays.fullCalendar('clientEvents',
         (e) ->
           (start.isAfter(e.start) || start.isSame(e.start)) &&
             (end.isBefore(e.end) || end.isSame(e.end)))
@@ -36,7 +38,6 @@ angular.module('BBAdminServices').directive 'scheduleWeekdays', (uiCalendarConfi
             slotEventOverlap: false
             minTime: options.min_time || '00:00:00'
             maxTime: options.max_time || '24:00:00'
-            noEventClick: true
         select: (start, end, jsEvent, view) ->
           events = $scope.getCalendarEvents(start, end)
           if events.length > 0
@@ -52,9 +53,11 @@ angular.module('BBAdminServices').directive 'scheduleWeekdays', (uiCalendarConfi
               end: moment(event.end).subtract(delta)
             $scope.removeRange(orig.start, orig.end)
             $scope.addRange(event.start, event.end)
+        eventClick: (event, jsEvent, view) ->
+          $scope.removeRange(event.start, event.end)
 
     $scope.render = () ->
-      $scope.$$childTail.scheduleCal.fullCalendar('render')
+      uiCalendarConfig.calendars.scheduleWeekdays.fullCalendar('render')
 
 
   link = (scope, element, attrs, ngModel) ->
@@ -74,9 +77,9 @@ angular.module('BBAdminServices').directive 'scheduleWeekdays', (uiCalendarConfi
       ngModel.$render()
 
     ngModel.$render = () ->
-      if scope.$$childTail
-        scope.$$childTail.scheduleCal.fullCalendar('refetchEvents')
-        scope.$$childTail.scheduleCal.fullCalendar('unselect')
+      if uiCalendarConfig && uiCalendarConfig.calendars.scheduleWeekdays
+        uiCalendarConfig.calendars.scheduleWeekdays.fullCalendar('refetchEvents')
+        uiCalendarConfig.calendars.scheduleWeekdays.fullCalendar('unselect')
 
   {
     controller: controller

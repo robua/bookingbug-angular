@@ -6,16 +6,18 @@ angular.module('BB.Directives').directive 'bbTotal', () ->
   scope : true
   controller : 'Total'
 
-angular.module('BB.Controllers').controller 'Total', ($scope,  $rootScope,
-    $q, $location, $window) ->
+angular.module('BB.Controllers').controller 'Total', ($scope,  $rootScope, $q, $location, $window, PurchaseService) ->
 
   $scope.controller = "public.controllers.Total"
   $scope.notLoaded $scope
 
   $rootScope.connection_started.then =>
     $scope.bb.payment_status = null
-    $scope.total = $scope.bb.total
-    $scope.setLoaded $scope
+
+    PurchaseService.query({url_root: $scope.bb.api_url, purchase_id: $scope.bb.total.long_id}).then (total) ->
+      $scope.total = total
+      $scope.setLoaded $scope
+
   , (err) ->
     $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
 

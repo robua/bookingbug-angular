@@ -61,13 +61,15 @@ app.directive 'bbPrintPage', ($window, $timeout) ->
 
 
 
-app.directive 'bbInclude', ($compile) ->
+app.directive 'bbInclude', ($compile, $rootScope) ->
   link: (scope, element, attr) ->
+    track_page = if attr.bbTrackPage? then true else false
     scope.$watch 'bb.path_setup', (newval, oldval) =>
       if newval
         element.attr('ng-include', "'" + scope.getPartial(attr.bbInclude) + "'")
         element.attr('bb-include',null)
         $compile(element)(scope)
+        $rootScope.$broadcast "page:loaded", attr.bbInclude if track_page
 
 
 
@@ -281,6 +283,7 @@ app.directive 'bbDateSplit', ($parse) ->
     }
 
     # split the date if it's already set
+    question.date.splitDate(moment(question.answer)) if question.answer
     question.date.splitDate(moment(ngModel.$viewValue)) if ngModel.$viewValue
  
     # watch self to split date when it changes  
@@ -339,26 +342,52 @@ app.directive 'bbCapitaliseFirstLetter', () ->
         ngModel.$render()
         return
 
-
+# Deprecate - see below
 app.directive 'apiUrl', ($rootScope, $compile, $sniffer, $timeout, $window) ->
   restrict: 'A'
+  replace: true
   compile: (tElem, tAttrs) ->
     pre: (scope, element, attrs) ->
       $rootScope.bb ||= {}
       $rootScope.bb.api_url = attrs.apiUrl
-      if ($sniffer.msie && $sniffer.msie < 10)
-        url = document.createElement('a')
-        url.href = attrs.apiUrl
+      url = document.createElement('a')
+      url.href = attrs.apiUrl
+      if ($sniffer.msie && $sniffer.msie < 10) && url.host != $window.location.host
         if url.protocol[url.protocol.length - 1] == ':'
           src = "#{url.protocol}//#{url.host}/ClientProxy.html"
         else
           src = "#{url.protocol}://#{url.host}/ClientProxy.html"
         $rootScope.iframe_proxy_ready = false
-        $window.iFrameLoaded = () ->
+        $window.iframeLoaded = () ->
           $rootScope.iframe_proxy_ready = true
           $rootScope.$broadcast('iframe_proxy_ready', {iframe_proxy_ready: true})
-        $compile("<iframe id='ieapiframefix' name='" + url.hostname + "' src='#{src}' style='visibility:false;display:none;'></iframe>") scope, (cloned, scope) =>
+        $compile("<iframe id='ieapiframefix' name='" + url.hostname + "' src='#{src}' style='visibility:false;display:none;' onload='iframeLoaded()'></iframe>") scope, (cloned, scope) =>
           element.append(cloned)
+
+
+app.directive 'bbApiUrl', ($rootScope, $compile, $sniffer, $timeout, $window, $location) ->
+  restrict: 'A'
+  scope:
+    'apiUrl': '@bbApiUrl'
+  compile: (tElem, tAttrs) ->
+    pre: (scope, element, attrs) ->
+      $rootScope.bb ||= {}
+      $rootScope.bb.api_url = scope.apiUrl
+      url = document.createElement('a')
+      url.href = scope.apiUrl
+      if $sniffer.msie && $sniffer.msie < 10
+        unless url.host == $location.host() || url.host == "#{$location.host()}:#{$location.port()}"
+          console.log "cors ie proxy"
+          if url.protocol[url.protocol.length - 1] == ':'
+            src = "#{url.protocol}//#{url.host}/ClientProxy.html"
+          else
+            src = "#{url.protocol}://#{url.host}/ClientProxy.html"
+          $rootScope.iframe_proxy_ready = false
+          $window.iframeLoaded = () ->
+            $rootScope.iframe_proxy_ready = true
+            $rootScope.$broadcast('iframe_proxy_ready', {iframe_proxy_ready: true})
+          $compile("<iframe id='ieapiframefix' name='" + url.hostname + "' src='#{src}' style='visibility:false;display:none;' onload='iframeLoaded()'></iframe>") scope, (cloned, scope) =>
+            element.append(cloned)
 
 
 app.directive 'bbPriceFilter', (PathSvc) ->

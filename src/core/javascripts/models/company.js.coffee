@@ -27,6 +27,8 @@ angular.module('BB.Models').factory "CompanyModel", ($q, BBModel, BaseModel) ->
       for c in @companies
         if c.id == parseInt(id)
           return c
+        if c.ref && c.ref == String(id)
+          return c
       # failed to find by id - maybe by name ?
       if typeof id == "string"
         name = id.replace(/[\s\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|'’!<>;:,.~`=+-@£&%"]/g, '').toLowerCase()  

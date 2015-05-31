@@ -535,6 +535,7 @@ angular.module('BB.Models').factory "BasketItemModel",
       data.coupon_id = @coupon_id
       data.is_coupon = @is_coupon
       data.attachment_id = @attachment_id if @attachment_id
+      data.vouchers = @deal_codes if @deal_codes
 
       if @email?
         data.email = @email
@@ -631,9 +632,10 @@ angular.module('BB.Models').factory "BasketItemModel",
 
     # get booking end datetime
     end_datetime: () ->
-      return null if !@date || !@time || !@listed_duration
+      return null if !@date || !@time || (!@listed_duration && !@duration)
+      duration = if @listed_duration then @listed_duration else @duration 
       end_datetime = moment(@date.date.toISODate())
-      end_datetime.minutes(@time.time + @listed_duration)
+      end_datetime.minutes(@time.time + duration)
       end_datetime
 
     # set a booking are to be a move (or a copy?) from a previous booking
@@ -689,6 +691,7 @@ angular.module('BB.Models').factory "BasketItemModel",
     setDeal: (deal) ->
       @deal = deal
       @book_link = @deal if @deal.$has('book')
+      @setPrice(deal.price) if deal.price
 
     ####################
     # various status tests

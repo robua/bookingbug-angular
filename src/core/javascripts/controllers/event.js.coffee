@@ -90,11 +90,13 @@ angular.module('BB.Controllers').controller 'Event', ($scope,  $rootScope, Event
 
   $scope.setReady = () =>
     $scope.bb.event_details = {
-      name     : $scope.event.chain.name,
-      image    : $scope.event.image,
-      address  : $scope.event.chain.address,
-      datetime : $scope.event.date,
-      tickets  : $scope.event.tickets
+      name         : $scope.event.chain.name,
+      image        : $scope.event.image,
+      address      : $scope.event.chain.address,
+      datetime     : $scope.event.date,
+      end_datetime : $scope.event.end_datetime,
+      duration     : $scope.event.duration
+      tickets      : $scope.event.tickets
     }
 
     return $scope.updateBasket()

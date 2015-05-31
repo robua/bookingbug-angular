@@ -2,19 +2,33 @@
 
   <div bb-form-data-store></div>
 
-<!--   <div bb-breadcrumbs class="breadcrumbs_holder" ng-init="setRoute([
-      {page:'event_list', title: 'Select an event'},
-      {page:'event', title: 'Event'},
-      {page:'checkout', title: 'Confirmation'}
-      ])">
-  </div> -->
-  <!-- <div progressbar value="bb.percentage_complete" type="primary"></div> -->
+  <!-- BREADCRUMB ROUTE
+  <div bb-breadcrumbs class="breadcrumbs_holder" ng-init="setRoute([
+    {page:'event_list', title: 'Select an event'},
+    {page:'event', title: 'Event'},
+    {page:'checkout', title: 'Confirmation'}
+    ])">
 
-<!--   <div ng-if="bb.current_step" class="step-heading">
+    <ol class="breadcrumb"> 
+      <li ng-repeat="step in bb.allSteps" ng-class="{'active': step.active, 'passed': step.passed, 'disabled': isDisabledStep(step)}">
+        <button type="button" ng-click="loadStep(step.number)" ng-class="{'active': step.active, 'passed': step.passed}" ng-disabled="isDisabledStep(step)">
+          <span class="step-num">{{step.number}}.</span>
+          <span class="step-title">{{step.title}}</span>
+        </button>
+      </li>
+    </ol>
+  </div> 
+  -->
+
+  <!-- PROGRESSBAR
+  <div progressbar value="bb.percentage_complete" type="primary"></div>
+  -->
+
+  <!-- STEP INDICATOR
+  <div ng-if="bb.current_step" class="step-heading">
     <span ng-if="bb.current_step != 1 && bb.current_step <  bb.allSteps.length" ng-bind="'Step ' + (bb.current_step - 1) + ' of ' + (bb.allSteps.length - 2)"></span>
     <span ng-if="bb.current_step == bb.allSteps.length" ng-bind="'Complete'"></span>
   </div> -->
-
   <div class="row">
     <div class="col-sm-12">
       <div bb-translate ng-hide="bb.current_page == 'checkout' || bb.current_page == 'checkout_event' " class="btn-group" dropdown is-open="status.isopen" >

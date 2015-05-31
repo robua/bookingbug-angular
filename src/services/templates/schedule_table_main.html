@@ -1,14 +1,14 @@
 <button class="btn btn-default" ng-click="newSchedule()">New Schedule</button>
-<table tr-ng-grid="" items="schedules">
+<table tr-ng-grid="" items="schedules" fields="fields">
    <tbody>
     <tr>
       <td>
         <button class="btn btn-default btn-sm"
-          ng-click="delete(gridDisplayItem.id)">
+          ng-click="delete(gridItem)">
             Delete
         </button>
         <button class="btn btn-default btn-sm"
-          ng-click="edit(gridDisplayItem.id)">
+          ng-click="edit(gridItem)">
             Edit
         </button>
       </td>

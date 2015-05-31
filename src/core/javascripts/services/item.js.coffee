@@ -37,6 +37,7 @@ angular.module('BB.Services').factory "ItemService", ($q, BBModel) ->
         wlist = []
         for v in found
           if v.type == prms.item
-            matching.push(new BBModel.BookableItem(v))  
-        deferred.resolve(matching)
+            matching.push(new BBModel.BookableItem(v))
+        $q.all((m.ready.promise for m in matching)).then () ->
+          deferred.resolve(matching)
 

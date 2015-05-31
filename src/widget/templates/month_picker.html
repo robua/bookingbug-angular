@@ -13,14 +13,14 @@
       <tbody>
         <tr ng-repeat="week in month.weeks">
           <td ng-repeat="day in week.days" 
-            ng-class="{'available': day.data && day.data.spaces > 0 && month.start_date.isSame(day.date, 'month'), 
-                       'selected': day.date.isSame(filters.date),
-                       'today': day.data.today,
-                       'past': day.date.isBefore(moment(), 'day'),
-                       'disabled': !day.date.isSame(month.start_date, 'month')
+            ng-class="{'available': day.available, 
+                       'selected': day.selected,
+                       'today': day.today,
+                       'past': day.past,
+                       'disabled': day.disabled
                       }" 
               ng-click="showDay(day)" 
-              ng-disabled="day.date.isBefore(moment(), 'day') || !day.date.isSame(month.start_date, 'month')">
+              ng-disabled="day.disabled || day.past">
             <div class="circle">{{day.date.date()}}</div>
           </td>
         </tr>

@@ -28,7 +28,7 @@ angular.module('BB.Controllers').controller 'Breadcrumbs', ($scope) ->
   $scope.steps    = $scope.bb.steps
   $scope.allSteps = $scope.bb.allSteps
 
-  # stop users from clicking back once the form is completed
+  # stop users from clicking back once the form is completed ###
   $scope.loadStep = (number) ->
     if !lastStep() && !currentStep(number) && !atDisablePoint()
       loadStep number
