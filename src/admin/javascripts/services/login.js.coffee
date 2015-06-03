@@ -1,5 +1,6 @@
 
-angular.module('BBAdmin.Services').factory "AdminLoginService", ($q, halClient, $rootScope, BBModel, $sessionStorage, $cookies) ->
+angular.module('BBAdmin.Services').factory "AdminLoginService", ($q, halClient,
+    $rootScope, BBModel, $sessionStorage, $cookies, UriTemplate) ->
  
   login: (form, options) ->
     deferred = $q.defer()
@@ -80,7 +81,7 @@ angular.module('BBAdmin.Services').factory "AdminLoginService", ($q, halClient, 
           url = "/api/v1/login{?id,role}"
         params.id = params.companyId || params.company_id
         params.role = 'admin'
-        href = new UriTemplate.parse(url).expand(params || {})
+        href = new UriTemplate(url).fillFromObject(params || {})
         options = {auth_token: auth_token}
         halClient.$get(href, options).then (login) =>
           if login.$has('administrator')

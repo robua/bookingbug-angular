@@ -15,7 +15,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   FormDataStoreService.init 'MapCtrl', $scope, [
     'address'
     'selectedStore'
-    'prms'
+    'search_prms'
   ]
 
   # init vars
@@ -33,7 +33,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   $scope.numberedPin          ||= null
   $scope.defaultPin           ||= null
   $scope.hide_not_live_stores = false
-  $scope.address              = $scope.$eval $attrs.bbAddress or null
+  $scope.address              = $scope.$eval $attrs.bbAddress if !$scope.address && $attrs.bbAddress
   $scope.error_msg            = options.error_msg or "You need to select a store"
   $scope.notLoaded $scope
   
@@ -45,7 +45,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   #if $scope.bb.company.$has('parent')
   $rootScope.connection_started.then ->
 
-    $scope.setLoaded $scope
+    $scope.setLoaded $scope if !$scope.selectedStore
     if $scope.bb.company.companies
       $rootScope.parent_id = $scope.bb.company.id
     else if $rootScope.parent_id
@@ -103,8 +103,12 @@ angular.module('BB.Controllers').controller 'MapCtrl',
 
   # if the user has clicked back to the map then display it.
   checkDataStore = ->
-    if $scope.selectedStore and $scope.prms
-      $scope.searchAddress $scope.prms
+    if $scope.selectedStore
+      $scope.notLoaded $scope
+      if $scope.search_prms
+        $scope.searchAddress $scope.search_prms
+      else 
+        $scope.geolocate()
       google.maps.event.addListenerOnce($scope.myMap, 'idle', ->
         _.each $scope.mapMarkers, (marker) ->
           if $scope.selectedStore.id is marker.company.id
@@ -115,7 +119,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   # create title for the map selection step
   $scope.title = ->
     ci = $scope.bb.current_item
-    if ci.cagetgory and ci.category.description
+    if ci.category and ci.category.description
       p1 = ci.category.description
     else
       p1 = $scope.bb.company.extra.department
@@ -147,17 +151,19 @@ angular.module('BB.Controllers').controller 'MapCtrl',
           req.bounds = new google.maps.LatLngBounds(sw, ne)
 
         new google.maps.Geocoder().geocode req, (results, status) ->
-          $scope.prms = prms
 
           $scope.geocoder_result = results[0] if results.length > 0 and status is 'OK'
 
           if !$scope.geocoder_result or ($scope.geocoder_result and $scope.geocoder_result.partial_match)
             searchPlaces(req)
-            return
+            return 
           else if $scope.geocoder_result
             searchSuccess($scope.geocoder_result)
           else
             searchFailed()
+          $scope.setLoaded $scope
+
+    $scope.setLoaded $scope
 
 
   searchPlaces = (prms) ->
@@ -297,6 +303,8 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   $scope.geolocate = () ->
     return false if !navigator.geolocation || ($scope.reverse_geocode_address && $scope.reverse_geocode_address == $scope.address)
 
+    $scope.notLoaded $scope
+
     webshim.ready 'geolocation', ->
       # set timeout as 5 seconds and max age as 1 hour
       options = {timeout: 5000, maximumAge: 3600000}
@@ -306,9 +314,11 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   geolocateFail = (error) ->
     switch error.code
       # if the geocode failed because the position was unavailable or the request timed out, raise an alert
-      when 2, 3 then AlertService.danger(ErrorService.getError('GEOLOCATION_ERROR'))
+      when 2, 3 
+        $scope.setLoaded $scope
+        AlertService.danger(ErrorService.getError('GEOLOCATION_ERROR'))
       else
-        return
+        return $scope.setLoaded $scope
 
 
   reverseGeocode = (position) ->
@@ -325,6 +335,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
           $scope.reverse_geocode_address += ', ' + ac.long_name if ac.types.indexOf("locality") >= 0
           $scope.address = $scope.reverse_geocode_address
         searchSuccess($scope.geocoder_result)
+      $scope.setLoaded $scope
 
   $scope.increaseRange = () ->
     $scope.range_limit = Infinity

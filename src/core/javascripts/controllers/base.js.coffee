@@ -98,7 +98,8 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
     $rootScope, halClient, $window, $http, $localCache, $q, $timeout, BasketService,
     LoginService, AlertService, $sce, $element, $compile, $sniffer, $modal, $log,
     BBModel, BBWidget, SSOService, ErrorService, AppConfig, QueryStringService,
-    QuestionService, LocaleService, PurchaseService, $sessionStorage, $bbug, SettingsService) ->
+    QuestionService, LocaleService, PurchaseService, $sessionStorage, $bbug,
+    SettingsService, UriTemplate) ->
   # dont change the cid as we use it in the app to identify this as the widget
   # root scope
   $scope.cid = "BBCtrl"
@@ -340,7 +341,7 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
         else
           comp_category_id = $scope.bb.item_defaults.category
 
-      comp_url = new UriTemplate.parse($scope.bb.api_url + '/api/v1/company/{company_id}{?embed,category_id}').expand({company_id: company_id, category_id: comp_category_id, embed: embed_params})
+      comp_url = new UriTemplate($scope.bb.api_url + '/api/v1/company/{company_id}{?embed,category_id}').fillFromObject({company_id: company_id, category_id: comp_category_id, embed: embed_params})
       comp_promise = halClient.$get(comp_url)
 
       setup_promises.push(comp_promise)
@@ -839,7 +840,7 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
         affiliate_id: $scope.bb.affiliate_id
         clear_baskets: if $scope.bb.clear_basket then '1' else null
         clear_member: if $scope.bb.clear_member then '1' else null
-      uri = new $window.UriTemplate.parse(href).expand(params)
+      uri = new UriTemplate(href).fillFromObject(params)
       status = halClient.$get(uri, {"auth_token": auth_token, "no_cache": true})
       status.then (res) =>
         if res.$has('client')

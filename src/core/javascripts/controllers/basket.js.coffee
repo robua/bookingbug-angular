@@ -63,6 +63,7 @@ angular.module('BB.Controllers').controller 'BasketList', ($scope,  $rootScope, 
 
 
   $scope.applyCoupon = (coupon) =>
+    AlertService.clear()
     $scope.notLoaded $scope
     params = {bb: $scope.bb, coupon: coupon }
     BasketService.applyCoupon($scope.bb.company, params).then (basket) ->

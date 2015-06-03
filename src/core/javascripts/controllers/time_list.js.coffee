@@ -6,7 +6,6 @@ angular.module('BB.Directives').directive 'bbTimes', () ->
   scope : true
   controller : 'TimeList'
 
-
 angular.module('BB.Controllers').controller 'TimeList', ($attrs, $element, $scope,  $rootScope, $q, TimeService, AlertService, BBModel) ->
   $scope.controller = "public.controllers.TimeList"
   $scope.notLoaded $scope
@@ -57,9 +56,7 @@ angular.module('BB.Controllers').controller 'TimeList', ($attrs, $element, $scop
 
 
   $scope.selectSlot = (slot, route) =>
-
     if slot && slot.availability() > 0
-
       # if this time cal was also for a specific item source (i.e.a person or resoure- make sure we've selected it)
       if $scope.item_link_source
         $scope.data_source.setItem($scope.item_link_source)
@@ -67,11 +64,14 @@ angular.module('BB.Controllers').controller 'TimeList', ($attrs, $element, $scop
         $scope.setLastSelectedDate($scope.selected_day.date)
         $scope.data_source.setDate($scope.selected_day)
       $scope.data_source.setTime(slot)
-      if $scope.data_source.ready
-        $scope.addItemToBasket().then () =>
-          $scope.decideNextPage(route)
+      if $scope.$parent.$has_page_control
+        return
       else
-        $scope.decideNextPage(route)
+        if $scope.data_source.ready
+          $scope.addItemToBasket().then () =>
+            $scope.decideNextPage(route)
+        else
+          $scope.decideNextPage(route)
 
 
   $scope.highlightSlot = (slot) =>

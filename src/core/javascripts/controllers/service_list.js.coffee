@@ -65,6 +65,10 @@ angular.module('BB.Controllers').controller 'ServiceList',($scope,  $rootScope, 
           # of services to ones that are relevant
           items = items.filter (x) -> x.$has('category') && x.$href('category') is $scope.booking_item.category.self
 
+      # filter out event groups unless explicity requested
+      if !$scope.options.show_event_groups
+        items = items.filter (x) -> !x.is_event_group 
+
       if (items.length is 1 && !$scope.allowSinglePick)
         if !$scope.selectItem(items[0], $scope.nextRoute )
           setServiceItem items

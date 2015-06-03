@@ -39,10 +39,18 @@ angular.module('BB.Directives').directive 'bbMonthPicker', () ->
         for w in [1..6]
           week = {days: []}
           for d in [1..7]
-            week.days.push({date: date.clone(), data: datehash[date.format("DDMMYY")] })
 
-            if date.isSame(date.clone().startOf('month'),'day') and !month.start_date
-              month.start_date = date.clone()
+            month.start_date = date.clone() if date.isSame(date.clone().startOf('month'),'day') and !month.start_date
+            day_data = datehash[date.format("DDMMYY")]
+
+            week.days.push({
+              date      : date.clone(), 
+              data      : day_data,
+              available : day_data and day_data.spaces and day_data.spaces > 0,
+              today     : moment().isSame(date, 'day'),
+              past      : date.isBefore(moment(), 'day'),
+              disabled  : !date.isSame(month.start_date, 'month')
+            })
 
             date.add(1, 'day')
             

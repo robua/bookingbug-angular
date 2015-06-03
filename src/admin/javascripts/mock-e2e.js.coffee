@@ -43,6 +43,8 @@ angular.module('BBAdminMockE2E').run ($httpBackend) ->
      _links:
        self:
          href: 'http://www.bookingbug.com/api/v1/company/123'
+       people:
+         href: 'http://www.bookingbug.com/api/v1/admin/123/people'
        new_person:
          href: 'http://www.bookingbug.com/api/v1/admin/123/people/new{?signup}'
          templated: true
@@ -62,6 +64,10 @@ angular.module('BBAdminMockE2E').run ($httpBackend) ->
          href: 'http://www.bookingbug.com/api/v1/admin/123/schedules'
        new_schedule:
          href: 'http://www.bookingbug.com/api/v1/admin/123/schedules/new'
+       resources:
+         href: 'http://www.bookingbug.com/api/v1/admin/123/resources'
+       new_resource:
+         href: 'http://www.bookingbug.com/api/v1/admin/123/resources/new'
    $httpBackend.whenGET('http://www.bookingbug.com/api/v1/admin/123/company').respond(company)
 
    people =
@@ -81,6 +87,10 @@ angular.module('BBAdminMockE2E').run ($httpBackend) ->
                href: "http://www.bookingbug.com/api/v1/admin/123/people/1"
              items:
                href: "http://www.bookingbug.com/api/v1/123/items?person_id=1"
+             edit:
+               href: "http://www.bookingbug.com/api/v1/admin/123/people/1/edit"
+             schedule:
+               href: "http://www.bookingbug.com/api/v1/admin/123/schedules/1"
            _embedded: {}
          }
          {
@@ -97,6 +107,10 @@ angular.module('BBAdminMockE2E').run ($httpBackend) ->
                href: "http://www.bookingbug.com/api/v1/admin/123/people/2"
              items:
                href: "http://www.bookingbug.com/api/v1/123/items?person_id=2"
+             edit:
+               href: "http://www.bookingbug.com/api/v1/admin/123/people/2/edit"
+             schedule:
+               href: "http://www.bookingbug.com/api/v1/admin/123/schedules/1"
            _embedded: {}
          }
          {
@@ -113,6 +127,10 @@ angular.module('BBAdminMockE2E').run ($httpBackend) ->
                href: "http://www.bookingbug.com/api/v1/admin/123/people/3"
              items:
                href: "http://www.bookingbug.com/api/v1/123/items?person_id=3"
+             edit:
+               href: "http://www.bookingbug.com/api/v1/admin/123/people/3/edit"
+             schedule:
+               href: "http://www.bookingbug.com/api/v1/admin/123/schedules/1"
            _embedded: {}
          }
        ]
@@ -126,27 +144,29 @@ angular.module('BBAdminMockE2E').run ($httpBackend) ->
 
    person_schema =
      form: [
-       {'key':'name', type:'text', feedback:false},
-       {'key':'email', type:'email', feedback:false},
-       {key:'phone', type:'text', feedback:false},
+       '*',
        {type:'submit', title:'Save'}
      ]
      schema:
        properties:
          email:
            title: 'Email *'
-           type: 'String'
+           type: 'string'
          name:
            title: 'Name *'
-           type: 'String'
+           type: 'string'
          phone:
            title: 'Phone'
-           type: 'String'
+           type: 'string'
        required: ['name', 'email']
        title: 'Person'
        type: 'object'
    $httpBackend.whenGET('http://www.bookingbug.com/api/v1/admin/123/people/new').respond () ->
      [200, person_schema, {}]
+   $httpBackend.whenGET(/http:\/\/www.bookingbug.com\/api\/v1\/admin\/123\/people\/\d\/edit/).respond () ->
+     [200, person_schema, {}]
+   $httpBackend.whenDELETE(/http:\/\/www.bookingbug.com\/api\/v1\/admin\/123\/people\/\d/).respond () ->
+     [200, {}, {}]
 
    $httpBackend.whenPOST('http://www.bookingbug.com/api/v1/admin/123/people').respond (method, url, data) ->
      console.log 'post person'
@@ -601,25 +621,24 @@ angular.module('BBAdminMockE2E').run ($httpBackend) ->
      [200, event_chain_schema, {}]
 
 
+   schedule1 =
+     id: 1
+     name: "Schedule1"
+     company_id: 123
+     rules:
+       '1': "0700-1500"
+       '2': "0700-1600,1800-1900"
+       '2015-02-01': "0600-1200"
+     _links:
+       self:
+         href: "http://www.bookingbug.com/api/v1/admin/123/schedules/1"
+       edit:
+         href: "http://www.bookingbug.com/api/v1/admin/123/schedules/edit"
+   $httpBackend.whenGET('http://www.bookingbug.com/api/v1/admin/123/schedules/1').respond(schedule1)
    schedules =
      total_entries: 1
      _embedded:
-       schedules: [
-         {
-           id: 1
-           name: "Schedule1"
-           company_id: 123
-           rules:
-             '1': "0700-1500"
-             '2': "0700-1600,1800-1900"
-             '2015-02-01': "0600-1200"
-           _links:
-             self:
-               href: "http://www.bookingbug.com/api/v1/admin/123/schedules/1"
-             edit:
-               href: "http://www.bookingbug.com/api/v1/admin/123/schedules/edit"
-         }
-       ]
+       schedules: [schedule1]
      _links:
        self:
          href: "http://www.bookingbug.com/api/v1/admin/123/schedules"
@@ -632,13 +651,19 @@ angular.module('BBAdminMockE2E').run ($httpBackend) ->
      form: [
        {key:'name', type:'text', feedback:false},
        {key:'rules', type:'schedule', feedback:false},
+       {type:'submit', title:'Save'}
+     ],
+     schema:
+       properties:
+         name:
+           title: 'Name *'
+           type: 'string'
          rules:
            title: 'Rules *'
            type: 'string'
        required: ['name', 'rules']
        title: 'Schema'
        type: 'object'
-     ]
    $httpBackend.whenGET('http://www.bookingbug.com/api/v1/admin/123/schedules/new').respond () ->
      [200, schedule_schema, {}]
    $httpBackend.whenGET('http://www.bookingbug.com/api/v1/admin/123/schedules/edit').respond () ->

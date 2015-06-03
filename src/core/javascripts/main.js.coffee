@@ -26,7 +26,8 @@ app = angular.module('BB', [
   'slick',
   'angulartics',
   'angulartics.google.analytics',
-  'pascalprecht.translate'
+  'pascalprecht.translate',
+  'vcRecaptcha'
 ]);
 
 
@@ -39,6 +40,7 @@ if (window.use_no_conflict)
 else
   app.value '$bbug', jQuery
 
+app.constant('UriTemplate', window.UriTemplate)
 
 app.config ($locationProvider, $httpProvider, $provide, ie8HttpBackendProvider) ->
   $httpProvider.defaults.headers.common =

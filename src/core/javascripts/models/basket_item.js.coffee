@@ -500,6 +500,8 @@ angular.module('BB.Models').factory "BasketItemModel",
         data.time = @time.time
         if @time.event_id
           data.event_id = @time.event_id
+        else if @time.event_ids
+          data.event_ids = @time.event_ids
       else if @date and @date.event_id
         data.event_id = @date.event_id
       data.price = @price

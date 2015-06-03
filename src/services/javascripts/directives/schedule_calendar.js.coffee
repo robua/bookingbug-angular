@@ -2,13 +2,15 @@ angular.module('BBAdminServices').directive 'scheduleCalendar', (uiCalendarConfi
 
   controller = ($scope, $attrs) ->
 
+    $scope.calendarName = 'scheduleCal'
+
     $scope.eventSources = [
       events: (start, end, timezone, callback) ->
         callback($scope.getEvents())
     ]
 
     $scope.getCalendarEvents = (start, end) ->
-      events = $scope.$$childTail.scheduleCal.fullCalendar('clientEvents',
+      events = uiCalendarConfig.calendars.scheduleCal.fullCalendar('clientEvents',
         (e) ->
           (start.isAfter(e.start) || start.isSame(e.start)) &&
             (end.isBefore(e.end) || end.isSame(e.end)))
@@ -23,9 +25,10 @@ angular.module('BBAdminServices').directive 'scheduleCalendar', (uiCalendarConfi
         header:
           left: 'today,prev,next'
           center: 'title'
-          right: 'month,agendaWeek'
+          right: 'month,agendaSelectAcrossWeek'
         selectHelper: false
         eventOverlap: false
+        lazyFetching: false
         views:
           agendaSelectAcrossWeek:
             duration:
@@ -34,7 +37,6 @@ angular.module('BBAdminServices').directive 'scheduleCalendar', (uiCalendarConfi
             slotEventOverlap: false
             minTime: options.min_time || '00:00:00'
             maxTime: options.max_time || '24:00:00'
-            noEventClick: true
         select: (start, end, jsEvent, view) ->
           events = $scope.getCalendarEvents(start, end)
           if events.length > 0
@@ -50,9 +52,11 @@ angular.module('BBAdminServices').directive 'scheduleCalendar', (uiCalendarConfi
               end: moment(event.end).subtract(delta)
             $scope.removeRange(orig.start, orig.end)
             $scope.addRange(event.start, event.end)
+        eventClick: (event, jsEvent, view) ->
+          $scope.removeRange(event.start, event.end)
 
     $scope.render = () ->
-      $scope.$$childTail.scheduleCal.fullCalendar('render')
+      uiCalendarConfig.calendars.scheduleCal.fullCalendar('render')
 
 
   link = (scope, element, attrs, ngModel) ->
@@ -76,12 +80,9 @@ angular.module('BBAdminServices').directive 'scheduleCalendar', (uiCalendarConfi
       ngModel.$render()
 
     ngModel.$render = () ->
-      if scope.$$childTail
-        scope.$$childTail.scheduleCal.fullCalendar('refetchEvents')
-        scope.$$childTail.scheduleCal.fullCalendar('unselect')
-
-    scope.calendar = () ->
-      if scope.$$childTail then scope.$$childTail.scheduleCal
+      if uiCalendarConfig && uiCalendarConfig.calendars.scheduleCal
+        uiCalendarConfig.calendars.scheduleCal.fullCalendar('refetchEvents')
+        uiCalendarConfig.calendars.scheduleCal.fullCalendar('unselect')
 
   {
     controller: controller

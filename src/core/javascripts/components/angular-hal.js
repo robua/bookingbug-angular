@@ -66,8 +66,8 @@ angular
 
 })
 .factory('halClient', [
-  '$http', '$q', 'data_cache', 'shared_header', function(
-    $http, $q, data_cache, shared_header
+  '$http', '$q', 'data_cache', 'shared_header', 'UriTemplate', function(
+    $http, $q, data_cache, shared_header, UriTemplate
   ){
     return {
       setCache: function(cache) {
@@ -230,7 +230,7 @@ angular
 
       function hrefLink(link, params) {
         var href = link.templated
-        ? new UriTemplate.parse(link.href).expand(params || {})
+        ? new UriTemplate(link.href).fillFromObject(params || {})
         : link.href
         ;
 

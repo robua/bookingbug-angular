@@ -1,16 +1,15 @@
 angular.module('BBAdminServices').directive 'personTable', (AdminCompanyService,
-    AdminPersonService, $modal, $log, ModalForm) ->
+    AdminPersonService, $log, ModalForm) ->
 
   controller = ($scope) ->
 
+    $scope.fields = ['id', 'name', 'mobile']
 
     $scope.getPeople = () ->
       params =
         company: $scope.company
       AdminPersonService.query(params).then (people) ->
-        $scope.people_models = people
-        $scope.people = _.map people, (person) ->
-          _.pick person, 'id', 'name', 'mobile'
+        $scope.people = people
 
     $scope.newPerson = () ->
       ModalForm.new
@@ -21,18 +20,22 @@ angular.module('BBAdminServices').directive 'personTable', (AdminCompanyService,
         success: (person) ->
           $scope.people.push(person)
 
-    $scope.delete = (id) ->
-      person = _.find $scope.people_models, (p) -> p.id == id
+    $scope.delete = (person) ->
       person.$del('self').then () ->
-        $scope.people = _.reject $scope.people, (p) -> p.id == id
+        $scope.people = _.reject $scope.people, person
       , (err) ->
         $log.error "Failed to delete person"
 
-    $scope.edit = (id) ->
-      person = _.find $scope.people_models, (p) -> p.id == id
+    $scope.edit = (person) ->
       ModalForm.edit
         model: person
         title: 'Edit Person'
+
+    $scope.schedule = (person) ->
+      person.$get('schedule').then (schedule) ->
+        ModalForm.edit
+          model: schedule
+          title: 'Edit Schedule'
 
   link = (scope, element, attrs) ->
     if scope.company
