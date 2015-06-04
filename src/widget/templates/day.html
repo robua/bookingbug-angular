@@ -1,11 +1,10 @@
 <div bb-page ng-init="checkStepTitle('Select a date and time')">
 
   <div class="page-summary">
-    <p>Select a date and time for your {{bb.current_item.service.name}} appointment.</p>
     <div bb-include="service_item_aggregate">
     </div>
+    <p>Select a date and time for your {{bb.current_item.service.name}} appointment.</p>
   </div>
-
 <!--   <div bb-people></div> -->
 
   <div bb-time-ranges class="calendar" ng-init="init({selected_day: today})">
