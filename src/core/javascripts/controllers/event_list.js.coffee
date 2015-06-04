@@ -366,7 +366,7 @@ angular.module('BB.Controllers').controller 'EventList', ($scope, $rootScope, Ev
     $scope.filterChanged()
 
 
-  # builds dynamic filters using company questions
+  # build dynamic filters using company questions
   buildDynamicFilters = (questions) ->
     $scope.dynamic_filters                = _.groupBy(questions, 'question_type')
     $scope.dynamic_filters.question_types = _.uniq(_.pluck(questions, 'question_type'))

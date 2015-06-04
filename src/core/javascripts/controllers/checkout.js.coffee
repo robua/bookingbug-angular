@@ -35,7 +35,7 @@ angular.module('BB.Controllers').controller 'Checkout', ($scope, $rootScope, Bas
       $scope.setLoaded $scope
       $scope.checkoutFailed = true
 
-  , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
+  , (err) -> $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
 
   # Deprecated - use window.print or $scope.printElement
   # Print booking details using print_purchase.html template

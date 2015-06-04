@@ -16,7 +16,7 @@ angular.module('BB.Controllers').controller 'ClientDetails', ($scope,  $rootScop
 
     if !$scope.client.valid() && LoginService.isLoggedIn()
       # make sure we set the client to the currently logged in member
-      # we should also jsut check the logged in member is  a member of the company they are currently booking with
+      # we should also jsut check the logged in member is a member of the company they are currently booking with
       $scope.setClient(new BBModel.Client(LoginService.member()._data))
 
     if LoginService.isLoggedIn() && LoginService.member().$has("child_clients") && LoginService.member()
@@ -61,9 +61,9 @@ angular.module('BB.Controllers').controller 'ClientDetails', ($scope,  $rootScop
       $scope.existing_member = false
       $scope.decideNextPage(route)
     , (err) ->
-      if err.data.error == "Please Log in" 
+      if err.data.error == "Please login" 
         $scope.existing_member = true
-        AlertService.danger({msg: "You have already registered with this email address. Please log in or reset your password using the Forgot Password link below."})
+        AlertService.danger({msg: "You have already registered with this email address. Please login or reset your password using the Forgot Password link below."})
       $scope.setLoaded $scope
 
   $scope.clientLogin = () =>

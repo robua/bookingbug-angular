@@ -1,5 +1,4 @@
-angular.module('BB.Directives').directive 'paymentButton', ($compile, $sce,
-    $http, $templateCache, $q, $log) ->
+angular.module('BB.Directives').directive 'bbPaymentButton', ($compile, $sce, $http, $templateCache, $q, $log) ->
 
   getTemplate = (type, scope) ->
     switch type
