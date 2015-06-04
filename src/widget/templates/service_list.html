@@ -58,7 +58,7 @@
           </div>
           <div class="col-sm-2 col-xs-6">
             <div class="bb-service-price">
-              <span ng-show="item.price > 0">{{item.price | currency: bb.company.currency_code}}</span>
+              <span ng-show="item.price > 0">{{item.price | icurrency: bb.company.currency_code}}</span>
               <span ng-show="item.price == 0">Free</span>
             </div>
           </div>
