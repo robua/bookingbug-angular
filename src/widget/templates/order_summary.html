@@ -1,0 +1,53 @@
+<ul class="confirmation-summary">
+  <li ng-if="total.id" class="row confirmation-summary-item">
+    <div class="col-sm-3">Booking Reference:</div>
+    <div class="col-sm-9">{{total.id}}</div>
+  </li>
+</ul>
+<ul class="confirmation-summary" ng-repeat="i in total.items track by $index">
+  <li ng-if="i.name" class="row confirmation-summary-item">
+    <div class="col-sm-3">Name:</div>
+    <div class="col-sm-9">{{i.name}}</div>
+  </li>
+  <li ng-if="i.description" class="row confirmation-summary-item">
+    <div class="col-sm-3">Description:</div>
+  <div class="col-sm-9">{{i.description}}</div>
+  </li>
+  <li ng-if="i.full_describe" class="row confirmation-summary-item">
+    <div class="col-sm-3">Service:</div>
+    <div class="col-sm-9">{{i.full_describe}}</div>
+  </li>
+  <li ng-if="i.describe" class="row confirmation-summary-item">
+    <div class="col-sm-3">Date/Time:</div>
+    <div class="col-sm-9">{{i.describe}}</div>
+  </li>
+  <li ng-if="i.price" class="row confirmation-summary-item">
+    <div class="col-sm-3">Price:</div>
+    <div class="col-sm-9">{{i.price | pretty_price }}</div>
+  </li>
+  <li ng-if="i.due_now != i.price" class="row confirmation-summary-item">
+    <div class="col-sm-3">Due Now:</div>
+    <div class="col-sm-9">{{i.due_now | currency }}</div>
+  </li>
+</ul>
+<ul ng-show="total.items[0].address.lat" class="confirmation-summary">
+  <li class="row confirmation-summary-item">
+    <div class="col-sm-12">
+      <div bb-address-map="total.items[0].address" ng-if="total.items[0].address.lat" >
+        <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options">
+          <ui-gmap-marker coords="marker.coords" idkey="marker.id">
+          </ui-gmap-marker>
+        </ui-gmap-google-map>
+      </div>
+    </div>
+  </li>
+  <li class="row confirmation-summary-item">
+    <div class="col-sm-12">
+      <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>{{total.items[0].address | address_single_line }}
+    </div>
+  </li>
+</ul>
+<div bb-custom-confirmation-text class="bb-message">
+  <div ng-repeat="msg in messages" ng-bind-html="msg">
+  </div>
+</div>
