@@ -7,7 +7,7 @@
   <div class="bb-subcontent">
 
 
-    <div class="bb-filters" ng-show="filtered_items.length > 0">
+    <div class="bb-filters" ng-show="items.length > 9">
 
       <div accordion close-others="true">
         <div accordion-group is-open="is_open" ng-class="{'expanded': is_open, 'selected': is_selected}" class="store-body">
@@ -79,7 +79,7 @@
         <div class="col-sm-12 ">
           <div class="bb-service-unavailable">
             <p>
-              No services match your <span ng-show="filtered_items.length > 9"> filter</span> criteria.
+              No services match your <span ng-show="items.length > 9"> filter</span> criteria.
             </p>
           </div>
         </div>
