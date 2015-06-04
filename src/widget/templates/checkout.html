@@ -19,15 +19,17 @@
         </div>
 
         <div ng-show="total">
-          <div ng-if="total.id" class="row confirmation-summary-item">
-            <div class="col-sm-3">Booking Reference:</div>
-            <div class="col-sm-9">{{total.id}}</div>
-         </div>
-         <ul class="confirmation-summary" ng-repeat="i in total.items track by $index">
+          <ul class="confirmation-summary">
+            <li ng-if="total.id" class="row confirmation-summary-item">
+              <div class="col-sm-3">Booking Reference:</div>
+              <div class="col-sm-9">{{total.id}}</div>
+            </li>
+          </ul>
+          <ul class="confirmation-summary" ng-repeat="i in total.items track by $index">
             <li ng-if="i.name" class="row confirmation-summary-item">
               <div class="col-sm-3">Name:</div>
               <div class="col-sm-9">{{i.name}}</div>
-           </li>
+            </li>
             <li ng-if="i.description" class="row confirmation-summary-item">
               <div class="col-sm-3">Description:</div>
             <div class="col-sm-9">{{i.description}}</div>
@@ -72,7 +74,7 @@
               class="btn btn-primary" 
               total="total" 
               bb="bb"
-              decide-next-page="decideNextPage">
+              decide-next-page="decideNextPage">Pay
             </div>
           </div>
           <div bb-custom-confirmation-text class="bb-message">
