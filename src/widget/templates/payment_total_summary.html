@@ -1,0 +1,19 @@
+<div ng-show="total">
+  <ul>
+    <li class="row confirmation-summary-item">
+      <div class="col-sm-2">Payment id:</div>
+      <div class="col-sm-10">{{total.id}} for the following services</div>
+    </li>
+    <li class="row confirmation-summary-item" ng-repeat="item in total.items">
+      <div class="col-sm-offset-2 col-sm-10">{{$index + 1}}) {{ item.full_describe}}, on {{ item.describe }}</div>
+    </li>
+    <li ng-if="total.deposit != 0" class="row confirmation-summary-item">
+      <div class="col-sm-2">Deposit:</div>
+      <div class="col-sm-10">{{total.deposit | pretty_price}}</div>
+    </li>
+    <li ng-if="total.due_now" class="row confirmation-summary-item">
+      <div class="col-sm-2">Total Due Now:</div>
+      <div class="col-sm-10">{{total.due_now | pretty_price}}</div>
+    </li>
+  </ul>
+</div>
