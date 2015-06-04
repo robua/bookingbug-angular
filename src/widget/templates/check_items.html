@@ -1,9 +1,10 @@
 <div bb-page ng-init="checkStepTitle('Review')">
   <div bb-item-details>
 
-    <h1>Review</h1>
-
-    <div bb-include="service_item_aggregate">
+    <div class="page-summary">
+      <div bb-include="service_item_aggregate">
+      </div>
+      <p>Complete the booking details.</p>
     </div>
 
     <div class="bb-subcontent">
@@ -12,7 +13,7 @@
 
         <div ng-show="item_details.hasQuestions" ng-form name="booking_questions_form" class="bb-form" role="form" novalidate>
 
-          <h2 class="booking-form-header">Other information</h2>
+          <h2 class="booking-form-header">Booking details</h2>
 
           <div class="form-group" ng-repeat="question in item_details.questions" ng-if="question.id != '17581' && question.currentlyShown" bb-question-line ng-class="{'has-error': booking_questions_form['q' + question.id].$invalid && (booking_questions_form['q' + question.id].$dirty || booking_form.submitted)}">
             <label for="{{question.id}}" class="control-label col-sm-4">{{question.name}}<span ng-show="question.required">*</span></label>
