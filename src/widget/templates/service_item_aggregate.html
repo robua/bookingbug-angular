@@ -1,4 +1,10 @@
 <ul class="bb-summary-list">
+  <li class="bb-confirmation-summary-item" ng-if="bb.current_item.company.name">
+    <div class="bb-summary-label">Location:
+    </div>
+    <div class="bb-summary-value"><span>{{bb.current_item.company.name}}</span>
+    </div>
+  </li>
   <li class="bb-confirmation-summary-item" ng-if="bb.current_item.service.name">
     <div class="bb-summary-label">Service:
     </div>
