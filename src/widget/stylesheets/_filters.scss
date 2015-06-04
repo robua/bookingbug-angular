@@ -1,4 +1,9 @@
 .bb-filters {
+  margin-bottom: 30px;
+
+  .panel-body {
+    padding: 20px 0px 10px;
+  }
 
   .panel:last-child {
     margin-bottom: 0;
@@ -19,15 +24,15 @@
     padding-bottom: 0px;
   }
 
-  .panel-body {
-    padding-bottom: 0;
-  }
-
   .form-group {
-    padding-right: 15px;
+    padding-right: 20px;
     @media (max-width: $screen-xs-max) {
       padding-right: 0;
     }
+  }
+
+  .form-control {
+    margin-bottom: 8px;
   }
 
   .date-picker {
@@ -40,10 +45,17 @@
     }
   }
 
+
   [bb-price-filter] {
     width: 240px;
     @media (max-width: $screen-xs-max) {
       width: 100%;
     }
   }
+
 }
+
+.ngrs-range-slider {
+  padding: 8px;
+}
+
