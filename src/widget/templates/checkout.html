@@ -1,12 +1,5 @@
 <div bb-checkout class="bb-checkout">
 
-  <div ng-if="total.$has('new_payment')" class="col-sm-12">
-    <div ng-if="total.items.length == 1" bb-include="service_item_aggregate">
-    </div>
-    <div ng-if="total.items.length > 1" bb-include="payment_total_summary"></div>
-    <div bb-include="payment"></div>
-  </div>
-
   <div class="row">
     <div ng-show="!total.$has('new_payment')" class="col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8">
       <div class="bb-subcontent">
@@ -26,6 +19,21 @@
         </div>
         <div bb-include="order_summary">
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div ng-if="total.$has('new_payment')" class="col-sm-12">
+    <div ng-if="total.items.length == 1" bb-include="service_item_aggregate">
+    </div>
+    <div ng-if="total.items.length > 1" bb-include="payment_total_summary"></div>
+    <div ng-if="total.$has('new_payment')" class="bb-checkout-pay-button-div">
+      <div bb-payment-button 
+        value="Pay" 
+        class="btn btn-primary" 
+        total="total" 
+        bb="bb"
+        decide-next-page="decideNextPage">
       </div>
     </div>
   </div>

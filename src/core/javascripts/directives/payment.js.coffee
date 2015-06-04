@@ -1,11 +1,12 @@
 angular.module('BB.Directives').directive 'bbPaymentButton', ($compile, $sce, $http, $templateCache, $q, $log) ->
 
   getTemplate = (type, scope) ->
+    debugger
     switch type
       when 'button_form'
         getButtonFormTemplate(scope)
       when 'page'
-        """<a ng-click="decideNextPage()">{{label}}</a>"""
+        "<div bb-pay-include='payment'>{{label}}</div>"
       when 'location'
         """<a href='{{payment_link}}'>{{label}}</a>"""
       else ""
@@ -81,3 +82,11 @@ angular.module('BB.Directives').directive 'bbPaypalExpressButton', ($compile, $s
     link: linker
   }
 
+angular.module('BB.Directives').directive 'bbPayInclude', ($compile, $rootScope, $templateCache) ->
+  link: (scope, element, attr) ->
+    scope.$watch 'bb.path_setup', (newval, oldval) =>
+      debugger
+      if newval
+        html = $templateCache.get('payment.html')
+        e = $compile(html)(scope)
+        element.replaceWith(e)
