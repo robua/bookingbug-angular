@@ -401,26 +401,30 @@ app.directive 'bbPriceFilter', (PathSvc) ->
     $scope.$watch 'items', (new_val, old_val) ->
       setPricefilter new_val if new_val
 
+    compareNumbers = (a, b) -> 
+      return a - b
+
     setPricefilter = (items) ->
       $scope.price_array = _.uniq _.map items, (item) ->
-        return item.price or 0
-      $scope.price_array.sort()
+        return item.price
+      $scope.price_array.sort(compareNumbers)
       suitable_max()
       
     suitable_max = () ->
-      top_number = _.last($scope.price_array)
+      top_number = _.max($scope.price_array)
       max_number = switch 
-        when top_number < 1 then 0
-        when top_number < 11 then 10
+        when top_number < 1 then 0 
+        when top_number < 11 then 10 
         when top_number < 51 then 50
         when top_number < 101 then 100
-        when top_number < 1000 then ( Math.ceil( top_number / 100 ) ) * 100
-      min_number = _.first($scope.price_array)
+        when top_number < 1000 then  ( Math.ceil( top_number / 100 ) ) * 100
+      min_number = 0
       $scope.price_options = {
         min: min_number
         max: max_number
       }
       $scope.filters.price = {min: min_number, max: max_number}
+      $scope.step_range = max_number / 10
 
     $scope.$watch 'filters.price.min', (new_val, old_val) ->
       $scope.filterChanged() if new_val != old_val

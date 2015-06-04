@@ -1,7 +1,13 @@
 <div bb-services ng-init="checkStepTitle('Select a service')" class="bb-service-list">
+  <div bb-include="service_item_aggregate">
+  </div>
+  <div class="page-summary">
+    <p>Select a service from the list below.</p>
+  </div>
   <div class="bb-subcontent">
 
-<!--     <div class="bb-filters" ng-show="items">
+
+    <div class="bb-filters" ng-show="filtered_items.length > 0">
 
       <div accordion close-others="true">
         <div accordion-group is-open="is_open" ng-class="{'expanded': is_open, 'selected': is_selected}" class="store-body">
@@ -13,7 +19,7 @@
 
           <form class="form-inline">
 
-            <div ng-if="all_categories"class="form-group">
+            <div ng-if="all_categories" class="form-group">
               <label class="sr-only" >Category</label>
               <select class="form-control" type="text" name="category" id="category" ng-model="filters.name" ng-options="item.name for item in all_categories" ng-change="filterChanged()">
                 <option  value="">Any category</option>
@@ -34,7 +40,7 @@
         </div>
       </div>
 
-    </div> -->
+    </div>
 
     <div class="panel panel-default" ng-repeat="item in filtered_items">
       <div class="panel-body">
@@ -53,7 +59,7 @@
           <div class="col-sm-2 col-xs-6">
             <div class="bb-service-price">
               <span ng-show="item.price > 0">{{item.price | currency: bb.company.currency_code}}</span>
-              <span ng-show="some_free && item.price == 0">Free</span>
+              <span ng-show="item.price == 0">Free</span>
             </div>
           </div>
           <div class="col-xs-12 hidden-sm hidden-md hidden-lg bbb-service-image" ng-if="item.extra.image_url">
@@ -73,7 +79,7 @@
         <div class="col-sm-12 ">
           <div class="bb-service-unavailable">
             <p>
-              No services match your filter criteria.
+              No services match your <span ng-show="filtered_items.length > 9"> filter</span> criteria.
             </p>
           </div>
         </div>
