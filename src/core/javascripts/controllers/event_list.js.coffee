@@ -165,8 +165,11 @@ angular.module('BB.Controllers').controller 'EventList', ($scope, $rootScope, Ev
     else
       $scope.notLoaded $scope
       comp ||= $scope.bb.company 
-
-      params = {item: $scope.bb.current_item, start_date:$scope.start_date.toISODate(), end_date:$scope.end_date.toISODate()}
+      
+      if $rootScope.member && comp.getSettings().has_memberships
+        params = {item: $scope.bb.current_item, start_date:$scope.start_date.toISODate(), end_date:$scope.end_date.toISODate(), current_session_member_id: $rootScope.member.id}
+      else
+        params = {item: $scope.bb.current_item, start_date:$scope.start_date.toISODate(), end_date:$scope.end_date.toISODate()}
 
       EventChainService.query(comp, params).then (events) ->
         $scope.setLoaded $scope
