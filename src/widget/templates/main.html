@@ -31,7 +31,7 @@
   </div> -->
   <div class="row">
     <div class="col-sm-12">
-      <div bb-translate ng-hide="bb.current_page == 'checkout' || bb.current_page == 'checkout_event' " class="btn-group" dropdown is-open="status.isopen" >
+      <div bb-translate="{widget_lang: true}" ng-hide="bb.current_page == 'checkout' || bb.current_page == 'checkout_event' " class="btn-group" dropdown is-open="status.isopen" >
         <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled" title="{{'CHANGE_LANG' | translate}}">
           <span translate="{{selected_language.key}}"></span> <span class="caret"></span>
         </button>

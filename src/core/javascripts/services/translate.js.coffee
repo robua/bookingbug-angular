@@ -17,6 +17,9 @@ angular.module('BB.Directives').directive 'bbTranslate', ($translate, $rootScope
   scope : false
   link: (scope, element, attrs) ->
 
+    options = scope.$eval(attrs.bbTranslate) or {}
+    console.log options
+
     scope.languages = [{name: 'en', key: 'EN'}, {name: 'de', key: 'DE'}, {name: 'fr', key: 'FR'}]
 
     $rootScope.connection_started.then ->
@@ -24,7 +27,9 @@ angular.module('BB.Directives').directive 'bbTranslate', ($translate, $rootScope
       moment.locale(scope.selected_language.name) if scope.selected_language
 
     scope.changeLanguage = (language) ->
+
       return if !language
+
       scope.selected_language = language
       moment.locale(language.name)
       $translate.use(language.name)
