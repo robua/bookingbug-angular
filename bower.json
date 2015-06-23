@@ -52,7 +52,8 @@
     "fullcalendar": "~2.3.1",
     "angular-translate-storage-cookie": "~2.7.0",
     "angular-translate-loader-url": "~2.7.0",
-    "angular-translate-loader-static-files": "~2.7.0"
+    "angular-translate-loader-static-files": "~2.7.0",
+    "angular-translate-loader-partial": "~2.7.2"
   },
   "resolutions": {
     "angular": "~1.2.25",

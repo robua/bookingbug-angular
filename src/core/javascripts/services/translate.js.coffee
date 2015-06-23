@@ -1,9 +1,9 @@
-angular.module('pascalprecht.translate').config ($translateProvider) ->
+angular.module('pascalprecht.translate').config ($translateProvider, $translatePartialLoaderProvider) ->
 
+  $translatePartialLoaderProvider.addPart('default');
   $translateProvider
-    .useStaticFilesLoader({
-      prefix: 'languages/',
-      suffix: '.json'
+    .useLoader('$translatePartialLoader', {
+      urlTemplate: '/languages/{part}/{lang}.json'
     })
     .determinePreferredLanguage () ->
       language = navigator.languages[0] or navigator.language or navigator.browserLanguage or navigator.systemLanguage or navigator.userLanguage or 'en'
@@ -32,7 +32,11 @@ angular.module('BB.Directives').directive 'bbTranslate', ($translate, $rootScope
 
       scope.selected_language = language
       moment.locale(language.name)
-      $translate.use(language.name)
+      if options.widget_lang
+        $translate.use(language.name)
+      else
+        debugger
+        $translate.use('default/' + language.name)
       # restart the widget 
       scope.clearBasketItem()
       scope.emptyBasket()

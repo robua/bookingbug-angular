@@ -100,10 +100,16 @@ gulp.task('fonts', function() {
     .pipe(gulp.dest('release/fonts'));
 });
 
-gulp.task('languages', function() {
-    gulp.src('src/languages/*')
+gulp.task('languages-default', function() {
+    gulp.src('src/languages/default/*')
         .pipe(flatten())
-        .pipe(gulp.dest('release/languages'));
+        .pipe(gulp.dest('release/languages/default'));
+});
+
+gulp.task('languages-widget', function() {
+    gulp.src('src/languages/widget/*')
+        .pipe(flatten())
+        .pipe(gulp.dest('release/languages/widget'));
 });
 
 gulp.task('watch', function() {
@@ -117,6 +123,6 @@ gulp.task('webserver', function() {
   });
 });
 
-gulp.task('assets', ['clean', 'javascripts', 'images', 'stylesheets','fonts', 'theme', 'shims', 'widget', 'languages']);
+gulp.task('assets', ['clean', 'javascripts', 'images', 'stylesheets','fonts', 'theme', 'shims', 'widget', 'languages-default', 'languages-widget']);
 
 gulp.task('default', ['assets', 'watch', 'webserver']);
