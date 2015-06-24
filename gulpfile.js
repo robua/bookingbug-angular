@@ -35,12 +35,10 @@ gulp.task('javascripts', function() {
         './src/*/main.js.coffee', 
         './src/core/javascripts/services/widget.js.coffee', 
         './src/core/javascripts/collections/base.js.coffee', 
-        './src/widget/templates.js', 
         './src/*/javascripts/**/*', 
         './src/*/directives/**/*', 
         './src/*/models/**/*', 
         './src/*/services/**/*', 
-        './src/*/templates.js', 
         '!./**/*~',]))
     // .pipe(filelog())
     .pipe(gulpif(/.*coffee$/, coffee().on('error', function (e) {
@@ -79,7 +77,7 @@ gulp.task('stylesheets', function() {
 });
 
 gulp.task('widget', function() {
-  gulp.src('src/widget/stylesheets/widget.scss')
+  gulp.src('src/widget/stylesheets/main.scss')
     .pipe(sass({errLogToConsole: true}))
     .pipe(flatten())
     .pipe(concat('bookingbug-widget.css'))
