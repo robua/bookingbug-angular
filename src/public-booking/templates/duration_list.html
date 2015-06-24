@@ -15,7 +15,7 @@
           </div>
           <div class="col-sm-2 col-xs-6">
             <div class="bb-duration-price">
-              <span ng-show="duration.price > 0">{{duration.price | pretty_price:'£'}}</span>
+              <span ng-show="duration.price > 0">{{duration.price | icurrency:'£'}}</span>
               <span ng-show="duration.price == 0"><span translate="ITEM_FREE"></span></span>
             </div>
           </div>

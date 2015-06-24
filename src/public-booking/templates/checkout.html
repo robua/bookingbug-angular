@@ -43,7 +43,7 @@
             </li>
             <li ng-if="i.price" class="row confirmation-summary-item">
               <div class="col-sm-3"><span translate="ITEM_PRICE"></span>:</div>
-              <div class="col-sm-9">{{i.price | pretty_price }}</div>
+              <div class="col-sm-9">{{i.price | icurrency }}</div>
             </li>
             <li ng-if="i.due_now != i.price" class="row confirmation-summary-item">
               <div class="col-sm-3"><span translate="ITEM_DUE_NOW"></span>:</div>

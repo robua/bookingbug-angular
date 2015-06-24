@@ -33,9 +33,9 @@
 			 					<p></p>
 							</td>
 							<td class="text-right">
-								{{ item.total_price | pretty_price }}
+								{{ item.total_price | icurrency }}
 								<div ng-if="item.certificate_paid > 0">
-								 <small><span translate="BASKET_CERTIFICATE_PAID"></span>: {{ item.certificate_paid | pretty_price }}</small>
+								 <small><span translate="BASKET_CERTIFICATE_PAID"></span>: {{ item.certificate_paid | icurrency }}</small>
 							  </div>
 							</td>
 							<td class="text-center">
@@ -56,7 +56,7 @@
 			 					<p></p>
 							</td>
 							<td class="text-right">
-								{{ deal_code.value | pretty_price }}
+								{{ deal_code.value | icurrency }}
 							</td>
 							<td class="text-center">
 			 					<span class="glyphicon glyphicon-trash" aria-hidden="true" ng-click="removeDeal(deal_code)"></span>
@@ -78,7 +78,7 @@
 					
 			  	  <tr data-ng-if="basket.hasDeal()">
 							<th class="text-right"><span translate="BASKET_GIFT_CERTIFICATES_TOTAL"></span></th>
-							<th class="text-right">{{basket.totalDeals() | pretty_price }}</th>
+							<th class="text-right">{{basket.totalDeals() | icurrency }}</th>
 							<th>&nbsp;</th>
 						</tr>
 
@@ -96,7 +96,7 @@
 
 						<tr data-ng-if="basket.total_price > 0">
 							<th class="text-right"><span translate="BASKET_TOTAL"></span></th>
-							<th class="text-right">{{basket.total_price | pretty_price }}</th>
+							<th class="text-right">{{basket.total_price | icurrency }}</th>
 							<th>&nbsp;</th>
 						</tr>
 						<tr data-ng-if="basket.total_due_price != basket.total_price">
