@@ -18,7 +18,6 @@ angular.module('BB.Directives').directive 'bbTranslate', ($translate, $translate
   link: (scope, element, attrs) ->
 
     options = scope.$eval(attrs.bbTranslate) or {}
-    console.log options
 
     scope.languages = [{name: 'en', key: 'EN'}, {name: 'de', key: 'DE'}, {name: 'fr', key: 'FR'}]
 
@@ -27,19 +26,19 @@ angular.module('BB.Directives').directive 'bbTranslate', ($translate, $translate
       moment.locale(scope.selected_language.name) if scope.selected_language
 
     scope.changeLanguage = (language) ->
-
       return if !language
-
       scope.selected_language = language
       moment.locale(language.name)
-      if options.widget_lang
-        $translatePartialLoader.addPart(options.widget_lang)
-        $translate.refresh()
       $translate.use(language.name)
       # restart the widget 
       scope.clearBasketItem()
       scope.emptyBasket()
       scope.restart()
+
+    if options.widget_lang
+      $translatePartialLoader.addPart(options.widget_lang)
+      $translate.refresh()
+      scope.changeLanguage()
 
 angular.module('BB.Directives').directive 'bbTimePeriod', ($translate) ->
   restrict: 'AE'
