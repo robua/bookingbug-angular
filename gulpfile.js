@@ -100,16 +100,10 @@ gulp.task('fonts', function() {
     .pipe(gulp.dest('release/fonts'));
 });
 
-gulp.task('i18n-default', function() {
+gulp.task('i18n', function() {
     gulp.src('src/i18n/default/*')
         .pipe(flatten())
         .pipe(gulp.dest('release/i18n/default'));
-});
-
-gulp.task('i18n-widget', function() {
-    gulp.src('src/i18n/widget/*')
-        .pipe(flatten())
-        .pipe(gulp.dest('release/i18n/widget'));
 });
 
 gulp.task('watch', function() {
@@ -123,6 +117,6 @@ gulp.task('webserver', function() {
   });
 });
 
-gulp.task('assets', ['clean', 'javascripts', 'images', 'stylesheets','fonts', 'theme', 'shims', 'widget', 'i18n-default', 'i18n-widget']);
+gulp.task('assets', ['clean', 'javascripts', 'images', 'stylesheets','fonts', 'theme', 'shims', 'widget', 'i18n']);
 
 gulp.task('default', ['assets', 'watch', 'webserver']);
