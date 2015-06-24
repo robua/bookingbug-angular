@@ -3,7 +3,7 @@ angular.module('pascalprecht.translate').config ($translateProvider, $translateP
   $translatePartialLoaderProvider.addPart('default');
   $translateProvider
     .useLoader('$translatePartialLoader', {
-      urlTemplate: '/languages/{part}/{lang}.json'
+      urlTemplate: '/i18n/{part}/{lang}.json'
     })
     .determinePreferredLanguage () ->
       language = navigator.languages[0] or navigator.language or navigator.browserLanguage or navigator.systemLanguage or navigator.userLanguage or 'en'

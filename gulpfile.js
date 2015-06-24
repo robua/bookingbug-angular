@@ -100,16 +100,16 @@ gulp.task('fonts', function() {
     .pipe(gulp.dest('release/fonts'));
 });
 
-gulp.task('languages-default', function() {
-    gulp.src('src/languages/default/*')
+gulp.task('i18n-default', function() {
+    gulp.src('src/i18n/default/*')
         .pipe(flatten())
-        .pipe(gulp.dest('release/languages/default'));
+        .pipe(gulp.dest('release/i18n/default'));
 });
 
-gulp.task('languages-widget', function() {
-    gulp.src('src/languages/widget/*')
+gulp.task('i18n-widget', function() {
+    gulp.src('src/i18n/widget/*')
         .pipe(flatten())
-        .pipe(gulp.dest('release/languages/widget'));
+        .pipe(gulp.dest('release/i18n/widget'));
 });
 
 gulp.task('watch', function() {
@@ -123,6 +123,6 @@ gulp.task('webserver', function() {
   });
 });
 
-gulp.task('assets', ['clean', 'javascripts', 'images', 'stylesheets','fonts', 'theme', 'shims', 'widget', 'languages-default', 'languages-widget']);
+gulp.task('assets', ['clean', 'javascripts', 'images', 'stylesheets','fonts', 'theme', 'shims', 'widget', 'i18n-default', 'i18n-widget']);
 
 gulp.task('default', ['assets', 'watch', 'webserver']);
