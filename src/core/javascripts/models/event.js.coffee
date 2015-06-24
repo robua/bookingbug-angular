@@ -126,8 +126,9 @@ angular.module('BB.Models').factory "EventModel", ($q, BBModel, BaseModel, DateT
       def = $q.defer()
       @getChain().then () =>
 
-        @chain.getAddressPromise().then (address) =>
-          @chain.address = address
+        if @chain.$has('address')
+          @chain.getAddressPromise().then (address) =>
+            @chain.address = address
 
         @chain.getTickets().then (tickets) =>
           @tickets = tickets

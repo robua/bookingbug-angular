@@ -26,7 +26,6 @@ angular.module('BB.Directives').directive 'bbPayment', ($window, $location, $sce
     element.find('iframe')[0].contentWindow.postMessage(payload, origin)
 
   linker = (scope, element, attributes) ->
-
     element.find('iframe').bind 'load', (event) =>
       url = scope.bb.total.$href('new_payment')
       origin = getHost(url)
@@ -61,16 +60,11 @@ angular.module('BB.Controllers').controller 'Payment', ($scope,  $rootScope, $q,
 
   $scope.controller = "public.controllers.Payment"
 
+  $scope.bb.total = $scope.purchase if $scope.purchase
+
   $rootScope.connection_started.then =>
-
     $scope.bb.total = $scope.total if $scope.total
-
-    if !$scope.bb.total.total_price or parseFloat($scope.bb.total.total_price) is 0.0
-      $scope.decideNextPage()
-      return
-
     $scope.url = $sce.trustAsResourceUrl($scope.bb.total.$href('new_payment'))
-
   
   $scope.callNotLoaded = () =>
     $scope.notLoaded $scope

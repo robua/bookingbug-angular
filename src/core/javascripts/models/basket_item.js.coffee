@@ -141,7 +141,7 @@ angular.module('BB.Models').factory "BasketItemModel",
       if defaults.time
         @requested_time = parseInt(defaults.time)
       if defaults.date
-        @date = new BBModel.Day({date: defaults.date, spaces: 1})
+        @requested_date = moment(defaults.date)
       if defaults.service_ref
         @service_ref = defaults.service_ref
       if defaults.group
@@ -167,6 +167,7 @@ angular.module('BB.Models').factory "BasketItemModel",
     # if it turned out that a requested date, or time was unavailable - we'll have to clear it
     requestedTimeUnavailable: ->
       delete @requested_time
+      delete @requested_date
 
     setSlot: (slot) ->
 
@@ -468,6 +469,12 @@ angular.module('BB.Models').factory "BasketItemModel",
       @reserve_ready = false
 
 
+    clearTime: () ->
+      delete @time
+      @ready = false
+      @reserve_ready = false  
+
+
     setGroup: (group) ->
       @group = group
 
@@ -500,6 +507,8 @@ angular.module('BB.Models').factory "BasketItemModel",
         data.time = @time.time
         if @time.event_id
           data.event_id = @time.event_id
+        else if @time.event_ids
+          data.event_ids = @time.event_ids
       else if @date and @date.event_id
         data.event_id = @date.event_id
       data.price = @price
@@ -537,6 +546,10 @@ angular.module('BB.Models').factory "BasketItemModel",
       data.attachment_id = @attachment_id if @attachment_id
       data.vouchers = @deal_codes if @deal_codes
 
+      data.email = @email if @email
+      data.first_name = @first_name if @first_name
+      data.last_name = @last_name if @last_name
+
       if @email?
         data.email = @email
       if @email_admin?
@@ -549,10 +562,11 @@ angular.module('BB.Models').factory "BasketItemModel",
     setPrice: (nprice) ->
       if nprice?
         @price = parseFloat(nprice)
-        @printed_price = if @price % 1 == 0 then "£" + parseInt(@price) else $window.sprintf("£%.2f", @price)
+        printed_price = @price / 100
+        @printed_price = if printed_price % 1 == 0 then "£" + parseInt(printed_price) else $window.sprintf("£%.2f", printed_price)
         @printed_vat_cal = @.company.settings.payment_tax if @.company && @.company.settings
-        @printed_vat = @printed_vat_cal / 100 * @price if @printed_vat_cal
-        @printed_vat_inc = @printed_vat_cal / 100 * @price + @price if @printed_vat_cal
+        @printed_vat = @printed_vat_cal / 100 * printed_price if @printed_vat_cal
+        @printed_vat_inc = @printed_vat_cal / 100 * printed_price + printed_price if @printed_vat_cal
       else
         @price = null
         @printed_price = null
@@ -670,10 +684,10 @@ angular.module('BB.Models').factory "BasketItemModel",
     # price including discounts
     totalPrice: =>
       if @discount_price?
-        return @discount_price
+        return @discount_price + @questionPrice()
       pr = @total_price
-      pr ||= @price
-      pr ||= 0
+      pr = @price if !angular.isNumber(pr)
+      pr = 0      if !angular.isNumber(pr)
       return pr + @questionPrice()
 
     # price not including discounts

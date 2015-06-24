@@ -30,7 +30,7 @@ angular.module('BB.Controllers').controller 'DealList', ($scope, $rootScope, Dea
     iitem.setDeal deal
     if !$scope.bb.company_settings.no_recipient
       modalInstance = $modal.open
-        templateUrl: $scope.getPartial('add_recipient')
+        templateUrl: $scope.getPartial('_add_recipient')
         scope: $scope
         controller: ModalInstanceCtrl
         resolve:

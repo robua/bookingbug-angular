@@ -193,16 +193,49 @@
 
             <div bb-item-details="item">
               <div ng-form name="booking_questions_form">
+                <div class="form-group" ng-class="{'has-error': booking_questions_form.first_name.$invalid && (booking_questions_form.first_name.$dirty|| booking_form.submitted)}">
+                  <label for="first_name" class="control-label col-sm-4"><span translate="ATTENDEE"></span> {{$index + 1}} <span translate="DETAILS_FIRST_NAME"></span>:</label>
+                  <div class="col-sm-5">
+                    <input type="text" name="first_name" id="first_name" required ng-model="item.first_name" class="form-control"/>
+                  </div>
+                  <div class="col-sm-offset-4 messages">
+                    <div class="error-message" ng-show="booking_questions_form.first_name.$invalid && booking_form.submitted">
+                      <span translate="ATTENDEE_FIRST_NAME_VALIDATION_MSG"></span>
+                    </div>          
+                  </div>
+                </div>
+                <div class="form-group" ng-class="{'has-error': booking_questions_form.last_name.$invalid && (booking_questions_form.last_name.$dirty|| booking_form.submitted)}">
+                  <label for="last_name" class="control-label col-sm-4"><span translate="ATTENDEE"></span> {{$index + 1}} <span translate="DETAILS_LAST_NAME"></span>:</label>
+                  <div class="col-sm-5">
+                    <input type="text" name="last_name" id="last_name" required ng-model="item.last_name" class="form-control"/>
+                  </div>
+                  <div class="col-sm-offset-4 messages">
+                    <div class="error-message" ng-show="booking_questions_form.last_name.$invalid && booking_form.submitted">
+                      <span translate="ATTENDEE_LAST_NAME_VALIDATION_MSG"></span>
+                    </div>          
+                  </div>
+                </div>
+                <div class="form-group" ng-class="{'has-error': booking_questions_form.email.$invalid && (booking_questions_form.email.$dirty|| booking_form.submitted)}">
+                  <label for="email" class="control-label col-sm-4"><span translate="ATTENDEE"></span> {{$index + 1}} <span translate="DETAILS_EMAIL"></span>:</label>
+                  <div class="col-sm-5">
+                    <input type="email" name="email" id="email" required ng-model="item.email" class="form-control"/>
+                  </div>
+                  <div class="col-sm-offset-4 messages">
+                    <div class="error-message" ng-show="booking_questions_form.email.$invalid && booking_form.submitted">
+                      <span translate="ATTENDEE_EMAIL_VALIDATION_MSG"></span>
+                    </div>          
+                  </div>
+                </div>
                 <div class="form-group" ng-repeat="question in item_details.questions" ng-if="question.currentlyShown" bb-question-line ng-class="{'has-error': booking_questions_form['q' + question.id].$invalid && (booking_questions_form['q' + question.id].$dirty || booking_form.submitted)}">
                   <label for="{{question.id}}" class="control-label col-sm-4">{{question.name}}</label>
                   <div class="col-sm-5">
                     <input bb-question="question"/>
                   </div>
                   <div class="col-sm-offset-4 messages">
-                <div class="error-message" ng-show="booking_questions_form['q' + question.id].$invalid && ( booking_questions_form['q' + question.id].$dirty || booking_form.submitted )">
-                  <span translate="DETAILS_REQUIRED"></span>
-                </div>
-              </div> 
+                    <div class="error-message" ng-show="booking_questions_form['q' + question.id].$invalid && ( booking_questions_form['q' + question.id].$dirty || booking_form.submitted )">
+                      <span translate="DETAILS_REQUIRED"></span>
+                    </div>
+                  </div> 
                 </div>
               </div>
 

@@ -49,7 +49,7 @@ angular.module('BB.Directives').directive 'bbMonthPicker', () ->
               available : day_data and day_data.spaces and day_data.spaces > 0,
               today     : moment().isSame(date, 'day'),
               past      : date.isBefore(moment(), 'day'),
-              disabled  : !date.isSame(month.start_date, 'month')
+              disabled  : !month.start_date or !date.isSame(month.start_date, 'month')
             })
 
             date.add(1, 'day')
@@ -80,8 +80,11 @@ angular.module('BB.Directives').directive 'bbMonthPicker', () ->
     $scope.selectMonthNumber = (month) ->
       return if $scope.selected_month && $scope.selected_month.start_date.month() == month
 
+      $scope.notLoaded $scope
       for m in $scope.months
         $scope.selectMonth(m) if m.start_date.month() == month
+      $scope.setLoaded $scope
+      
       return true
 
 
@@ -111,7 +114,7 @@ angular.module('BB.Directives').directive 'bbSlick', ($rootScope, $timeout, $bbu
   scope : true
   require : '^bbMonthPicker'
   templateUrl : (element, attrs) ->
-    PathSvc.directivePartial "month_picker"
+    PathSvc.directivePartial "_month_picker"
   controller : ($scope, $element, $attrs) ->
 
     windowWidth = angular.element($window).width()

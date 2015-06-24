@@ -16,8 +16,8 @@ angular.module('BB.Directives').directive 'bbBreadcrumb', (PathSvc) ->
   controller : 'Breadcrumbs'
   templateUrl : (element, attrs) ->
     if _.has attrs, 'complex'
-    then PathSvc.directivePartial "breadcrumb_complex"
-    else PathSvc.directivePartial "breadcrumb"
+    then PathSvc.directivePartial "_breadcrumb_complex"
+    else PathSvc.directivePartial "_breadcrumb"
 
   link : (scope) ->
     return

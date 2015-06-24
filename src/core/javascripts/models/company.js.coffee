@@ -1,13 +1,16 @@
 'use strict';
 
 # helpful functions about a company
-angular.module('BB.Models').factory "CompanyModel", ($q, BBModel, BaseModel) ->
+angular.module('BB.Models').factory "CompanyModel", ($q, BBModel, BaseModel, halClient) ->
 
   class Company extends BaseModel
 
     constructor: (data) ->
       super(data)
-      @test = 1
+
+      # instantiate each child company as a hal resource
+      if @companies
+        @companies = _.map @companies, (c) -> new BBModel.Company(halClient.$parse(c))
 
     getCompanyByRef: (ref) ->
       defer = $q.defer()

@@ -26,7 +26,8 @@ app = angular.module('BB', [
   'slick',
   'angulartics',
   'angulartics.google.analytics',
-  'pascalprecht.translate'
+  'pascalprecht.translate',
+  'vcRecaptcha'
 ]);
 
 

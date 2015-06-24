@@ -3,14 +3,14 @@ angular.module('BB.Directives').directive 'pricepicker', ()->
   controller = ($scope) ->
 
     $scope.$watch 'price', (price) ->
-      $scope.updateModel(price*100) if price?
+      $scope.updateModel(price) if price?
         
 
   link = (scope, element, attrs, ngModel) ->
 
     ngModel.$render = () ->
       if ngModel.$viewValue
-        scope.price = ngModel.$viewValue/100
+        scope.price = ngModel.$viewValue
 
     scope.updateModel = (value) ->
       ngModel.$setViewValue(value)

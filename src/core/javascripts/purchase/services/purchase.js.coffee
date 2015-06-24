@@ -1,4 +1,4 @@
-angular.module('BB.Services').factory "PurchaseService", ($q, halClient, BBModel, $window) ->
+angular.module('BB.Services').factory "PurchaseService", ($q, halClient, BBModel, $window, UriTemplate) ->
 
   query: (params) ->
     defer = $q.defer()
@@ -13,7 +13,7 @@ angular.module('BB.Services').factory "PurchaseService", ($q, halClient, BBModel
 
   bookingRefQuery: (params) ->
     defer = $q.defer()
-    uri = new $window.UriTemplate.parse(params.url_root + "/api/v1/purchases/booking_ref/{booking_ref}{?raw}").expand(params)
+    uri = new UriTemplate(params.url_root + "/api/v1/purchases/booking_ref/{booking_ref}{?raw}").fillFromObject(params)
     halClient.$get(uri, params).then (purchase) ->
       purchase = new BBModel.Purchase.Total(purchase)
       defer.resolve(purchase)

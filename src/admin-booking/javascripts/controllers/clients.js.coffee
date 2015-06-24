@@ -21,18 +21,6 @@ angular.module('BBAdminBooking').controller 'adminBookingClients', ($scope,  $ro
   $scope.search_error = false
 
 
-#  $rootScope.connection_started.then ->
-#    $scope.notLoaded $scope
-#    AdminClientService.query({company_id:$scope.bb.company_id}).then (clients) =>
-#      $scope.clients = clients
-#      $scope.clientDef.resolve(clients)
-#      $scope.setLoaded $scope
-#    , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
-#    ClientDetailsService.query($scope.bb.company).then (details) =>
-#      $scope.client_details = details
-#      $scope.setLoaded $scope
-
-
   $scope.showSearch = () =>
     $scope.searchClients = true
     $scope.newClient = false
@@ -43,14 +31,16 @@ angular.module('BBAdminBooking').controller 'adminBookingClients', ($scope,  $ro
     $scope.no_clients = false
     $scope.searchClients = false
     $scope.newClient = true
+    # clear the client if one has already been selected
+    $scope.clearClient()
   
 
-  $scope.selectClient = (client) =>
+  $scope.selectClient = (client, route) =>
     $scope.search_error = false
     $scope.no_clients = false
     $scope.setClient(client)
     $scope.client.setValid(true)
-    $scope.decideNextPage()
+    $scope.decideNextPage(route)
 
   $scope.checkSearch = (search) =>
     if search.length >= 3
@@ -61,18 +51,18 @@ angular.module('BBAdminBooking').controller 'adminBookingClients', ($scope,  $ro
       return false
 
 
-  $scope.createClient = (client_form) =>
+  $scope.createClient = (route) =>
     $scope.notLoaded $scope
 
-    # we need to validate teh client information has been correctly entered here
+    # we need to validate the client information has been correctly entered here
     if $scope.bb && $scope.bb.parent_client
       $scope.client.parent_client_id = $scope.bb.parent_client.id
     $scope.client.setClientDetails($scope.client_details) if $scope.client_details
 
     ClientService.create_or_update($scope.bb.company, $scope.client).then (client) =>
       $scope.setLoaded $scope
-      $scope.selectClient(client)
-    , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
+      $scope.selectClient(client, route)
+    , (err) -> $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
    
 
   $scope.getClients = (currentPage, filterBy, filterByFields, orderBy, orderByReverse) ->
@@ -94,8 +84,9 @@ angular.module('BBAdminBooking').controller 'adminBookingClients', ($scope,  $ro
       , (err) ->  
         $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
         clientDef.reject(err)
-    true
-  
+ 
 
   $scope.edit = (item) ->
     console.log item
+
+    

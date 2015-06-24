@@ -1,5 +1,4 @@
-angular.module('BB.Directives').directive 'paymentButton', ($compile, $sce,
-    $http, $templateCache, $q, $log) ->
+angular.module('BB.Directives').directive 'bbPaymentButton', ($compile, $sce, $http, $templateCache, $q, $log) ->
 
   getTemplate = (type, scope) ->
     switch type
@@ -56,14 +55,12 @@ angular.module('BB.Directives').directive 'paymentButton', ($compile, $sce,
     link: linker
   }
 
-angular.module('BB.Directives').directive 'bbPaypalExpressButton', ($compile, $sce,
-    $http, $templateCache, $q, $log, $window) ->
+angular.module('BB.Directives').directive 'bbPaypalExpressButton', ($compile, $sce, $http, $templateCache, $q, $log, $window, UriTemplate) ->
 
   linker = (scope, element, attributes) ->
     total = scope.total
     paypalOptions = scope.paypalOptions
-    scope.href = $window.UriTemplate.parse(total.$link('paypal_express').href)
-                                    .expand(paypalOptions)
+    scope.href = new UriTemplate(total.$link('paypal_express').href).fillFromObject(paypalOptions)
 
     scope.showLoader = () ->
       scope.notLoaded scope if scope.notLoaded

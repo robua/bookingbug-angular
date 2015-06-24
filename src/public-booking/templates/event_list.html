@@ -69,9 +69,15 @@
             </div>
 
             <div class="form-group">
+<<<<<<< HEAD:src/public-booking/templates/event_list.html
               <label class="sr-only" for="price" translate="ITEM_PRICE"></label>
               <select class="form-control" name="price" id="price" ng-model="filters.price" ng-options="price as (price | ipretty_price) for price in price_options" ng-change="filterChanged()">
                 <option value=""><span translate="FILTER_ANY"></span> <span translate="ITEM_PRICE"></span></option>
+=======
+              <label class="sr-only" for="price">Price</label>
+              <select class="form-control" name="price" id="price" ng-model="filters.price" ng-options="price as (price | currency) for price in price_options" ng-change="filterChanged()">
+                <option value="">Any Price</option>
+>>>>>>> 25150486edd937b8959eb94a9460560bb4fda09c:src/public-booking/templates/event_list.html
               </select>
             </div>
 
@@ -139,8 +145,13 @@
                 </li>
                 <li class="price" ng-show="item.tickets">
                   <span class="bb-icon icon-price"></span>
+<<<<<<< HEAD:src/public-booking/templates/event_list.html
                   <span ng-show="item.price_range && (item.price_range.from != item.price_range.to)"><span translate="ITEM_FROM"></span> {{item.price_range.from | ipretty_price}}</span>
                   <span ng-show="item.price_range && (item.price_range.from == item.price_range.to)">{{item.price_range.from | ipretty_price}}</span>
+=======
+                  <span ng-show="item.price_range && (item.price_range.from != item.price_range.to)">From {{item.price_range.from | currency}}</span>
+                  <span ng-show="item.price_range && (item.price_range.from == item.price_range.to)">{{item.price_range.from | currency}}</span>
+>>>>>>> 25150486edd937b8959eb94a9460560bb4fda09c:src/public-booking/templates/event_list.html
                 </li>
               </ul>
             </div>

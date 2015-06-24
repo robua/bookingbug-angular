@@ -1,6 +1,6 @@
 <div bb-client-details ng-init="checkStepTitle('Your Details')">
 
-  <div bb-include="service_item_aggregate" ng-if="bb.service">
+  <div bb-include="_service_item_aggregate" ng-if="bb.service">
   </div>
 
   <form name="client_form" ng-submit="validator.validateForm(client_form)" class="form-horizontal" role="form" bb-form-resettable bb-form novalidate>

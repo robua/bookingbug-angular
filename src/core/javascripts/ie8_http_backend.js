@@ -45,8 +45,6 @@ angular.module('BB.Services').provider("ie8HttpBackend", function ie8HttpBackend
     }
     var pmHandler = function (method, url, post, callback, headers, timeout, withCredentials) {
       var win =  $('[name="' + getHostName(url) + '"]')[0].id ;
-      console.log('ie postMessage for url : ' + url);
-      console.log( 'iframe window ' + win);
       pm({
         target: window.frames[win],
         type: 'xhrRequest',

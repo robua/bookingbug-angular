@@ -93,6 +93,7 @@ angular.module('BB.Controllers').controller 'BasketList', ($scope,  $rootScope, 
       basket.setSettings($scope.bb.basket.settings)
       $scope.setBasket(basket)
       $scope.items = $scope.bb.basket.items
+      $scope.deal_code = null
     , (err) ->
       if err && err.data && err.data.error
         AlertService.clear()

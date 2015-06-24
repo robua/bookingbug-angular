@@ -7,12 +7,13 @@ angular.module('BB.Directives').directive 'bbEvent', () ->
   controller : 'Event'
 
 
-angular.module('BB.Controllers').controller 'Event', ($scope,  $rootScope, EventService, $q, PageControllerService, BBModel, ValidatorService) ->
+angular.module('BB.Controllers').controller 'Event', ($scope, $attrs, $rootScope, EventService, $q, PageControllerService, BBModel, ValidatorService) ->
   $scope.controller = "public.controllers.Event"
   $scope.notLoaded $scope
   angular.extend(this, new PageControllerService($scope, $q))
 
   $scope.validator = ValidatorService
+  $scope.event_options = $scope.$eval($attrs.bbEvent) or {}
 
   $rootScope.connection_started.then ->
     if $scope.bb.company
@@ -30,12 +31,15 @@ angular.module('BB.Controllers').controller 'Event', ($scope,  $rootScope, Event
         image.background_css = {'background-image': 'url(' + image.url + ')'}
         $scope.event.image = image
         # TODO pick most promiment image
-        # debugger
         # colorThief = new ColorThief()
         # colorThief.getColor image.url
 
+
       for ticket in $scope.event.tickets
-        ticket.qty = 0
+        ticket.qty = if $scope.event_options.default_num_tickets then $scope.event_options.default_num_tickets else 0
+
+      $scope.selectTickets() if $scope.event_options.default_num_tickets and $scope.event_options.auto_select_tickets and $scope.event.tickets.length is 1
+      
       $scope.setLoaded $scope
 
     , (err) -> $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')

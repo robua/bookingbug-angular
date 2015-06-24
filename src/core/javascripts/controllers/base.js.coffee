@@ -731,7 +731,7 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
         $scope.bb.current_item.person = null
         $scope.bb.current_item.selected_person = null
         error_modal = $modal.open
-          templateUrl: $scope.getPartial('error_modal')
+          templateUrl: $scope.getPartial('_error_modal')
           controller: ($scope, $modalInstance) ->
             $scope.message = ErrorService.getError('ITEM_NO_LONGER_AVAILABLE').msg
             $scope.ok = () ->
@@ -1061,8 +1061,10 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
   $scope.setLoadedAndShowError = (scope, err, error_string) ->
     $log.warn(err, error_string)
     scope.setLoaded(scope)
-    if err.status == 409
+    if err.status is 409
       AlertService.danger(ErrorService.getError('ITEM_NO_LONGER_AVAILABLE'))
+    else if err.data.error is "Number of Bookings exceeds the maximum"
+      AlertService.danger(ErrorService.getError('MAXIMUM_TICKETS'))
     else
       AlertService.danger(ErrorService.getError('GENERIC'))
 

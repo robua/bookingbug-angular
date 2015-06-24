@@ -250,7 +250,7 @@ angular.module('BB.Controllers').controller 'Purchase', ($scope,  $rootScope, Co
   # delete a single booking
   $scope.delete = (booking) ->
     modalInstance = $modal.open
-      templateUrl: $scope.getPartial "cancel_modal"
+      templateUrl: $scope.getPartial "_cancel_modal"
       controller: ModalDelete
       resolve:
         booking: ->
@@ -264,7 +264,7 @@ angular.module('BB.Controllers').controller 'Purchase', ($scope,  $rootScope, Co
   # delete all bookings assoicated to the purchase
   $scope.delete_all = () ->
     modalInstance = $modal.open
-      templateUrl: $scope.getPartial "cancel_modal"
+      templateUrl: $scope.getPartial "_cancel_modal"
       controller: ModalDeleteAll
       resolve:
         purchase: ->

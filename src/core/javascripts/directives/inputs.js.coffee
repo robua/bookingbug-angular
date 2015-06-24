@@ -397,3 +397,19 @@ app.directive 'bbQuestionSet', ($compile) ->
       if newval
         scope.question_set = newval
         element.removeClass 'ng-hide'
+
+
+# Input match test
+app.directive "bbMatchInput", ->
+  restrict: "A"
+  require: 'ngModel'
+  link: (scope, element, attrs, ctrl, ngModel) ->
+
+    scope.$watch attrs.bbMatchInput, ->
+      scope.val_1 = scope.$eval(attrs.bbMatchInput)
+      compare(ctrl.$viewValue)
+
+    compare = (value) ->
+      ctrl.$setValidity 'match', scope.val_1 is value
+
+    ctrl.$parsers.push compare

@@ -63,12 +63,12 @@ angular.module('BB.Controllers').controller 'EventList', ($scope, $rootScope, Ev
     # has the event group been manually set (i.e. in the step before)
     $scope.event_group_manually_set = if !$scope.event_group_manually_set? and $scope.current_item.event_group? then true else false
 
-    # clear event data unless in summary mode
+    # clear current item unless in summary mode
     if $scope.current_item.event and $scope.mode != 0
-      delete $scope.current_item.event
-      delete $scope.current_item.event_chain
-      delete $scope.current_item.event_group if !$scope.event_group_manually_set
-      delete $scope.current_item.tickets
+      event_group = $scope.current_item.event_group
+      $scope.clearBasketItem()
+      $scope.emptyBasket()
+      $scope.current_item.setEventGroup(event_group) if $scope.event_group_manually_set
 
     promises = []
 
@@ -277,7 +277,7 @@ angular.module('BB.Controllers').controller 'EventList', ($scope, $rootScope, Ev
       $scope.end_date = moment(date)
       $scope.loadEventData()
     else
-      new_date = date if !date.isSame($scope.selected_date, 'day')
+      new_date = date if !$scope.selected_date or !date.isSame($scope.selected_date, 'day')
 
     if new_date
       $scope.selected_date = new_date
@@ -338,10 +338,20 @@ angular.module('BB.Controllers').controller 'EventList', ($scope, $rootScope, Ev
     result = true
 
     for type in $scope.dynamic_filters.question_types
-      for filter in $scope.dynamic_filters[type]
-        name = filter.name.parameterise('_')
-        filter = ($scope.dynamic_filters.values[filter.name] and item.chain.extra[name] is $scope.dynamic_filters.values[filter.name].name) or !$scope.dynamic_filters.values[filter.name]?
-        result = result and filter
+      if type is 'check'
+        for dynamic_filter in $scope.dynamic_filters['check']
+          name = dynamic_filter.name.parameterise('_')
+          filter = false
+          if item.chain and item.chain.extra[name]
+            for i in item.chain.extra[name]
+              filter = ($scope.dynamic_filters.values[dynamic_filter.name] and i is $scope.dynamic_filters.values[dynamic_filter.name].name) or !$scope.dynamic_filters.values[dynamic_filter.name]?
+              break if filter
+          result = result and filter
+      else
+        for dynamic_filter in $scope.dynamic_filters[type]
+          name = dynamic_filter.name.parameterise('_')
+          filter = ($scope.dynamic_filters.values[dynamic_filter.name] and item.chain.extra[name] is $scope.dynamic_filters.values[dynamic_filter.name].name) or !$scope.dynamic_filters.values[dynamic_filter.name]?
+          result = result and filter
     return result
 
 
@@ -356,7 +366,7 @@ angular.module('BB.Controllers').controller 'EventList', ($scope, $rootScope, Ev
     $scope.filterChanged()
 
 
-  # builds dynamic filters using company questions
+  # build dynamic filters using company questions
   buildDynamicFilters = (questions) ->
     $scope.dynamic_filters                = _.groupBy(questions, 'question_type')
     $scope.dynamic_filters.question_types = _.uniq(_.pluck(questions, 'question_type'))
