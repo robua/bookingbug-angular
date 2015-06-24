@@ -12,7 +12,7 @@ angular.module('pascalprecht.translate').config ($translateProvider, $translateP
     .useCookieStorage()
 
 
-angular.module('BB.Directives').directive 'bbTranslate', ($translate, $rootScope) ->
+angular.module('BB.Directives').directive 'bbTranslate', ($translate, $translatePartialLoader, $rootScope) ->
   restrict: 'AE'
   scope : false
   link: (scope, element, attrs) ->
@@ -33,15 +33,13 @@ angular.module('BB.Directives').directive 'bbTranslate', ($translate, $rootScope
       scope.selected_language = language
       moment.locale(language.name)
       if options.widget_lang
-        $translate.use(language.name)
-      else
-        debugger
-        $translate.use('default/' + language.name)
+        $translatePartialLoader.addPart(options.widget_lang)
+        $translate.refresh()
+      $translate.use(language.name)
       # restart the widget 
       scope.clearBasketItem()
       scope.emptyBasket()
       scope.restart()
-      
 
 angular.module('BB.Directives').directive 'bbTimePeriod', ($translate) ->
   restrict: 'AE'
