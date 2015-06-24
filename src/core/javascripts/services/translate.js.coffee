@@ -3,7 +3,8 @@ angular.module('pascalprecht.translate').config ($translateProvider, $translateP
   $translatePartialLoaderProvider.addPart('default');
   $translateProvider
     .useLoader('$translatePartialLoader', {
-      urlTemplate: '/i18n/{part}/{lang}.json'
+      urlTemplate: '/i18n/{part}/{lang}.json',
+      loadFailureHandler: 'MyErrorHandler'
     })
     .determinePreferredLanguage () ->
       language = navigator.languages[0] or navigator.language or navigator.browserLanguage or navigator.systemLanguage or navigator.userLanguage or 'en'
@@ -39,6 +40,13 @@ angular.module('BB.Directives').directive 'bbTranslate', ($translate, $translate
       $translatePartialLoader.addPart(options.widget_lang)
       $translate.refresh()
       scope.changeLanguage()
+
+
+angular.module('BB.Services').factory 'MyErrorHandler', ($q, $log) ->
+  return (part, lang) ->
+    $log.error('The "' + part + '/' + lang + '" part was not loaded.')
+    return $q.when({})
+
 
 angular.module('BB.Directives').directive 'bbTimePeriod', ($translate) ->
   restrict: 'AE'
