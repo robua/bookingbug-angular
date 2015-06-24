@@ -1,6 +1,5 @@
 {
   "CHANGE_LANG":"******Change language******",
-  "EN":"******English******",
   "DE":"******Deutsch******",
   "FR":"******Français******",
   "POWERED_BY":"******Bookings powered by******",
@@ -27,7 +26,6 @@
   "PROGRESS_CANCEL_CANCEL":"******Do not cancel******",
   "PROGRESS_CANCEL_BOOKING":"******Cancel booking******",
   "MAP_TITLE":"******Search for a store to begin your booking.******",
-  "MAP_PLACEHOLDER":"******Enter a town, city, postcode or store******",
   "GEOLOCATE":"******Use current location******",
   "STORE_RESULT_TITLE":"******{{number}} results for stores near {{address}}******",
   "STORE_PHONE":"******Phone******",
