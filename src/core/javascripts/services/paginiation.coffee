@@ -13,5 +13,5 @@ angular.module('BB.Services').factory "PaginationService", () ->
     end   = paginator.current_page * paginator.page_size
     total = if end < paginator.page_size then end else length
     end = if end > total then total else end
-    suffix = if total >= 100 then "+" else ""
-    paginator.summary =  "#{start} - #{end} of #{total}#{suffix}"
+    total = if total >= 100 then "100+" else total
+    paginator.summary =  "#{start} - #{end} of #{total}"

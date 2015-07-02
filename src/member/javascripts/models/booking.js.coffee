@@ -61,3 +61,9 @@ angular.module('BB.Models').factory "Member.BookingModel", ($q, $window, BBModel
           @member = new BBModel.Member.Member(member)
           defer.resolve(@member)
       defer.promise
+
+    canCancel: () ->
+      return moment(@min_cancellation_time).isAfter(moment())
+
+    canMove: () ->
+      return @canCancel()

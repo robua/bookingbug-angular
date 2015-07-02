@@ -125,7 +125,6 @@ angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $roo
   $scope.confirm_move = (route) ->
     confirming = true
     $scope.item ||= $scope.bb.current_item
-   
     # we need to validate the question information has been correctly entered here
     $scope.item.setAskedQuestions()
     if $scope.item.ready

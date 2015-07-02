@@ -30,7 +30,6 @@ angular.module('BB.Models').factory "BasketModel", ($q, BBModel, BaseModel) ->
     clearItem: (item) ->
       @items = @items.filter (i) -> i isnt item
 
-
     # should we try to checkout ?
     readyToCheckout: ->
       if @items.length > 0
@@ -45,6 +44,17 @@ angular.module('BB.Models').factory "BasketModel", ($q, BBModel, BaseModel) ->
         titems.push(i) if !i.is_coupon and !i.ready
       titems
 
+    couponItems: ->
+      citems = []
+      for i in @items
+        citems.push(i) if i.is_coupon
+      citems
+
+    removeCoupons: ->
+      for item, i in @items
+        if item.is_coupon
+          @items.splice(i, 1)
+      @items
 
     setSettings: (set) ->
       return if !set
@@ -75,7 +85,7 @@ angular.module('BB.Models').factory "BasketModel", ($q, BBModel, BaseModel) ->
 
     # the amount due now - taking account of any wait list items
     dueTotal: ->
-      total = @total_price
+      total = @totalPrice()
       for item in @items
         total -= item.price if item.isWaitlist()
       total = 0 if total < 0
@@ -93,6 +103,7 @@ angular.module('BB.Models').factory "BasketModel", ($q, BBModel, BaseModel) ->
         price += item.questionPrice() if (!item.ready and unready) or !unready
       return price
 
+    # return the total price after coupons have been applied
     totalPrice: (options) ->
       unready = options and options.unready
       price = 0
@@ -100,7 +111,7 @@ angular.module('BB.Models').factory "BasketModel", ($q, BBModel, BaseModel) ->
         price += item.totalPrice() if (!item.ready and unready) or !unready
       return price
 
-
+    # return the full price before any coupons or deals have been applied
     fullPrice: ->
       price = 0
       for item in @items
@@ -111,6 +122,11 @@ angular.module('BB.Models').factory "BasketModel", ($q, BBModel, BaseModel) ->
       for item in @items
         return true if item.is_coupon
       return false
+
+
+   # return the total coupon discount applied to the basket
+    totalCoupons: ->
+      @fullPrice() - @totalPrice() - @totalDealPaid()
     
 
     totalDuration: ->
@@ -130,18 +146,30 @@ angular.module('BB.Models').factory "BasketModel", ($q, BBModel, BaseModel) ->
       return false
 
     getDealCodes: ->
-      @deals = @items[0].deal_codes if @items[0] && @items[0].deal_codes
+      @deals = if @items[0] && @items[0].deal_codes then @items[0].deal_codes else []
       @deals
 
+    # return the total value of deals (gift certificates) applied to the basket
     totalDeals: ->
       value = 0
       for deal in @getDealCodes()
         value += deal.value
       return value
 
-    totalCertificatePaid: ->
+    # return amount paid by deals (gift certficates)
+    totalDealPaid: ->
       total_cert_paid = 0
-      for item  in @items
-        if item.certificate_paid
-          total_cert_paid += item.certificate_paid
-      return @totalDeals() - total_cert_paid
+      for item in @items
+        total_cert_paid += item.certificate_paid if item.certificate_paid
+      return total_cert_paid
+
+    # return the remaining deal (gift certificate) balance
+    remainingDealBalance : ->
+      return @totalDeals() - @totalDealPaid()
+
+
+    hasWaitlistItem : ->
+      for item in @items
+        return true if item.isWaitlist()
+      return false
+      

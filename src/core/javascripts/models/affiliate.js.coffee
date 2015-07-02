@@ -12,7 +12,6 @@ angular.module('BB.Models').factory "AffiliateModel", ($q, BBModel, BaseModel) -
     getCompanyByRef: (ref) ->
       defer = $q.defer()
       @$get('companies', {reference: ref}).then (company) ->
-        console.log company
         if company
           defer.resolve(new BBModel.Company(company))
         else

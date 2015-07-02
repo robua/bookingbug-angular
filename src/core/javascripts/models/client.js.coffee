@@ -23,7 +23,7 @@ angular.module('BB.Models').factory "ClientModel", ($q, BBModel, BaseModel, Loca
         @phone  = "0" + @phone if @phone && @phone[0] != "0"
 
 
-    setClientDetails: (details) =>
+    setClientDetails: (details) ->
       @client_details = details
       @questions = @client_details.questions
 
@@ -45,6 +45,13 @@ angular.module('BB.Models').factory "ClientModel", ($q, BBModel, BaseModel, Loca
       @address5 = values.address5 if values.address5
       @postcode = values.postcode if values.postcode
       @country = values.country if values.country
+      @default_answers = values.answers if values.answers
+
+    pre_fill_answers: (details) ->
+      return if !@default_answers
+      for q in details.questions
+        if @default_answers[q.name]
+          q.answer = @default_answers[q.name]
 
     getName:  ->
       str = ""
@@ -128,6 +135,7 @@ angular.module('BB.Models').factory "ClientModel", ($q, BBModel, BaseModel, Loca
       x.comp_ref = @comp_ref
       x.parent_client_id = @parent_client_id
       x.password = @password
+      x.notifications = @notifications
 
       if @mobile
         @remove_prefix()

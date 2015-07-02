@@ -90,7 +90,7 @@ angular.module('BB.Services').factory 'ValidatorService', ($rootScope, AlertServ
       if prms.bounds
         sw = new google.maps.LatLng(prms.bounds.sw.x, prms.bounds.sw.y)
         ne = new google.maps.LatLng(prms.bounds.ne.x, prms.bounds.ne.y)
-        req.bounds =  new google.maps.LatLngBounds(sw, ne);
+        req.bounds = new google.maps.LatLngBounds(sw, ne);
       geocoder = new google.maps.Geocoder()
       geocoder.geocode req, (results, status) ->
         if results.length == 1 && status == 'OK'
@@ -110,8 +110,8 @@ angular.module('BB.Services').factory 'ValidatorService', ($rootScope, AlertServ
       AlertService.danger(form.alert)
       return false
     else if form.$invalid and form.raise_alerts
-        AlertService.danger(ErrorService.getError('FORM_INVALID')) 
-        return false
+      AlertService.danger(ErrorService.getError('FORM_INVALID')) 
+      return false
     else if form.$invalid 
       return false
     else

@@ -35,5 +35,8 @@
     "start": "gulp"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "gulp-rsync": "0.0.5"
+  }
 }

@@ -63,8 +63,10 @@ angular.module('BBMember').controller 'MemberBookings', ($scope, $modal, $log,
     defer.promise
 
   $scope.cancelBooking = (booking) ->
+    $scope.loading = true
     MemberBookingService.cancel($scope.member, booking).then () ->
       if $scope.bookings
         $scope.bookings = $scope.bookings.filter (b) -> b.id != booking.id
       if $scope.removeBooking
         $scope.removeBooking(booking)
+      $scope.loading = false

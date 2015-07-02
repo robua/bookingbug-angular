@@ -22,7 +22,10 @@ app = angular.module('BB', [
   'ui-rangeSlider',
   'uiGmapgoogle-maps',
   'angular.filter',
-  'ngCookies'
+  'ngCookies',
+  'slick',
+  'pascalprecht.translate',
+  'vcRecaptcha'
 ]);
 
 
@@ -35,6 +38,7 @@ if (window.use_no_conflict)
 else
   app.value '$bbug', jQuery
 
+app.constant('UriTemplate', window.UriTemplate)
 
 app.config ($locationProvider, $httpProvider, $provide, ie8HttpBackendProvider) ->
   $httpProvider.defaults.headers.common =

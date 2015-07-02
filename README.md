@@ -16,4 +16,4 @@ To start the server and watch files for changes run:
 
 `npm start`
 
-The examples are then accessible at [http://localhost:8000](http://localhost:8000)
+The examples are then accessible at [http://localhost:8888](http://localhost:8888)

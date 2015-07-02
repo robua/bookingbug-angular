@@ -16,7 +16,7 @@ angular.module('BB.Controllers').controller 'ClientDetails', ($scope,  $rootScop
 
     if !$scope.client.valid() && LoginService.isLoggedIn()
       # make sure we set the client to the currently logged in member
-      # we should also jsut check the logged in member is  a member of the company they are currently booking with
+      # we should also jsut check the logged in member is a member of the company they are currently booking with
       $scope.setClient(new BBModel.Client(LoginService.member()._data))
 
     if LoginService.isLoggedIn() && LoginService.member().$has("child_clients") && LoginService.member()
@@ -32,6 +32,7 @@ angular.module('BB.Controllers').controller 'ClientDetails', ($scope,  $rootScop
     else 
       ClientDetailsService.query($scope.bb.company).then (details) =>
         $scope.client_details = details
+        $scope.client.pre_fill_answers($scope.client_details) if $scope.client
         QuestionService.checkConditionalQuestions($scope.client_details.questions) if $scope.client_details.questions
         $scope.setLoaded $scope
       , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
@@ -60,7 +61,7 @@ angular.module('BB.Controllers').controller 'ClientDetails', ($scope,  $rootScop
       $scope.existing_member = false
       $scope.decideNextPage(route)
     , (err) ->
-      if err.data.error == "Please Login" 
+      if err.data.error == "Please login" 
         $scope.existing_member = true
         AlertService.danger({msg: "You have already registered with this email address. Please login or reset your password using the Forgot Password link below."})
       $scope.setLoaded $scope

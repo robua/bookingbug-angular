@@ -3,10 +3,6 @@
 angular.module('BB.Directives').directive 'bbPayment', ($window, $location, $sce) ->
 
   error = (scope, message) ->
-    # scope.url = ""
-    # scope.$apply()
-    # scope.url = $sce.trustAsResourceUrl(scope.bb.total.$href('new_payment'))
-    # scope.$apply()
     scope.error(message)
 
   getHost = (url) ->
@@ -18,35 +14,42 @@ angular.module('BB.Directives').directive 'bbPayment', ($window, $location, $sce
     referrer = $location.protocol() + "://" + $location.host()
     if $location.port()
       referrer += ":" + $location.port()
+    custom_stylesheet = scope.payment_options.custom_stylesheet if scope.payment_options.custom_stylesheet
     payload = JSON.stringify({
       'type': 'load',
       'message': referrer,
       'custom_partial_url': scope.bb.custom_partial_url
+      'custom_stylesheet' : custom_stylesheet
     })
     element.find('iframe')[0].contentWindow.postMessage(payload, origin)
 
   linker = (scope, element, attributes) ->
 
+    scope.payment_options = scope.$eval(attributes.bbPayment) or {}
+
     element.find('iframe').bind 'load', (event) =>
       url = scope.bb.total.$href('new_payment')
       origin = getHost(url)
       sendLoadEvent(element, origin, scope)
+      scope.$apply ->
+        scope.callSetLoaded()
 
     $window.addEventListener 'message', (event) =>
       if angular.isObject(event.data)
         data = event.data
-      else
+      else if not event.data.match(/iFrameSizer/)
         data = JSON.parse event.data
       scope.$apply =>
-        switch data.type
-          when "submitting"
-            scope.callNotLoaded()
-          when "error"
-            scope.callSetLoaded()
-            error(scope, event.data.message)
-          when "payment_complete"
-            scope.callSetLoaded()
-            scope.paymentDone()
+        if data
+          switch data.type
+            when "submitting"
+              scope.callNotLoaded()
+            when "error"
+              scope.callSetLoaded()
+              error(scope, event.data.message)
+            when "payment_complete"
+              scope.callSetLoaded()
+              scope.paymentDone()
     , false
 
   return {
@@ -61,16 +64,13 @@ angular.module('BB.Controllers').controller 'Payment', ($scope,  $rootScope, $q,
 
   $scope.controller = "public.controllers.Payment"
 
+  $scope.notLoaded $scope
+
+  $scope.bb.total = $scope.purchase if $scope.purchase
+
   $rootScope.connection_started.then =>
-
     $scope.bb.total = $scope.total if $scope.total
-
-    if !$scope.bb.total.total_price or parseFloat($scope.bb.total.total_price) is 0.0
-      $scope.decideNextPage()
-      return
-
     $scope.url = $sce.trustAsResourceUrl($scope.bb.total.$href('new_payment'))
-
   
   $scope.callNotLoaded = () =>
     $scope.notLoaded $scope

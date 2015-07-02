@@ -5,7 +5,7 @@ angular.module('BB.Directives').directive 'bbTimeRanges', () ->
   replace: true
   scope : true
   priority: 1
-  controller : 'TimeRangeList',
+  controller : 'TimeRangeList'
 
 
 # TODO Get the add/subtract functions to respect the current time range. Get the time range length to adjust if display mode is preset
@@ -64,7 +64,9 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
     # initialise the time range
     # last selected day is set (i.e, a user has already selected a date)
     if !$scope.start_date && $scope.last_selected_date
-      if $scope.original_start_date 
+      # if the time range list was initialised with a selected_day, restore the view so that
+      # selected day remains relative to where the first day that was originally shown
+      if $scope.original_start_date
         diff = $scope.last_selected_date.diff($scope.original_start_date, 'days')
         diff = diff % $scope.time_range_length
         diff = if diff is 0 then diff else diff + 1 
@@ -79,7 +81,7 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
     else if $scope.selected_day
       $scope.original_start_date = $scope.original_start_date or moment($scope.selected_day)
       setTimeRange($scope.selected_day)
-    # set the time range as today
+    # set the time range as today, showing the current week
     else
       $scope.start_at_week_start = true
       setTimeRange(moment())
@@ -117,8 +119,8 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
         $scope.selected_day = moment(options.selected_day)
 
 
-  $scope.moment = () ->
-    moment()
+  $scope.moment = (date) ->
+    moment(date)
 
 
   $scope.setDataSource = (source) ->
@@ -229,15 +231,15 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
   # called when user selects a time slot
   # use this when you just want to hightlight the the slot and not progress to the next step
   $scope.highlightSlot = (day, slot) ->
-    curItem = $scope.bb.current_item
+    current_item = $scope.bb.current_item
 
     if slot && slot.availability() > 0
       if day
         $scope.setLastSelectedDate(day.date)
-        curItem.setDate(day)
+        current_item.setDate(day)
 
-      curItem.setTime(slot)
-      curItem.setDate(day)
+      current_item.setTime(slot)
+      current_item.setDate(day)
       $scope.selected_slot = slot
       $scope.selected_day  = day.date
       $scope.selected_date = day.date.toDate()
@@ -253,14 +255,15 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
 
   # load the time data
   $scope.loadData = ->
-    curItem = $scope.bb.current_item
+   
+    current_item = $scope.bb.current_item
 
     # has a service been selected?
-    if curItem.service and !$scope.options.ignore_min_advance_datetime
-      $scope.min_date = curItem.service.min_advance_datetime
-      $scope.max_date = curItem.service.max_advance_datetime
+    if current_item.service and !$scope.options.ignore_min_advance_datetime
+      $scope.min_date = current_item.service.min_advance_datetime
+      $scope.max_date = current_item.service.max_advance_datetime
       # if the selected day is before the services min_advance_datetime, adjust the time range
-      setTimeRange(curItem.service.min_advance_datetime) if $scope.selected_day && $scope.selected_day.isBefore(curItem.service.min_advance_datetime, 'day')
+      setTimeRange(current_item.service.min_advance_datetime) if $scope.selected_day && $scope.selected_day.isBefore(current_item.service.min_advance_datetime, 'day')
 
 
     date = $scope.start_date
@@ -297,60 +300,68 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
       promise.finally ->
         $scope.setLoaded $scope
 
-      promise.then (dateTimeArr) ->
+      promise.then (datetime_arr) ->
         $scope.days = []
 
-        for pair in _.sortBy(_.pairs(dateTimeArr), (pair) -> pair[0])
+        # sort time slots to be in chronological order
+        for pair in _.sortBy(_.pairs(datetime_arr), (pair) -> pair[0])
           d = pair[0]
-          timeSlotsArr = pair[1]
-          day = {date: moment(d), slots: timeSlotsArr}
+          time_slots = pair[1]
+          day = {date: moment(d), slots: time_slots}
           $scope.days.push(day)
 
-          if timeSlotsArr.length > 0
-            if !curItem.earliest_time || curItem.earliest_time.isAfter(d)
-              curItem.earliest_time = moment(d).add(timeSlotsArr[0].time, 'minutes')
-            if !curItem.earliest_time_slot || curItem.earliest_time_slot.date.isAfter(d)
-              curItem.earliest_time_slot = {date: moment(d).add(timeSlotsArr[0].time, 'minutes'), time: timeSlotsArr[0].time}
+          if time_slots.length > 0
+            if !current_item.earliest_time || current_item.earliest_time.isAfter(d)
+              current_item.earliest_time = moment(d).add(time_slots[0].time, 'minutes')
+            if !current_item.earliest_time_slot || current_item.earliest_time_slot.date.isAfter(d)
+              current_item.earliest_time_slot = {date: moment(d).add(time_slots[0].time, 'minutes'), time: time_slots[0].time}
 
           # padding is used to ensure that a list of time slots is always padded
-          # out with a certain of values, if its a partial set of results
-          if $scope.add_padding && timeSlotsArr.length > 0
+          # out with a certain of values if it's a partial set of results
+          if $scope.add_padding && time_slots.length > 0
             dtimes = {}
-            for slot in timeSlotsArr
+            for slot in time_slots
               dtimes[slot.time] = 1
               # add date to slot as well
               slot.date = day.date.format('DD-MM-YY')
 
             for pad, v in $scope.add_padding
               if (!dtimes[pad])
-                timeSlotsArr.splice(v, 0, new BBModel.TimeSlot({time: pad, avail: 0}, timeSlotsArr[0].service))
+                time_slots.splice(v, 0, new BBModel.TimeSlot({time: pad, avail: 0}, time_slots[0].service))
 
-          if (curItem.requested_time or curItem.time) and day.date.isSame(curItem.date.date)
-            found_time = false
+          checkRequestedTime(day, time_slots)
 
-            for slot in timeSlotsArr
-              if (slot.time is curItem.requested_time)
-                curItem.requestedTimeUnavailable()
-                $scope.selectSlot(day, slot)
-                found_time = true
-                $scope.days = []
-                return  # hey if we just picked the day and routed - then move on!
-
-              if (curItem.time and curItem.time.time is slot.time and slot.avail is 1)
-                if $scope.selected_slot and $scope.selected_slot.time isnt curItem.time.time
-                  $scope.selected_slot = curItem.time
-                  #console.log ("Timings are out of sync")
-                curItem.setTime(slot)  # reset it - just in case this is really a new slot!
-                found_time = true
-
-            if !found_time
-              # if we didn't find the time - give up and do force it's selecttion
-              curItem.requestedTimeUnavailable()
-              AlertService.add("danger", { msg: "Sorry, your requested time slot is not available. Please choose a different time." })
         $scope.updateHideStatus()
       , (err) -> $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
     else
       $scope.setLoaded $scope
+
+
+  checkRequestedTime = (day, time_slots) ->
+
+    current_item = $scope.bb.current_item
+
+    if (current_item.requested_time or current_item.time) and current_item.requested_date and day.date.isSame(current_item.requested_date)
+      found_time = false
+
+      for slot in time_slots
+        if (slot.time is current_item.requested_time)
+          current_item.requestedTimeUnavailable()
+          $scope.selectSlot(day, slot)
+          found_time = true
+          $scope.days = []
+          return  # hey if we just picked the day and routed - then move on!
+
+        if (current_item.time and current_item.time.time is slot.time and slot.avail is 1)
+          if $scope.selected_slot and $scope.selected_slot.time isnt current_item.time.time
+            $scope.selected_slot = current_item.time
+          current_item.setTime(slot)  # reset it - just in case this is really a new slot!
+          found_time = true
+
+      if !found_time
+        current_item.requestedTimeUnavailable()
+        AlertService.add("danger", { msg: "The requested time slot is not available. Please choose a different time." })
+
 
 
   $scope.padTimes = (times) ->
@@ -379,8 +390,7 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
 
 
   $scope.format_date = (fmt) ->
-    if $scope.start_date
-      $scope.start_date.format(fmt)
+    $scope.start_date.format(fmt) if $scope.start_date
 
 
   $scope.format_start_date = (fmt) ->
@@ -388,8 +398,7 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
 
 
   $scope.format_end_date = (fmt) ->
-    if $scope.end_date
-      $scope.end_date.format(fmt)
+    $scope.end_date.format(fmt) if $scope.end_date
 
 
   $scope.pretty_month_title = (month_format, year_format, seperator = '-') ->

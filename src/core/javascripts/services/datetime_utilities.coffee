@@ -1,6 +1,6 @@
 angular.module('BB.Services').factory "DateTimeUlititiesService", () ->
 
-  # converts date and time belongging to BBModel.Day and BBModel.TimeSlot into
+  # converts date and time belonging to BBModel.Day and BBModel.TimeSlot into
   # a valid moment object
   convertTimeSlotToMoment: (date, time) ->
     return if !date and !time

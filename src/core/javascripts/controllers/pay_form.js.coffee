@@ -1,7 +1,6 @@
 'use strict'
 
-angular.module('BB.Directives').directive 'bbPayForm', ($window, $timeout,
-    $sce, $http, $compile, $document, $location) ->
+angular.module('BB.Directives').directive 'bbPayForm', ($window, $timeout, $sce, $http, $compile, $document, $location) ->
 
   applyCustomPartials = (custom_partial_url, scope, element) ->
     if custom_partial_url?
@@ -19,7 +18,20 @@ angular.module('BB.Directives').directive 'bbPayForm', ($window, $timeout,
               compiled_form.attr('action', action)
               $(form).replaceWith(compiled_form)
 
+  applyCustomStylesheet = (href) ->
+    css_id = 'custom_css'
+    if !document.getElementById(css_id)
+      head = document.getElementsByTagName('head')[0]
+      link = document.createElement('link')
+      link.id = css_id
+      link.rel = 'stylesheet'
+      link.type = 'text/css'
+      link.href = href
+      link.media = 'all'
+      head.appendChild link
+
   linker = (scope, element, attributes) ->
+
     $window.addEventListener 'message', (event) =>
       if angular.isObject(event.data)
         data = event.data
@@ -30,8 +42,8 @@ angular.module('BB.Directives').directive 'bbPayForm', ($window, $timeout,
           when "load"
             scope.$apply =>
               scope.referrer = data.message
-              if data.custom_partial_url
-                applyCustomPartials(event.data.custom_partial_url, scope, element)
+              applyCustomPartials(event.data.custom_partial_url, scope, element) if data.custom_partial_url
+              applyCustomStylesheet(data.custom_stylesheet) if data.custom_stylesheet
     , false
 
   return {
@@ -52,18 +64,18 @@ angular.module('BB.Controllers').controller 'PayForm', ($scope, $location) ->
   $scope.setCard = (card) ->
     $scope.card = card
 
-
   sendSubmittingEvent = () =>
-    origin = $location.protocol() + "://" + $location.host() + ":" + $location.port()
     referrer = $location.protocol() + "://" + $location.host()
     if $location.port()
       referrer += ":" + $location.port()
+    target_origin = $scope.referrer
+
     payload = JSON.stringify({
       'type': 'submitting',
       'message': referrer
     })
-    parent.postMessage(payload, origin)
- 
+    parent.postMessage(payload, target_origin)
+
   submitPaymentForm = () =>
     payment_form = angular.element.find('form')
     payment_form[0].submit()

@@ -141,7 +141,7 @@ angular.module('BB.Models').factory "BasketItemModel",
       if defaults.time
         @requested_time = parseInt(defaults.time)
       if defaults.date
-        @date = new BBModel.Day({date: defaults.date, spaces: 1})
+        @requested_date = moment(defaults.date)
       if defaults.service_ref
         @service_ref = defaults.service_ref
       if defaults.group
@@ -167,6 +167,7 @@ angular.module('BB.Models').factory "BasketItemModel",
     # if it turned out that a requested date, or time was unavailable - we'll have to clear it
     requestedTimeUnavailable: ->
       delete @requested_time
+      delete @requested_date
 
     setSlot: (slot) ->
 
@@ -335,6 +336,13 @@ angular.module('BB.Models').factory "BasketItemModel",
       prom.then (group) =>
         @setEventGroup(group)
       @num_book = event.qty
+      if @event.getSpacesLeft() <= 0 && !@company.settings
+        @status = 8 if @company.getSettings().has_waitlists
+      else if @event.getSpacesLeft() <= 0 && @company.settings && @company.settings.has_waitlists 
+        @status = 8
+
+ 
+
 
     # if someone sets a category - we may then later restrict the service list by category
     setCategory: (cat) ->
@@ -461,6 +469,12 @@ angular.module('BB.Models').factory "BasketItemModel",
       @reserve_ready = false
 
 
+    clearTime: () ->
+      delete @time
+      @ready = false
+      @reserve_ready = false  
+
+
     setGroup: (group) ->
       @group = group
 
@@ -493,6 +507,8 @@ angular.module('BB.Models').factory "BasketItemModel",
         data.time = @time.time
         if @time.event_id
           data.event_id = @time.event_id
+        else if @time.event_ids
+          data.event_ids = @time.event_ids
       else if @date and @date.event_id
         data.event_id = @date.event_id
       data.price = @price
@@ -519,6 +535,7 @@ angular.module('BB.Models').factory "BasketItemModel",
       data.event_chain_id = @event_chain_id
       data.event_group_id = @event_group_id
       data.qty = @qty   
+      data.status = @status if @status
       data.num_resources = parseInt(@num_resources) if @num_resources?
       data.product = @product
       data.deal = @deal if @deal
@@ -527,6 +544,11 @@ angular.module('BB.Models').factory "BasketItemModel",
       data.coupon_id = @coupon_id
       data.is_coupon = @is_coupon
       data.attachment_id = @attachment_id if @attachment_id
+      data.vouchers = @deal_codes if @deal_codes
+
+      data.email = @email if @email
+      data.first_name = @first_name if @first_name
+      data.last_name = @last_name if @last_name
 
       if @email?
         data.email = @email
@@ -540,10 +562,11 @@ angular.module('BB.Models').factory "BasketItemModel",
     setPrice: (nprice) ->
       if nprice?
         @price = parseFloat(nprice)
-        @printed_price = if @price % 1 == 0 then "£" + parseInt(@price) else $window.sprintf("£%.2f", @price)
+        printed_price = @price / 100
+        @printed_price = if printed_price % 1 == 0 then "£" + parseInt(printed_price) else $window.sprintf("£%.2f", printed_price)
         @printed_vat_cal = @.company.settings.payment_tax if @.company && @.company.settings
-        @printed_vat = @printed_vat_cal / 100 * @price if @printed_vat_cal
-        @printed_vat_inc = @printed_vat_cal / 100 * @price + @price if @printed_vat_cal
+        @printed_vat = @printed_vat_cal / 100 * printed_price if @printed_vat_cal
+        @printed_vat_inc = @printed_vat_cal / 100 * printed_price + printed_price if @printed_vat_cal
       else
         @price = null
         @printed_price = null
@@ -623,9 +646,10 @@ angular.module('BB.Models').factory "BasketItemModel",
 
     # get booking end datetime
     end_datetime: () ->
-      return null if !@date || !@time || !@listed_duration
+      return null if !@date || !@time || (!@listed_duration && !@duration)
+      duration = if @listed_duration then @listed_duration else @duration 
       end_datetime = moment(@date.date.toISODate())
-      end_datetime.minutes(@time.time + @listed_duration)
+      end_datetime.minutes(@time.time + duration)
       end_datetime
 
     # set a booking are to be a move (or a copy?) from a previous booking
@@ -660,10 +684,10 @@ angular.module('BB.Models').factory "BasketItemModel",
     # price including discounts
     totalPrice: =>
       if @discount_price?
-        return @discount_price
+        return @discount_price + @questionPrice()
       pr = @total_price
-      pr ||= @price
-      pr ||= 0
+      pr = @price if !angular.isNumber(pr)
+      pr = 0      if !angular.isNumber(pr)
       return pr + @questionPrice()
 
     # price not including discounts
@@ -681,6 +705,7 @@ angular.module('BB.Models').factory "BasketItemModel",
     setDeal: (deal) ->
       @deal = deal
       @book_link = @deal if @deal.$has('book')
+      @setPrice(deal.price) if deal.price
 
     ####################
     # various status tests

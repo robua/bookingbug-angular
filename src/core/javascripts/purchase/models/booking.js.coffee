@@ -141,5 +141,5 @@ angular.module('BB.Models').factory "Purchase.BookingModel", ($q, $window, BBMod
       return moment(@min_cancellation_time).isAfter(moment())
 
     canMove: () ->
-      return @canCancel()    
+      return @canCancel()  
 

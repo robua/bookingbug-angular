@@ -49,7 +49,6 @@ angular.module('BB.Controllers').controller 'BasketList', ($scope,  $rootScope, 
     $scope.bb.emptyStackedItems()
     $scope.bb.current_item.setCompany($scope.bb.company)
     $scope.restart()
-    $rootScope.$broadcast 'widget:restart'
 
 
   $scope.checkout = (route) =>
@@ -64,6 +63,7 @@ angular.module('BB.Controllers').controller 'BasketList', ($scope,  $rootScope, 
 
 
   $scope.applyCoupon = (coupon) =>
+    AlertService.clear()
     $scope.notLoaded $scope
     params = {bb: $scope.bb, coupon: coupon }
     BasketService.applyCoupon($scope.bb.company, params).then (basket) ->
@@ -93,6 +93,7 @@ angular.module('BB.Controllers').controller 'BasketList', ($scope,  $rootScope, 
       basket.setSettings($scope.bb.basket.settings)
       $scope.setBasket(basket)
       $scope.items = $scope.bb.basket.items
+      $scope.deal_code = null
     , (err) ->
       if err && err.data && err.data.error
         AlertService.clear()
@@ -112,3 +113,11 @@ angular.module('BB.Controllers').controller 'BasketList', ($scope,  $rootScope, 
       if err && err.data && err.data.error
         AlertService.clear()
         AlertService.add("danger", { msg: err.data.error })
+
+
+  $scope.setReady = ->
+    if $scope.bb.basket.items.length > 0
+      $scope.setReadyToCheckout(true)
+    else
+      AlertService.add 'info', ErrorService.getError('EMPTY_BASKET_FOR_CHECKOUT')
+      

@@ -15,7 +15,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   FormDataStoreService.init 'MapCtrl', $scope, [
     'address'
     'selectedStore'
-    'prms'
+    'search_prms'
   ]
 
   # init vars
@@ -33,7 +33,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   $scope.numberedPin          ||= null
   $scope.defaultPin           ||= null
   $scope.hide_not_live_stores = false
-  $scope.address              = $scope.$eval $attrs.bbAddress or null
+  $scope.address              = $scope.$eval $attrs.bbAddress if !$scope.address && $attrs.bbAddress
   $scope.error_msg            = options.error_msg or "You need to select a store"
   $scope.notLoaded $scope
   
@@ -45,7 +45,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   #if $scope.bb.company.$has('parent')
   $rootScope.connection_started.then ->
 
-    $scope.setLoaded $scope
+    $scope.setLoaded $scope if !$scope.selectedStore
     if $scope.bb.company.companies
       $rootScope.parent_id = $scope.bb.company.id
     else if $rootScope.parent_id
@@ -61,7 +61,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
 
     $scope.mapBounds = new google.maps.LatLngBounds()
     for comp in $scope.companies
-      if comp.address.lat && comp.address.long
+      if comp.address and comp.address.lat and comp.address.long
         latlong = new google.maps.LatLng(comp.address.lat,comp.address.long)
         $scope.mapBounds.extend(latlong)
 
@@ -79,7 +79,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   # load map and create the map markers. the map is hidden at this point
   $scope.map_init.then ->
     for comp in $scope.companies
-      if comp.address.lat && comp.address.long
+      if comp.address and comp.address.lat and comp.address.long
         latlong = new google.maps.LatLng(comp.address.lat,comp.address.long)
         marker = new google.maps.Marker({
           map: $scope.myMap,
@@ -103,8 +103,12 @@ angular.module('BB.Controllers').controller 'MapCtrl',
 
   # if the user has clicked back to the map then display it.
   checkDataStore = ->
-    if $scope.selectedStore and $scope.prms
-      $scope.searchAddress $scope.prms
+    if $scope.selectedStore
+      $scope.notLoaded $scope
+      if $scope.search_prms
+        $scope.searchAddress $scope.search_prms
+      else 
+        $scope.geolocate()
       google.maps.event.addListenerOnce($scope.myMap, 'idle', ->
         _.each $scope.mapMarkers, (marker) ->
           if $scope.selectedStore.id is marker.company.id
@@ -115,7 +119,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   # create title for the map selection step
   $scope.title = ->
     ci = $scope.bb.current_item
-    if ci.cagetgory and ci.category.description
+    if ci.category and ci.category.description
       p1 = ci.category.description
     else
       p1 = $scope.bb.company.extra.department
@@ -147,17 +151,19 @@ angular.module('BB.Controllers').controller 'MapCtrl',
           req.bounds = new google.maps.LatLngBounds(sw, ne)
 
         new google.maps.Geocoder().geocode req, (results, status) ->
-          $scope.prms = prms
 
           $scope.geocoder_result = results[0] if results.length > 0 and status is 'OK'
 
           if !$scope.geocoder_result or ($scope.geocoder_result and $scope.geocoder_result.partial_match)
             searchPlaces(req)
-            return
+            return 
           else if $scope.geocoder_result
             searchSuccess($scope.geocoder_result)
           else
             searchFailed()
+          $scope.setLoaded $scope
+
+    $scope.setLoaded $scope
 
 
   searchPlaces = (prms) ->
@@ -210,6 +216,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
     pi = Math.PI;
     R = 6371  #equatorial radius
     distances = []
+    distances_kilometres = []
 
     lat1 = latlong.lat();
     lon1 = latlong.lng();
@@ -231,6 +238,7 @@ angular.module('BB.Controllers').controller 'MapCtrl',
               Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(rLat1) * Math.cos(rLat2);
       c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       d = R * c;
+      k = d
       # convert to miles
       d = d * 0.621371192
 
@@ -238,10 +246,14 @@ angular.module('BB.Controllers').controller 'MapCtrl',
         marker.setVisible(false)
 
       marker.distance = d
+      marker.distance_kilometres = k
       distances.push marker if d < $scope.range_limit
-
-    distances.sort (a,b)->
-      a.distance - b.distance
+      distances_kilometres.push marker if k < $scope.range_limit
+      items = [distances, distances_kilometres]
+      for item in items
+        item.sort (a, b)->
+          a.distance - b.distance
+          a.distance_kilometres - b.distance_kilometres
 
     $scope.shownMarkers = distances.slice(0,$scope.numSearchResults)
     localBounds = new google.maps.LatLngBounds()
@@ -291,6 +303,8 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   $scope.geolocate = () ->
     return false if !navigator.geolocation || ($scope.reverse_geocode_address && $scope.reverse_geocode_address == $scope.address)
 
+    $scope.notLoaded $scope
+
     webshim.ready 'geolocation', ->
       # set timeout as 5 seconds and max age as 1 hour
       options = {timeout: 5000, maximumAge: 3600000}
@@ -300,9 +314,11 @@ angular.module('BB.Controllers').controller 'MapCtrl',
   geolocateFail = (error) ->
     switch error.code
       # if the geocode failed because the position was unavailable or the request timed out, raise an alert
-      when 2, 3 then AlertService.danger(ErrorService.getError('GEOLOCATION_ERROR'))
+      when 2, 3 
+        $scope.setLoaded $scope
+        AlertService.danger(ErrorService.getError('GEOLOCATION_ERROR'))
       else
-        return
+        return $scope.setLoaded $scope
 
 
   reverseGeocode = (position) ->
@@ -319,10 +335,12 @@ angular.module('BB.Controllers').controller 'MapCtrl',
           $scope.reverse_geocode_address += ', ' + ac.long_name if ac.types.indexOf("locality") >= 0
           $scope.address = $scope.reverse_geocode_address
         searchSuccess($scope.geocoder_result)
+      $scope.setLoaded $scope
 
   $scope.increaseRange = () ->
     $scope.range_limit = Infinity
     $scope.searchAddress($scope.search_prms)
+
 
   # look for change in display size to determine if the map needs to be refreshed
   $scope.$watch 'display.xs', (new_value, old_value) =>
@@ -331,3 +349,9 @@ angular.module('BB.Controllers').controller 'MapCtrl',
       $scope.myMap.setCenter $scope.loc
       $scope.myMap.setZoom 15
       $scope.showClosestMarkers $scope.loc
+
+
+  $rootScope.$on 'widget:restart', () ->
+    $scope.loc = null
+    $scope.reverse_geocode_address = null
+    $scope.address = null

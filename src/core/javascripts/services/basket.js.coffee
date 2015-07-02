@@ -81,7 +81,6 @@ angular.module('BB.Services').factory "BasketService", ($q, $rootScope, BBModel,
     if !lnk
       deferred.reject("rel book not found for event")
       return deferred.promise
-
     MutexService.getLock().then (mutex) ->
       lnk.$post('book', params, data).then (basket) ->
         MutexService.unlock(mutex)
@@ -136,15 +135,21 @@ angular.module('BB.Services').factory "BasketService", ($q, $rootScope, BBModel,
     if !item.$has('self')
       deferred.reject("rel self not found for item")
     else
-      item.$del('self', params).then (basket) ->
-        company.$flush('basket')
-        basket = new BBModel.Basket(basket, params.bb)
-        if basket.$has('items')
-          basket.$get('items').then (items) ->
-            basket.addItem(new BBModel.BasketItem(item, params.bb)) for item in items
-        deferred.resolve(basket)
+      MutexService.getLock().then (mutex) ->
+        item.$del('self', params).then (basket) ->
+          MutexService.unlock(mutex)
+          company.$flush('basket')
+          basket = new BBModel.Basket(basket, params.bb)
+          if basket.$has('items')
+            basket.$get('items').then (items) ->
+              basket.addItem(new BBModel.BasketItem(item, params.bb)) for item in items
+          deferred.resolve(basket)
+        , (err) ->
+          deferred.reject(err)
       , (err) ->
+        MutexService.unlock(mutex)
         deferred.reject(err)
+
     deferred.promise
 
   checkout: (company, basket, params) ->
@@ -154,22 +159,32 @@ angular.module('BB.Services').factory "BasketService", ($q, $rootScope, BBModel,
     else
       data = basket.getPostData()
       data.affiliate_id = $rootScope.affiliate_id
-      basket.$post('checkout', params, data).then (total) ->
-        $rootScope.$broadcast('updateBookings')
-        tot = new BBModel.Purchase.Total(total)
-        $rootScope.$broadcast('newCheckout', tot)
-        basket.clear()
-        deferred.resolve(tot)
+      MutexService.getLock().then (mutex) ->
+        basket.$post('checkout', params, data).then (total) ->
+          MutexService.unlock(mutex)
+          $rootScope.$broadcast('updateBookings')
+          tot = new BBModel.Purchase.Total(total)
+          $rootScope.$broadcast('newCheckout', tot)
+          basket.clear()
+          deferred.resolve(tot)
+        , (err) ->
+          deferred.reject(err)
       , (err) ->
+        MutexService.unlock(mutex)
         deferred.reject(err)
     deferred.promise
 
   empty: (bb) ->
     deferred = $q.defer()
-    bb.company.$del('basket').then (basket) ->
-      bb.company.$flush('basket')
-      deferred.resolve(new BBModel.Basket(basket, bb))
+    MutexService.getLock().then (mutex) ->
+      bb.company.$del('basket').then (basket) ->
+        MutexService.unlock(mutex)
+        bb.company.$flush('basket')
+        deferred.resolve(new BBModel.Basket(basket, bb))
+      , (err) ->
+        deferred.reject(err)
     , (err) ->
+      MutexService.unlock(mutex)
       deferred.reject(err)
     deferred.promise
 

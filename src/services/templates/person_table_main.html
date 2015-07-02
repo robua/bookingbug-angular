@@ -1,0 +1,21 @@
+<button class="btn btn-default" ng-click="newPerson()">New Person</button>
+<table tr-ng-grid="" items="people" fields="fields">
+   <tbody>
+    <tr>
+      <td>
+        <button class="btn btn-default btn-sm"
+          ng-click="delete(gridItem)">
+            Delete
+        </button>
+        <button class="btn btn-default btn-sm"
+          ng-click="edit(gridItem)">
+            Edit
+        </button>
+        <button class="btn btn-default btn-sm"
+          ng-click="schedule(gridItem)">
+            Schedule
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

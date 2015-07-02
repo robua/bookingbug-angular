@@ -72,9 +72,14 @@ app.directive 'bbScrollTo', ($rootScope, AppConfig, BreadcrumbService, $bbug) ->
       if (scroll_to_element)
         if (evnt == "page:loaded" and current_step > 1) or always_scroll or (evnt == "widget:restart") or
           (not scroll_to_element.is(':visible') and scroll_to_element.offset().top != 0)
-            $bbug("html, body").animate
-              scrollTop: scroll_to_element.offset().top
-              , bb_transition_time
+            if parent.document.getElementById("bbug-iframe")
+              $bbug(parent.document.body).animate
+                scrollTop: scroll_to_element.offset().top + $bbug(parent.document.getElementById("bbug-iframe")).offset().top
+                , bb_transition_time
+            else
+              $bbug("html, body").animate
+                scrollTop: scroll_to_element.offset().top
+                , bb_transition_time
 
 
 # bbSlotGrouper
@@ -104,9 +109,15 @@ app.directive 'bbForm', ($bbug) ->
       invalid_form_group = elem.find('.has-error:first')
       
       if invalid_form_group && invalid_form_group.length > 0
-        $bbug("html, body").animate
-          scrollTop: invalid_form_group.offset().top
-          , 1000
+        if parent.document.getElementById("bbug-iframe")
+          $(parent.document.body).animate
+                scrollTop: invalid_form_group.offset().top + $(parent.document.getElementById("bbug-iframe")).offset().top
+                , 1000
+        else 
+          $bbug("html, body").animate
+            scrollTop: invalid_form_group.offset().top
+            , 1000
+
         invalid_input      = invalid_form_group.find('.ng-invalid')
         invalid_input.focus()
         return false

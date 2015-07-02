@@ -1,7 +1,7 @@
 
 
-angular.module('BBAdmin.Services').factory 'AdminTimeService',
-($q, $window, halClient, BBModel) ->
+angular.module('BBAdmin.Services').factory 'AdminTimeService', ($q, $window,
+    halClient, BBModel, UriTemplate) ->
 
   query: (prms) ->
     if prms.day
@@ -12,7 +12,7 @@ angular.module('BBAdmin.Services').factory 'AdminTimeService',
     url = prms.url if prms.url
     href = url + "/api/v1/{company_id}/time_data{?date,event_id,service_id,person_id}"
 
-    uri = new $window.UriTemplate.parse(href).expand(prms || {})
+    uri = new UriTemplate(href).fillFromObject(prms || {})
     deferred = $q.defer()
     halClient.$get(uri, { no_cache: false }).then (found) =>
       found.$get('events').then (events) =>

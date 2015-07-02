@@ -2,11 +2,13 @@
   <h3 class="modal-title">{{title}}</h3>
 </div>
 <form name="modal_form" ng-submit="submit(modal_form)">
+  <div ng-show="loading"><img src='/BB_wait.gif' class="loader"></div>
   <div class="modal-body" sf-schema="schema" sf-form="form"
-    sf-model="form_model" sf-options="{formDefaults: {feedback: false}}">
+    sf-model="form_model" sf-options="{formDefaults: {feedback: false}}"
+    ng-hide="loading">
   </div>
   <div class="modal-footer">
-    <input type="submit" class="btn btn-primary" value="OK">
+    <input type="submit" class="btn btn-primary" ng-disabled="loading" value="OK">
     <button class="btn btn-default" ng-click="cancel($event)">Cancel</button>
   </div>
 </form>

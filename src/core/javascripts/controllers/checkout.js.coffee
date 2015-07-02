@@ -8,9 +8,11 @@ angular.module('BB.Directives').directive 'bbCheckout', () ->
   controller : 'Checkout'
 
 
-angular.module('BB.Controllers').controller 'Checkout', ($scope, $rootScope, BasketService, $q, $location, $window, $bbug, FormDataStoreService, $timeout) ->
+angular.module('BB.Controllers').controller 'Checkout', ($scope, $rootScope, $attrs, BasketService, $q, $location, $window, $bbug, FormDataStoreService, $timeout) ->
   $scope.controller = "public.controllers.Checkout"
   $scope.notLoaded $scope
+
+  $scope.options = $scope.$eval($attrs.bbCheckout) or {}
 
   # clear the form data store as we no longer need the data
   FormDataStoreService.destroy($scope)
@@ -18,23 +20,28 @@ angular.module('BB.Controllers').controller 'Checkout', ($scope, $rootScope, Bas
   $rootScope.connection_started.then =>
     $scope.bb.basket.setClient($scope.client)
     loading_total_def = $q.defer()
-
+    
     $scope.loadingTotal = BasketService.checkout($scope.bb.company, $scope.bb.basket, {bb: $scope.bb})
     $scope.loadingTotal.then (total) =>
       $scope.total = total
-      if total.$has('new_payment')
-        $scope.checkStepTitle('Review')
-      else
-        $scope.checkStepTitle('Confirmed')
+   
+      # if no payment is required, route to the next step unless instructed otherwise
+      if !total.$has('new_payment')
         $scope.$emit("processDone")
+        $scope.bb.total = $scope.total
+        $scope.bb.payment_status = 'complete'
+        if !$scope.options.disable_confirmation
+          $scope.skipThisStep()
+          $scope.decideNextPage()
+
       $scope.checkoutSuccess = true
       $scope.setLoaded $scope
       # currently just close the window and refresh the parent if we're in an admin popup
-    , (err) =>
-      $scope.setLoaded $scope
+    , (err) ->
+      $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
       $scope.checkoutFailed = true
 
-  , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
+  , (err) -> $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
 
   # Deprecated - use window.print or $scope.printElement
   # Print booking details using print_purchase.html template

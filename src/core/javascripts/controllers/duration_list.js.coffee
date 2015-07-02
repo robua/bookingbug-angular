@@ -7,7 +7,7 @@ angular.module('BB.Directives').directive 'bbDurations', () ->
   controller : 'DurationList'
 
 
-angular.module('BB.Controllers').controller 'DurationList', ($scope,  $rootScope, PageControllerService, $q, $attrs) ->
+angular.module('BB.Controllers').controller 'DurationList', ($scope,  $rootScope, PageControllerService, $q, $attrs, AlertService) ->
   $scope.controller = "public.controllers.DurationList"
   $scope.notLoaded $scope
 
@@ -56,12 +56,11 @@ angular.module('BB.Controllers').controller 'DurationList', ($scope,  $rootScope
   $scope.selectDuration = (dur, route) =>
     if $scope.$parent.$has_page_control
       $scope.duration = dur
-      return false
+      return
     else
       $scope.bb.current_item.setDuration(dur.value)
       $scope.decideNextPage(route)
       return true
-
 
   $scope.durationChanged = () =>
     $scope.bb.current_item.setDuration($scope.duration.value)
@@ -73,7 +72,9 @@ angular.module('BB.Controllers').controller 'DurationList', ($scope,  $rootScope
       $scope.bb.current_item.setDuration($scope.duration.value)
       return true
     else
-      return true
+      AlertService.clear()
+      AlertService.add("danger", { msg: "You need to select a duration" })
+      return false
 
 
   # when the current item is updated, reload the duration data

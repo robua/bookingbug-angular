@@ -1,13 +1,16 @@
 'use strict';
 
 # helpful functions about a company
-angular.module('BB.Models').factory "CompanyModel", ($q, BBModel, BaseModel) ->
+angular.module('BB.Models').factory "CompanyModel", ($q, BBModel, BaseModel, halClient) ->
 
   class Company extends BaseModel
 
     constructor: (data) ->
       super(data)
-      @test = 1
+
+      # instantiate each child company as a hal resource
+      if @companies
+        @companies = _.map @companies, (c) -> new BBModel.Company(halClient.$parse(c))
 
     getCompanyByRef: (ref) ->
       defer = $q.defer()
@@ -26,6 +29,8 @@ angular.module('BB.Models').factory "CompanyModel", ($q, BBModel, BaseModel) ->
       return null if !@companies
       for c in @companies
         if c.id == parseInt(id)
+          return c
+        if c.ref && c.ref == String(id)
           return c
       # failed to find by id - maybe by name ?
       if typeof id == "string"

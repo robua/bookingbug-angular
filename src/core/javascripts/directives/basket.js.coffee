@@ -12,7 +12,7 @@ angular.module('BB.Directives').directive 'bbBasket', (PathSvc) ->
   scope : true
   templateUrl : (element, attrs) ->
     if _.has attrs, 'mini'
-    then PathSvc.directivePartial "basket_mini"
+    then PathSvc.directivePartial "_basket_mini"
     else PathSvc.directivePartial "basket"
   controllerAs : 'BasketCtrl'
 
@@ -30,7 +30,7 @@ angular.module('BB.Directives').directive 'bbBasket', (PathSvc) ->
         return false
       else            
         modalInstance = $modal.open
-          templateUrl: $scope.getPartial "basket_details"
+          templateUrl: $scope.getPartial "_basket_details"
           scope: $scope
           controller: BasketInstanceCtrl
           resolve: 
@@ -78,7 +78,7 @@ angular.module('BB.Directives').directive 'bbMinSpend', () ->
     checkMinSpend = () ->
       price = 0
       for item in $scope.bb.stacked_items
-        price += (item.service.price * 100)
+        price += (item.service.price)
 
       if price >= $scope.min_spend
         AlertService.clear()

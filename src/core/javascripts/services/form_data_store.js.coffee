@@ -234,8 +234,15 @@ angular.module('BB.Services').factory 'FormDataStoreService',
     registered = false
     # go up the scope chain to find the app's rootscope, which will be the scope
     # with the bbctrl property
+
+    # step down a scope first - just in case this is on the same as the widget and iot's isloated! 
+    if scope && scope.$$childHead
+      scope = scope.$$childHead
+      
     while !_.has(scope, 'cid')
       scope = scope.$parent
+
+    return if !scope
 
     if scope.cid isnt 'BBCtrl'
       throw new Error("This directive can only be used with the BBCtrl")
@@ -267,10 +274,3 @@ angular.module('BB.Services').factory 'FormDataStoreService',
     register : register
     setIfUndefined : setIfUndefined
   }
-
-
-
-
-
-
-

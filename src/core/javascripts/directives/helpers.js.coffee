@@ -61,13 +61,15 @@ app.directive 'bbPrintPage', ($window, $timeout) ->
 
 
 
-app.directive 'bbInclude', ($compile) ->
+app.directive 'bbInclude', ($compile, $rootScope) ->
   link: (scope, element, attr) ->
+    track_page = if attr.bbTrackPage? then true else false
     scope.$watch 'bb.path_setup', (newval, oldval) =>
       if newval
         element.attr('ng-include', "'" + scope.getPartial(attr.bbInclude) + "'")
         element.attr('bb-include',null)
         $compile(element)(scope)
+        $rootScope.$broadcast "page:loaded", attr.bbInclude if track_page
 
 
 
@@ -155,8 +157,8 @@ app.directive 'bbDate', () ->
     scope.$watch 'bb_date.js_date', (newval, oldval) ->
       ndate = moment(newval)
       if !scope.bb_date.date.isSame(ndate)
-        scope.bb_date.date = ndate 
-        scope.$broadcast('dateChanged', moment(ndate))
+        scope.bb_date.date = ndate
+        scope.$broadcast('dateChanged', moment(ndate)) if moment(ndate).isValid()
 
 
 
@@ -281,6 +283,7 @@ app.directive 'bbDateSplit', ($parse) ->
     }
 
     # split the date if it's already set
+    question.date.splitDate(moment(question.answer)) if question.answer
     question.date.splitDate(moment(ngModel.$viewValue)) if ngModel.$viewValue
  
     # watch self to split date when it changes  
@@ -312,37 +315,8 @@ app.directive 'bbCommPref', ($parse) ->
         scope.bb.current_item.settings.send_sms_followup   = newval
 
 
-
-# bbOwlCarousel
-app.directive "bbOwlCarousel", ->
-  restrict: "A"
-  link: (scope, element, attrs) ->
-
-    # check for presence of owlCarousel
-    return if not element.owlCarousel
-
-    options = scope.$eval(attrs.bbOwlCarousel)
-    
-    scope.initCarousel = ->
-      scope.destroyCarousel()
-      element.owlCarousel options
-
-      # bind prev/next actions
-      # TODO make accessible via ng-click and scope to instantiated carousel to allow multiple per page
-      $('.bb-owl-prev').click ->
-        element.trigger('owl.prev')
-      $('.bb-owl-next').click ->
-        element.trigger('owl.next')
-
-    scope.destroyCarousel = ->
-      element.data('owlCarousel').destroy() if element.data('owlCarousel')
-
-    scope.$watch options.data, (newval, oldval) ->
-      if newval and newval.length > 0
-        scope.initCarousel()
-
-
 # bbCountTicketTypes
+# returns the number of tickets purchased grouped by name
 app.directive 'bbCountTicketTypes', () ->
   restrict: 'A'
   link: (scope, element, attrs) ->
@@ -369,27 +343,51 @@ app.directive 'bbCapitaliseFirstLetter', () ->
         ngModel.$render()
         return
 
-
-app.directive 'apiUrl', ($rootScope, $compile, $sniffer, $timeout) ->
+# Deprecate - see below
+app.directive 'apiUrl', ($rootScope, $compile, $sniffer, $timeout, $window) ->
   restrict: 'A'
+  replace: true
   compile: (tElem, tAttrs) ->
     pre: (scope, element, attrs) ->
       $rootScope.bb ||= {}
       $rootScope.bb.api_url = attrs.apiUrl
-      if ($sniffer.msie && $sniffer.msie < 10)
-        url = document.createElement('a')
-        url.href = attrs.apiUrl
+      url = document.createElement('a')
+      url.href = attrs.apiUrl
+      if ($sniffer.msie && $sniffer.msie < 10) && url.host != $window.location.host
         if url.protocol[url.protocol.length - 1] == ':'
           src = "#{url.protocol}//#{url.host}/ClientProxy.html"
         else
           src = "#{url.protocol}://#{url.host}/ClientProxy.html"
         $rootScope.iframe_proxy_ready = false
-        $timeout () ->
+        $window.iframeLoaded = () ->
           $rootScope.iframe_proxy_ready = true
-          $rootScope.$broadcast('iframe_proxy_ready')
-        , 2000
-        $compile("<iframe id='ieapiframefix' name='" + url.hostname + "' src='#{src}' style='visibility:false;display:none;'></iframe>") scope, (cloned, scope) =>
+          $rootScope.$broadcast('iframe_proxy_ready', {iframe_proxy_ready: true})
+        $compile("<iframe id='ieapiframefix' name='" + url.hostname + "' src='#{src}' style='visibility:false;display:none;' onload='iframeLoaded()'></iframe>") scope, (cloned, scope) =>
           element.append(cloned)
+
+
+app.directive 'bbApiUrl', ($rootScope, $compile, $sniffer, $timeout, $window, $location) ->
+  restrict: 'A'
+  scope:
+    'apiUrl': '@bbApiUrl'
+  compile: (tElem, tAttrs) ->
+    pre: (scope, element, attrs) ->
+      $rootScope.bb ||= {}
+      $rootScope.bb.api_url = scope.apiUrl
+      url = document.createElement('a')
+      url.href = scope.apiUrl
+      if $sniffer.msie && $sniffer.msie < 10
+        unless url.host == $location.host() || url.host == "#{$location.host()}:#{$location.port()}"
+          if url.protocol[url.protocol.length - 1] == ':'
+            src = "#{url.protocol}//#{url.host}/ClientProxy.html"
+          else
+            src = "#{url.protocol}://#{url.host}/ClientProxy.html"
+          $rootScope.iframe_proxy_ready = false
+          $window.iframeLoaded = () ->
+            $rootScope.iframe_proxy_ready = true
+            $rootScope.$broadcast('iframe_proxy_ready', {iframe_proxy_ready: true})
+          $compile("<iframe id='ieapiframefix' name='" + url.hostname + "' src='#{src}' style='visibility:false;display:none;' onload='iframeLoaded()'></iframe>") scope, (cloned, scope) =>
+            element.append(cloned)
 
 
 app.directive 'bbPriceFilter', (PathSvc) ->
@@ -398,14 +396,14 @@ app.directive 'bbPriceFilter', (PathSvc) ->
   scope: false
   require: '^?bbServices'
   templateUrl : (element, attrs) ->
-    PathSvc.directivePartial "price_filter"
+    PathSvc.directivePartial "_price_filter"
   controller : ($scope, $attrs) ->
     $scope.$watch 'items', (new_val, old_val) ->
       setPricefilter new_val if new_val
 
     setPricefilter = (items) ->
       $scope.price_array = _.uniq _.map items, (item) ->
-        return item.price
+        return item.price / 100 or 0
       $scope.price_array.sort()
       suitable_max()
       
@@ -434,7 +432,7 @@ app.directive 'bbPriceFilter', (PathSvc) ->
 app.directive 'bbBookingExport', ($compile) ->
   restrict: 'AE'
   scope: true
-  template: '<div bb-include="popout_export_booking" style="display: inline;"></div>'
+  template: '<div bb-include="_popout_export_booking" style="display: inline;"></div>'
   link: (scope, element, attrs) ->
 
     scope.$watch 'total', (newval, old) ->

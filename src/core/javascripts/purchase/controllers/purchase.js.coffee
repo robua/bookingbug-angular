@@ -10,7 +10,8 @@ angular.module('BB.Directives').directive 'bbPurchase', () ->
 angular.module('BB.Controllers').controller 'Purchase', ($scope,  $rootScope, CompanyService, PurchaseService, ClientService, $modal, $location, $timeout, BBWidget, BBModel, $q, QueryStringService, SSOService, AlertService, LoginService, $window, $upload, ServiceService, $sessionStorage) ->
 
   $scope.controller = "Purchase"
-
+  $scope.is_waitlist = false
+  $scope.make_payment = false
 
   setPurchaseCompany = (company) ->
     $scope.bb.company_id = company.id
@@ -84,6 +85,7 @@ angular.module('BB.Controllers').controller 'Purchase', ($scope,  $rootScope, Co
               $scope.bookings = bookings
               $scope.setLoaded $scope
               checkIfMoveBooking(bookings)
+              checkIfWaitlistBookings(bookings)
 
               for booking in $scope.bookings
                 booking.getAnswersPromise().then (answers) ->
@@ -119,6 +121,9 @@ angular.module('BB.Controllers').controller 'Purchase', ($scope,  $rootScope, Co
     if id
       move_booking = (b for b in bookings when b.id == id)
       $scope.move(move_booking[0]) if move_booking.length > 0 && $scope.isMovable(bookings[0])
+
+  checkIfWaitlistBookings = (bookings) ->
+    $scope.waitlist_bookings = (booking for booking in bookings when (booking.on_waitlist && booking.settings.sent_waitlist == 1))
 
 
   $scope.requireLogin = (action) =>
@@ -158,10 +163,11 @@ angular.module('BB.Controllers').controller 'Purchase', ($scope,  $rootScope, Co
 
 
   $scope.move = (booking, route, options = {}) ->
+    
     route ||= $scope.move_route
     if $scope.move_all
       return $scope.moveAll(route, options)
-
+    
     $scope.notLoaded $scope
     $scope.initWidget({company_id: booking.company_id, no_route: true})
     $timeout () =>
@@ -218,11 +224,33 @@ angular.module('BB.Controllers').controller 'Purchase', ($scope,  $rootScope, Co
           failMsg()
       , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
 
+  
+  $scope.bookWaitlistItem = (booking) ->
+    $scope.notLoaded $scope
+    params = { purchase: $scope.purchase, booking: booking }
+    PurchaseService.bookWaitlistItem(params).then (purchase) ->
+      $scope.purchase = purchase
+      $scope.total = $scope.purchase
+      $scope.bb.purchase = purchase
+      $scope.purchase.getBookingsPromise().then (bookings) ->
+        $scope.bookings = bookings
+        $scope.waitlist_bookings = (booking for booking in $scope.bookings when (booking.on_waitlist && booking.settings.sent_waitlist == 1))
+        if $scope.purchase.$has('new_payment') && $scope.purchase.due_now > 0
+          $scope.make_payment = true
+        $scope.setLoaded $scope
+      , (err) ->
+        $scope.setLoaded $scope
+        failMsg()
+    , (err) =>
+      $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
+
+
+
 
   # delete a single booking
   $scope.delete = (booking) ->
     modalInstance = $modal.open
-      templateUrl: $scope.getPartial "cancel_modal"
+      templateUrl: $scope.getPartial "_cancel_modal"
       controller: ModalDelete
       resolve:
         booking: ->
@@ -236,7 +264,7 @@ angular.module('BB.Controllers').controller 'Purchase', ($scope,  $rootScope, Co
   # delete all bookings assoicated to the purchase
   $scope.delete_all = () ->
     modalInstance = $modal.open
-      templateUrl: $scope.getPartial "cancel_modal"
+      templateUrl: $scope.getPartial "_cancel_modal"
       controller: ModalDeleteAll
       resolve:
         purchase: ->

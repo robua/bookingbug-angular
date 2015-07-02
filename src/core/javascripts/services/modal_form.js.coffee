@@ -3,19 +3,27 @@ angular.module('BB.Services').factory 'ModalForm', ($modal, $log) ->
   newForm = ($scope, $modalInstance, company, title, new_rel, post_rel,
       success, fail) ->
 
+    $scope.loading = true
     $scope.title = title
     $scope.company = company
-    $scope.company.$get(new_rel).then (schema) ->
-      $scope.form = _.reject schema.form, (x) -> x.type == 'submit'
-      $scope.schema = schema.schema
-      $scope.form_model = {}
+    if $scope.company.$has(new_rel)
+      $scope.company.$get(new_rel).then (schema) ->
+        $scope.form = _.reject schema.form, (x) -> x.type == 'submit'
+        $scope.schema = schema.schema
+        $scope.form_model = {}
+        $scope.loading = false
+    else
+      $log.warn("company does not have '#{new_rel}' rel")
 
     $scope.submit = (form) ->
       $scope.$broadcast('schemaFormValidate')
+      $scope.loading = true
       $scope.company.$post(post_rel, {}, $scope.form_model).then (model) ->
+        $scope.loading = false
         $modalInstance.close(model)
         success(model) if success
       , (err) ->
+        $scope.loading = false
         $modalInstance.close(err)
         $log.error 'Failed to create'
         fail(err) if fail
@@ -26,19 +34,27 @@ angular.module('BB.Services').factory 'ModalForm', ($modal, $log) ->
       $modalInstance.dismiss('cancel')
 
   editForm = ($scope, $modalInstance, model, title, success, fail) ->
+    $scope.loading = true
     $scope.title = title
     $scope.model = model
-    $scope.model.$get('edit').then (schema) ->
-      $scope.form = _.reject schema.form, (x) -> x.type == 'submit'
-      $scope.schema = schema.schema
-      $scope.form_model = $scope.model
+    if $scope.model.$has('edit')
+      $scope.model.$get('edit').then (schema) ->
+        $scope.form = _.reject schema.form, (x) -> x.type == 'submit'
+        $scope.schema = schema.schema
+        $scope.form_model = $scope.model
+        $scope.loading = false
+    else
+      $log.warn("model does not have 'edit' rel")
 
     $scope.submit = (form) ->
       $scope.$broadcast('schemaFormValidate')
+      $scope.loading = true
       $scope.model.$put('self', {}, $scope.form_model).then (model) ->
+        $scope.loading = false
         $modalInstance.close(model)
         success(model) if success
       , (err) ->
+        $scope.loading = false
         $modalInstance.close(err)
         $log.error 'Failed to create'
         fail() if fail
