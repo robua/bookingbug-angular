@@ -31,7 +31,7 @@ angular.module('BB.Models').service "BBModel", ($q, $injector) ->
   funcs['Purchase'] = pfuncs
 
   # member models
-  member_models = ['Member', 'Booking', 'PrepaidBooking']
+  member_models = ['Member', 'Booking', 'PrepaidBooking', 'Wallet', 'WalletLog']
   mfuncs = {}
   for model in member_models
     do (model) =>  

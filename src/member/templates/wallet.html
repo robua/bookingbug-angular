@@ -1,0 +1,16 @@
+<div class="bb-head">
+  <span id="wallet"> Your Wallet </span>
+</div>
+<div class="balance">
+  <div ng-if="wallet.amount == 0">
+    <span> You dont have any credit in your wallet. </span>
+  </div>
+  <div ng-if="wallet.amount > 0">
+    <span id="balance"> {{wallet.amount | icurrency }} </span>
+  </div>
+</div>
+<div class="bb-bookings-action col-sm-1">
+  <button ng-click="updateWallet(wallet)" class="btn btn-danger bb-push">
+    Top Up
+  </button>
+</div>

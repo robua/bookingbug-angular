@@ -50,7 +50,7 @@ gulp.task('javascripts', function() {
     .pipe(templateCache({module: 'BB'}))
   streamqueue({objectMode: true}, javascripts, templates)
     .pipe(concat('bookingbug-angular.js'))
-    .pipe(uglify({mangle: false})).on('error', gutil.log)
+    // .pipe(uglify({mangle: false})).on('error', gutil.log)
     .pipe(gulp.dest('release'));
 });
 

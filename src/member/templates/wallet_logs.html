@@ -1,0 +1,27 @@
+<h4> Wallet Payment History </h4>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Action</th>
+      <th>Amount</th>
+      <th>Changed By</th>
+      <th>Date and Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="log in logs" ng-class="{'last-item': $last}">
+      <td>
+         {{log.action}}
+      </td>
+      <td class="text-right">
+         {{log.payment_amount | icurrency }}
+      </td>
+      <td class="text-center">
+         {{ log.who_made_the_change }}
+      </td>
+      <td class="text-center">
+         {{ log.created_at | datetime  }}
+      </td>
+    </tr>
+  </tbody>
+</table>
