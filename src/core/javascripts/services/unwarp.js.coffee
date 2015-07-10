@@ -178,7 +178,7 @@ angular.module('BB.Services').factory "BB.Service.answers", ($q, BBModel) ->
 
       getAnswer: (question) ->
         for a in @answers
-          return a.value if a.question_text is question
+          return a.value if a.question_text is question or a.question_id is question
 
     return answers
 

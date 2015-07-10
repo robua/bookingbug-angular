@@ -1,7 +1,5 @@
-'use strict';
-
-angular.module('BB.Models').factory "Member.PrepaidBookingModel", ($q, BBModel, BaseModel) ->
-
+angular.module('BB.Models').factory "Member.PrePaidBookingModel", ($q, BBModel,
+    BaseModel) ->
 
   class Member_PrePaidBooking extends BaseModel
     constructor: (data) ->

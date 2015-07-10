@@ -72,14 +72,18 @@ app.directive 'bbScrollTo', ($rootScope, AppConfig, BreadcrumbService, $bbug) ->
       if (scroll_to_element)
         if (evnt == "page:loaded" and current_step > 1) or always_scroll or (evnt == "widget:restart") or
           (not scroll_to_element.is(':visible') and scroll_to_element.offset().top != 0)
-            if parent.document.getElementById("bbug-iframe")
-              $bbug(parent.document.body).animate
-                scrollTop: scroll_to_element.offset().top + $bbug(parent.document.getElementById("bbug-iframe")).offset().top
-                , bb_transition_time
+            if inIframe()
+              parent.postMessage('scrollToOffset:' + scroll_to_element.offset().top, '*') # '*' for any domain
             else
               $bbug("html, body").animate
                 scrollTop: scroll_to_element.offset().top
                 , bb_transition_time
+
+    inIframe = () ->
+      try
+        return window.self isnt window.top;
+      catch error
+        return true;
 
 
 # bbSlotGrouper
@@ -109,10 +113,8 @@ app.directive 'bbForm', ($bbug) ->
       invalid_form_group = elem.find('.has-error:first')
       
       if invalid_form_group && invalid_form_group.length > 0
-        if parent.document.getElementById("bbug-iframe")
-          $(parent.document.body).animate
-                scrollTop: invalid_form_group.offset().top + $(parent.document.getElementById("bbug-iframe")).offset().top
-                , 1000
+        if inIframe()
+          parent.postMessage('scrollToOffset:' + invalid_form_group.offset().top, '*')
         else 
           $bbug("html, body").animate
             scrollTop: invalid_form_group.offset().top
@@ -122,6 +124,12 @@ app.directive 'bbForm', ($bbug) ->
         invalid_input.focus()
         return false
       return true
+
+    inIframe = () ->
+      try
+        return window.self isnt window.top;
+      catch error
+        return true;
 
 
 # bbAddressMap

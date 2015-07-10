@@ -41,10 +41,10 @@
                 <div class="col-sm-3 col-xs-2"><span translate="ITEM_QTY"></span></div>
               </div>
             </li>
-            <li ng-repeat="ticket in event.tickets">
+            <li ng-repeat="ticket in tickets">
               <div class="row">
                 <div class="col-sm-6 col-xs-6">
-                  <span>{{ticket.fullName()}}</span>
+                  <span>{{ticket.fullName() || ticket.name}}</span>
                 </div>
                 <div class="col-sm-3 col-xs-4">
                   <span ng-if="ticket.price > 0">{{ticket.price | icurrency:"GBP"}}</span><span ng-if="ticket.price == 0"><span translate="ITEM_FREE"></span></span>
@@ -55,8 +55,19 @@
                   <select ng-if="!selected_tickets" ng-model="ticket.qty" ng-options="n as n for n in ticket.getRange(20)"></select>
                 </div>
               </div>
+              <div ng-repeat="prepaid in pre_paid_bookings">
+                Use pre-paid booking? {{prepaid.remaining}} remaining
+                <label class="radio-inline">
+                  <input type="radio" ng-model="ticket.pre_paid_booking_id"
+                    name="prepaid{{$index}}" id="prepaid{{$index}}yes" ng-value="prepaid.id"> Yes
+                </label>
+                <label class="radio-inline">
+                  <input type="radio" ng-model="ticket.pre_paid_booking_id"
+                    name="prepaid{{$index}}" id="prepaid{{$index}}no" ng-value="null"> No
+                </label>
+              </div>
             </li>
-            <li ng-if="selected_tickets && bb.basket.questionPrice()">
+            <li ng-if="bb.basket.questionPrice()">
               <div class="row">
                 <div class="col-sm-6 col-xs-6 total-label"><span translate="BASKET_BOOKING_FEE"></span></div>
                 <div class="col-sm-3">{{bb.basket.questionPrice() | currency}}</div>
@@ -82,6 +93,7 @@
               </div>
             </li>
           </ul>
+
 
           <div class="button-group" ng-if="!selected_tickets">
             <div class="row">

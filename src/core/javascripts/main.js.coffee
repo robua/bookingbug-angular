@@ -24,8 +24,6 @@ app = angular.module('BB', [
   'angular.filter',
   'ngCookies',
   'slick',
-  'angulartics',
-  'angulartics.google.analytics',
   'pascalprecht.translate',
   'vcRecaptcha'
 ]);

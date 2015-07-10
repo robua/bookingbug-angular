@@ -1,5 +1,5 @@
-angular.module('BB.Services').factory "MemberPrePaidBookingService",
-($q, $window, SpaceCollections, $rootScope, MemberService) ->
+angular.module('BB.Services').factory "MemberPrePaidBookingService", ($q,
+  BBModel) ->
 
       query: (member, params) ->
         deferred = $q.defer()
@@ -7,7 +7,7 @@ angular.module('BB.Services').factory "MemberPrePaidBookingService",
           deferred.reject("member does not have pre paid bookings")
         else
           member.$get('pre_paid_bookings', params).then (bookings) =>
-            if $window.typeIsArray bookings
+            if angular.isArray bookings
               # pre paid bookings were embedded in member
               bookings = for booking in bookings
                 new BBModel.Member.PrePaidBooking(booking)

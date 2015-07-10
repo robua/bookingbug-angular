@@ -117,48 +117,8 @@ angular.module('BB.Directives').directive 'bbSlick', ($rootScope, $timeout, $bbu
     PathSvc.directivePartial "_month_picker"
   controller : ($scope, $element, $attrs) ->
 
-    windowWidth = angular.element($window).width()
-    $scope.index = 0
-    breakpoints = $scope.$eval $attrs.bbSlick
-
-    $rootScope.connection_started.then ->
-      $scope.slidesToShow = getSlidesToShow()
-      register()
-
-    register = ->
-      slider = angular.element('div[slick]')
-      slider.on 'afterChange', (event, slick, currentSlide, nextSlide) ->
-        $scope.index = currentSlide
-        $scope.setMonth(currentSlide, slick.options.slidesToShow)
-        $scope.$apply()
-
-    angular.element($window).on 'orientationchange.slick.slick', ->
-      $scope.$broadcast 'window:resize'
-
-    angular.element($window).on 'resize.slick.slick', ->
-      $scope.$broadcast 'window:resize'
-
-    $scope.$on 'window:resize', ->
-      if angular.element($window).width() != windowWidth
-        clearTimeout($scope.windowDelay)
-        $scope.windowDelay = setTimeout () ->
-          windowWidth = angular.element($window).width()
-          $scope.checkResponsive()
-        , 200
-
-    getSlidesToShow = ->
-      for b in breakpoints
-        if angular.element($window).width() <= b.breakpoint
-          slidesToShow = b.settings.slidesToShow
-          break
-      return slidesToShow or 3
-
-    $scope.checkResponsive = ->
-      slides_to_show = getSlidesToShow()
-      if $scope.slidesToShow != slides_to_show
-        $scope.slidesToShow = slides_to_show
-        # recompile template to reinit slick
-        html = $templateCache.get('month_picker.html')
-        e = $compile(html)($scope)
-        $element.replaceWith(e)
-        register()
+    $scope.slickOnInit = () ->
+      $scope.refreshing = true
+      $scope.$apply()
+      $scope.refreshing = false
+      $scope.$apply()

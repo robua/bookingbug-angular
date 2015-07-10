@@ -151,6 +151,7 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
     Basket: 10
     Checkout: 11
     Slot: 12
+    Event: 13
   $scope.Route = $rootScope.Route 
 
 
@@ -616,6 +617,7 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
 
     else if ($scope.bb.company.$has('event_groups') && !$scope.bb.current_item.event_group && !$scope.bb.current_item.service && !$scope.bb.current_item.product && !$scope.bb.current_item.deal) or
             ($scope.bb.company.$has('events') && $scope.bb.current_item.event_group && !$scope.bb.current_item.event? && !$scope.bb.current_item.product && !$scope.bb.current_item.deal)
+      return if $scope.setPageRoute($rootScope.Route.Event)
       return $scope.showPage('event_list')
     else if ($scope.bb.company.$has('events') && $scope.bb.current_item.event && !$scope.bb.current_item.num_book && (!$scope.bb.current_item.tickets || !$scope.bb.current_item.tickets.qty) && !$scope.bb.current_item.product && !$scope.bb.current_item.deal)
       return $scope.showPage('event')
@@ -724,6 +726,7 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
         add_defer.resolve(basket)
     , (err) ->
       add_defer.reject(err)
+      # handle item conflict
       if err.status == 409
         # clear the currently cached time date
         halClient.clearCache("time_data")
@@ -738,7 +741,13 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
               $modalInstance.close()
         error_modal.result.finally () ->
           if $scope.bb.nextSteps
-            $scope.loadPreviousStep()
+            # either go back to the Date/Event routes or load the previous step
+            if $scope.setPageRoute($rootScope.Route.Date)
+              # already routed
+            else if $scope.setPageRoute($rootScope.Route.Event)
+              # already routed
+            else
+              $scope.loadPreviousStep()
           else
             $scope.decideNextPage()
     add_defer.promise
@@ -1063,7 +1072,7 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
     scope.setLoaded(scope)
     if err.status is 409
       AlertService.danger(ErrorService.getError('ITEM_NO_LONGER_AVAILABLE'))
-    else if err.data.error is "Number of Bookings exceeds the maximum"
+    else if err.data and err.data.error is "Number of Bookings exceeds the maximum"
       AlertService.danger(ErrorService.getError('MAXIMUM_TICKETS'))
     else
       AlertService.danger(ErrorService.getError('GENERIC'))

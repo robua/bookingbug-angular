@@ -297,6 +297,7 @@ angular.module('BB.Models').factory "BasketItemModel",
       if @event_chain.isSingleBooking()
         # if you can only book one ticket - just use that
         @tickets = {name: "Admittance", max: 1, type: "normal", price: @base_price}
+        @tickets.pre_paid_booking_id = @pre_paid_booking_id
         @tickets.qty = @num_book if @num_book
 
 
@@ -529,9 +530,12 @@ angular.module('BB.Models').factory "BasketItemModel",
       data.length = @length
       if @event
         data.event_id = @event.id
-        if @event.pre_paid_booking?
-          data.pre_paid_booking = @event.pre_paid_booking
+        if @event.pre_paid_booking_id?
+          data.pre_paid_booking_id = @event.pre_paid_booking_id
+        else if @tickets.pre_paid_booking_id?
+          data.pre_paid_booking_id = @tickets.pre_paid_booking_id
         data.tickets = @tickets
+      data.pre_paid_booking_id = @pre_paid_booking_id if @pre_paid_booking_id?
       data.event_chain_id = @event_chain_id
       data.event_group_id = @event_group_id
       data.qty = @qty   
@@ -683,6 +687,8 @@ angular.module('BB.Models').factory "BasketItemModel",
 
     # price including discounts
     totalPrice: =>
+      if @tickets.pre_paid_booking_id
+        return 0
       if @discount_price?
         return @discount_price + @questionPrice()
       pr = @total_price
