@@ -111,6 +111,9 @@ angular.module('BB.Models').factory "BasketModel", ($q, BBModel, BaseModel) ->
         price += item.totalPrice() if (!item.ready and unready) or !unready
       return price
 
+    updateTotalPrice: (options) ->
+      @total_price = @totalPrice(options)
+
     # return the full price before any coupons or deals have been applied
     fullPrice: ->
       price = 0

@@ -138,9 +138,18 @@ angular.module('BB.Models').factory "EventModel", ($q, BBModel, BaseModel, DateT
             for ticket in @tickets
               @price_range.from = ticket.price if !@price_range.from or (@price_range.from and ticket.price < @price_range.from)
               @price_range.to = ticket.price if !@price_range.to or (@price_range.to and ticket.price > @price_range.to)
+              ticket.old_price = ticket.price
           else
             @price_range.from  = @price
             @price_range.to = @price
 
           def.resolve()
       def.promise
+
+    updatePrice: () ->
+      for ticket in @tickets
+        if ticket.pre_paid_booking_id
+          ticket.price = 0
+        else
+          ticket.price = ticket.old_price
+

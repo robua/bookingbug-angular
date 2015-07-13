@@ -8,11 +8,13 @@
 angular.module('BB.Models').service "BBModel", ($q, $injector) ->
 
   # the top level models
-  models = ['Address', 'Answer', 'Affiliate', 'Basket', 'BasketItem', 'BookableItem', 
-    'Category', 'Client', 'ClientDetails', 'Company', 'CompanySettings',
-    'Day', 'Event', 'EventChain', 'EventGroup', 'EventTicket', 'EventSequence', 
-    'ItemDetails', 'Person', 'PurchaseItem', 'PurchaseTotal', 
-    'Question', 'Resource', 'Service', 'Slot', 'Space', 'SurveyQuestion','TimeSlot', 'BusinessQuestion', 'Image', 'Deal']
+  models = ['Address', 'Answer', 'Affiliate', 'Basket', 'BasketItem',
+    'BookableItem', 'Category', 'Client', 'ClientDetails', 'Company',
+    'CompanySettings', 'Day', 'Event', 'EventChain', 'EventGroup',
+    'EventTicket', 'EventSequence', 'ItemDetails', 'Person', 'PurchaseItem',
+    'PurchaseTotal', 'Question', 'Resource', 'Service', 'Slot', 'Space',
+    'SurveyQuestion','TimeSlot', 'BusinessQuestion', 'Image', 'Deal',
+    'PrePaidBooking']
 
   funcs = {}
   for model in models
@@ -31,7 +33,7 @@ angular.module('BB.Models').service "BBModel", ($q, $injector) ->
   funcs['Purchase'] = pfuncs
 
   # member models
-  member_models = ['Member', 'Booking', 'PrepaidBooking']
+  member_models = ['Member', 'Booking', 'PrePaidBooking']
   mfuncs = {}
   for model in member_models
     do (model) =>  

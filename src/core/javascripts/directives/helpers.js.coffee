@@ -404,7 +404,8 @@ app.directive 'bbPriceFilter', (PathSvc) ->
     setPricefilter = (items) ->
       $scope.price_array = _.uniq _.map items, (item) ->
         return item.price / 100 or 0
-      $scope.price_array.sort()
+      $scope.price_array.sort (a, b) ->
+        return a - b
       suitable_max()
       
     suitable_max = () ->
@@ -415,7 +416,7 @@ app.directive 'bbPriceFilter', (PathSvc) ->
         when top_number < 51 then 50
         when top_number < 101 then 100
         when top_number < 1000 then ( Math.ceil( top_number / 100 ) ) * 100
-      min_number = _.first($scope.price_array)
+      min_number = 0
       $scope.price_options = {
         min: min_number
         max: max_number

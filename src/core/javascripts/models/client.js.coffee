@@ -180,3 +180,18 @@ angular.module('BB.Models').factory "ClientModel", ($q, BBModel, BaseModel, Loca
       if pref_arr
         @mobile.replace pref_arr[0], ""
         @mobile_prefix = pref_arr[0]
+
+    getPrePaidBookingsPromise: (params) ->
+      defer = $q.defer()
+      if @$has('pre_paid_bookings')
+        @$get('pre_paid_bookings', params).then (collection) ->
+          collection.$get('pre_paid_bookings').then (prepaids) ->
+            defer.resolve((new BBModel.PrePaidBooking(prepaid) for prepaid in prepaids))
+          , (err) ->
+            defer.reject(err)
+        , (err) ->
+          defer.reject(err)
+      else
+        defer.reject('missing pre_paid_bookings link')
+      defer.promise
+

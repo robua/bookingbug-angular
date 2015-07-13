@@ -1077,7 +1077,7 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
     scope.setLoaded(scope)
     if err.status is 409
       AlertService.danger(ErrorService.getError('ITEM_NO_LONGER_AVAILABLE'))
-    else if err.data.error is "Number of Bookings exceeds the maximum"
+    else if err.data and err.data.error is "Number of Bookings exceeds the maximum"
       AlertService.danger(ErrorService.getError('MAXIMUM_TICKETS'))
     else
       AlertService.danger(ErrorService.getError('GENERIC'))
