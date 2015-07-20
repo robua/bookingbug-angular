@@ -57,7 +57,10 @@ angular.module('BB.Controllers').controller 'SurveyQuestions', ($scope,  $rootSc
           address = new BBModel.Address(booking.address)
           pretty_address = address.addressSingleLine()
           booking.pretty_address = pretty_address
-        booking.$get("survey_questions").then (details) =>
+        params = {}
+        if $rootScope.user
+          params = {admin_only: true}
+        booking.$get("survey_questions", params).then (details) =>
           item_details = new BBModel.ItemDetails(details)
           booking.survey_questions = item_details.survey_questions
           booking.getSurveyAnswersPromise().then (answers) =>
