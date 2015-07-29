@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('BB.Directives').directive 'bbPayment', ($window, $location, $sce) ->
+angular.module('BB.Directives').directive 'bbPayment', ($window, $location, $sce, SettingsService) ->
 
   error = (scope, message) ->
     scope.error(message)
@@ -18,8 +18,9 @@ angular.module('BB.Directives').directive 'bbPayment', ($window, $location, $sce
     payload = JSON.stringify({
       'type': 'load',
       'message': referrer,
-      'custom_partial_url': scope.bb.custom_partial_url
-      'custom_stylesheet' : custom_stylesheet
+      'custom_partial_url': scope.bb.custom_partial_url,
+      'custom_stylesheet' : custom_stylesheet,
+      'scroll_offset'     : SettingsService.getScrollOffset()
     })
     element.find('iframe')[0].contentWindow.postMessage(payload, origin)
 

@@ -23,7 +23,9 @@ angular.module('BB.Models').factory "Admin.BookingModel", ($q, BBModel, BaseMode
       data.time = @start.hour() * 60 + @start.minute()
       data.duration = @duration
       data.id = @id
-      data.questions = (q.getPostData() for q in @questions)
+      data.person_id = @person_id
+      if @questions
+        data.questions = (q.getPostData() for q in @questions)
       data
       
     hasStatus: (status) ->
@@ -56,7 +58,7 @@ angular.module('BB.Models').factory "Admin.BookingModel", ($q, BBModel, BaseMode
 
 
 
-    $update: () ->
-      data = @getPostData()
+    $update: (data) ->
+      data ||= @getPostData()
       @$put('self', {}, data).then (res) =>
         @constructor(res)

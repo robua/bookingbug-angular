@@ -1,0 +1,24 @@
+<div ng-show="loading"><img src='/BB_wait.gif' class="loader"></div>
+<div ng-hide="loading">
+  <div ng-if="server.serving">
+    <h3>Serving {{server.serving.first_name}}</h3>
+    <p>Appointment started at {{server.serving.start | datetime: "h:mma":false}}</p>
+    <p>Appointment due to finish at {{server.serving.end | datetime: "h:mma":false}}</p>
+    <button ng-click="extendAppointment(5)" class="btn btn-default">
+      Extend Appointment
+    </button>
+    <button ng-click="finishServing()" class="btn btn-default">
+      Finish Serving
+    </button>
+  </div>
+  <div ng-if="!server.serving">
+    <h3>Idle</h3>
+    <div class="well well-lg" jqyoui-droppable="{onDrop:'serveCustomer'}"
+      data-drop="true" ng-model="selected_queuers">
+      Drag customer here to serve or click 'Serve next customer'
+    </div>
+    <button ng-click="serveNext()" class="btn btn-default">
+      Serve next customer
+    </button>
+  </div>
+</div>

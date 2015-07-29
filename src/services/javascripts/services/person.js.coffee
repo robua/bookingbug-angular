@@ -7,7 +7,7 @@ angular.module('BBAdminServices').factory 'AdminPersonService',  ($q, $window,
     if company.$has('people')
       company.$get('people').then (collection) ->
         collection.$get('people').then (people) ->
-          models = (new BBModel.Person(p) for p in people)
+          models = (new BBModel.Admin.Person(p) for p in people)
           defer.resolve(models)
         , (err) ->
           defer.reject(err)
@@ -19,13 +19,8 @@ angular.module('BBAdminServices').factory 'AdminPersonService',  ($q, $window,
     defer.promise
 
   block: (company, person, data) ->
-    prms = {id:  person.id, company_id: company.id}
-
     deferred = $q.defer()
-    href = "/api/v1/admin/{company_id}/people/{id}/block"
-    uri = new $window.UriTemplate.parse(href).expand(prms || {})
-
-    halClient.$put(uri, {}, data).then  (slot) =>
+    person.$put('block', {}, data).then  (slot) =>
       slot = new BBModel.Admin.Slot(slot)
       SlotCollections.checkItems(slot)
       deferred.resolve(slot)
@@ -33,6 +28,7 @@ angular.module('BBAdminServices').factory 'AdminPersonService',  ($q, $window,
       deferred.reject(err)
 
     deferred.promise
+
 
   signup: (user, data) ->
     defer = $q.defer()

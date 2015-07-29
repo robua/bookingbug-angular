@@ -15,7 +15,10 @@ angular.module('BB.Directives').directive 'datetimepicker', ()->
 
     ngModel.$render = () ->
       if ngModel.$viewValue
-        scope.$$value$$ = ngModel.$viewValue
+        if moment.isMoment(ngModel.$viewValue)
+          scope.$$value$$ = ngModel.$viewValue.format()
+        else
+          scope.$$value$$ = ngModel.$viewValue
       else
         scope.$$value$$ = scope.schemaValidate.schema.default
 

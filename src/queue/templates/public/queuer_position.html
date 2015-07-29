@@ -1,0 +1,21 @@
+<div id="queue-position-wrapper" style="width: 500px; margin: 0 auto; border: grey 1px solid;">
+	<div id="company-header" style="box-shadow: 0 4px 2px -2px grey; text-align: center; background-color: #cccccc; padding: 10px;">Company header goes here</div>
+	<div id="main-text" style="padding: 20px; background-color: #eeeeee;">
+		Hi {{queuer.name}}, thanks for waiting. Your ticket number is {{queuer.ticketNumber}}.
+		<br /><br />
+		Keep an eye on your position, we will text you when we are almost ready to see you for your {{queuer.serviceName}}:
+		<br /><br />
+		<div id="queuer-rank" style="text-align: center;">
+			<span id="position" style="font-size: 30px;">{{queuer.position}}</span><br /><br />
+			<timer ng-if="queuer.dueTime" language="en" end-time="queuer.dueTime">
+				<span ng-show="years > 0">{{years}} year{{yearsS}}, </span><span ng-show="months > 0">{{months}} month{{monthsS}}, </span><span ng-show="days > 0">{{days}} day{{daysS}}, </span><span ng-show="hours > 0">{{hours}} hour{{hoursS}}, </span> {{minutes}} minute{{minutesS}}
+			</timer>
+		</div>
+	</div>
+	<div id="visit-us" style="box-shadow: inset 0 -4px 2px -2px gray; text-align: center; padding: 20px; background-color: #eeeeee;">
+		<button href="http://www.example.com" style="border-radius: 5px; background-color: #cccccc; border: 0;">Visit our website</button>
+	</div>
+	<div id="leave-queue" ng-click="removeFromQueue(queuer)" style="text-align: center; background-color: #cccccc; padding: 10px;">
+		Leave queue
+	</div>
+</div>

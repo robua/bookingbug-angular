@@ -1,6 +1,8 @@
 'use strict';
 
 angular.module('BB.Services').factory 'QuestionService', ($window, QueryStringService, $bbug) ->
+  
+  # grab url params
   defaults = QueryStringService() or {}
 
   convertDates = (obj) ->
@@ -31,8 +33,9 @@ angular.module('BB.Services').factory 'QuestionService', ($window, QueryStringSe
         if !question.answer and defaults[id]
           question.answer = defaults[id]
     else
-      questions.answer = defaults[questions.id + '']
-    return
+      
+      questions.answer = defaults[questions.id + ''] if defaults[questions.id + '']
+
 
 
   # converts a string to a clean, snake case string. it's used to convert
@@ -83,12 +86,13 @@ angular.module('BB.Services').factory 'QuestionService', ($window, QueryStringSe
       return
 
 
-  # takes an array of questions and an answers object, which then matches answers by 
-  # thier key name to the questions help_text value
-  addAnswersByKey = (questions, answers) ->
+  # takes an array of questions and an answers hash which then matches answers either
+  # by thier key name and the questions help_text value or by question id
+  addAnswersFromDefaults = (questions, answers) ->
     for question in questions
       name = question.help_text
       question.answer = answers[name] if answers[name]
+      question.answer = answers[question.id + ''] if answers[question.id + ''] 
 
 
   storeDefaults = (obj) ->
@@ -128,11 +132,11 @@ angular.module('BB.Services').factory 'QuestionService', ($window, QueryStringSe
     getStoredData   : ->
       return defaults
 
-    storeDefaults            : storeDefaults
-    addAnswersById           : addAnswersById
-    addAnswersByName         : addAnswersByName
-    addDynamicAnswersByName  : addDynamicAnswersByName
-    addAnswersByKey          : addAnswersByKey
-    convertToSnakeCase       : convertToSnakeCase
+    storeDefaults             : storeDefaults
+    addAnswersById            : addAnswersById
+    addAnswersByName          : addAnswersByName
+    addDynamicAnswersByName   : addDynamicAnswersByName
+    addAnswersFromDefaults    : addAnswersFromDefaults
+    convertToSnakeCase        : convertToSnakeCase
     checkConditionalQuestions : checkConditionalQuestions
   }

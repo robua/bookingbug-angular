@@ -42,8 +42,8 @@ angular.module('BB.Models').service "BBModel", ($q, $injector) ->
   funcs['Member'] = mfuncs
 
   # admin models
-  admin_models = ['Booking', 'Slot', 'User', 'Administrator', 'Schedule',
-    'Resource', 'Person', 'Service', 'Login', 'EventChain', 'EventGroup', 'Event']
+  admin_models = ['Booking', 'Slot', 'User', 'Administrator', 'Schedule', 'Address',
+    'Resource', 'Person', 'Service', 'Login', 'EventChain', 'EventGroup', 'Event', 'Queuer', 'ClientQueue', 'Clinic']
   afuncs = {}
   for model in admin_models
     do (model) =>  
@@ -68,7 +68,9 @@ angular.module('BB.Models').service "BaseModel", ($q, $injector, $rootScope, $ti
 
     constructor: (data) ->
       @deleted = false
-    
+      @updateModel(data)
+
+    updateModel: (data) ->
       if data
         @_data = data
       if data

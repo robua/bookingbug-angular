@@ -1,5 +1,6 @@
 'use strict';
 
-angular.module('BB.Models').factory "Admin.ServiceModel", ($q, BBModel, BaseModel) ->
+angular.module('BB.Models').factory "Admin.ServiceModel", ($q, BBModel, ServiceModel) ->
 
-  class Service extends BBModel.Service
+
+  class Admin_Service extends ServiceModel

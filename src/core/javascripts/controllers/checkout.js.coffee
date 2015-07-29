@@ -19,15 +19,13 @@ angular.module('BB.Controllers').controller 'Checkout', ($scope, $rootScope, $at
 
   $rootScope.connection_started.then =>
     $scope.bb.basket.setClient($scope.client)
-    loading_total_def = $q.defer()
-    
     $scope.loadingTotal = BasketService.checkout($scope.bb.company, $scope.bb.basket, {bb: $scope.bb})
     $scope.loadingTotal.then (total) =>
       $scope.total = total
    
       # if no payment is required, route to the next step unless instructed otherwise
       if !total.$has('new_payment')
-        $scope.$emit("processDone")
+        $scope.$emit("checkout:success", total)
         $scope.bb.total = $scope.total
         $scope.bb.payment_status = 'complete'
         if !$scope.options.disable_confirmation
@@ -40,8 +38,10 @@ angular.module('BB.Controllers').controller 'Checkout', ($scope, $rootScope, $at
     , (err) ->
       $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
       $scope.checkoutFailed = true
+      $scope.$emit("checkout:fail", err)
 
   , (err) -> $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
+
 
   # Deprecated - use window.print or $scope.printElement
   # Print booking details using print_purchase.html template
@@ -52,6 +52,7 @@ angular.module('BB.Controllers').controller 'Checkout', ($scope, $rootScope, $at
 
 
   # Print by creating popup containing the contents of the specified element
+  # TODO move print methods to a service
   $scope.printElement = (id, stylesheet) ->
     data = $bbug('#'+ id).html()
     # window.open(URL,name,specs,replace)

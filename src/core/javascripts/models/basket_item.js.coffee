@@ -164,7 +164,7 @@ angular.module('BB.Models').factory "BasketItemModel",
       return @defaults.service
       # @defaults = defaults
 
-    # if it turned out that a requested date, or time was unavailable - we'll have to clear it
+    # if it turned out that a requested date or time was unavailablem, we'll have to clear it
     requestedTimeUnavailable: ->
       delete @requested_time
       delete @requested_date

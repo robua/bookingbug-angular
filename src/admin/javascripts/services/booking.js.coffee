@@ -16,7 +16,7 @@ angular.module('BBAdmin.Services').factory 'AdminBookingService', ($q, $window,
     if existing
       deferred.resolve(existing)
     else if prms.company
-      prms.company.$get('bookings').then (collection) ->
+      prms.company.$get('bookings', prms).then (collection) ->
         collection.$get('bookings').then (bookings) ->
           models = (new BBModel.Admin.Booking(b) for b in bookings)
           deferred.resolve(models)
@@ -45,6 +45,8 @@ angular.module('BBAdmin.Services').factory 'AdminBookingService', ($q, $window,
 
   getBooking: (prms) ->
     deferred = $q.defer()
+    if prms.company && !prms.company_id
+      prms.company_id = prms.company.id
     href = "/api/v1/admin/{company_id}/bookings/{id}{?embed}"
     uri = new UriTemplate(href).fillFromObject(prms || {})
     halClient.$get(uri, { no_cache: true }).then (item) ->

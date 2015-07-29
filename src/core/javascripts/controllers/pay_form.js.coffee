@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('BB.Directives').directive 'bbPayForm', ($window, $timeout, $sce, $http, $compile, $document, $location) ->
+angular.module('BB.Directives').directive 'bbPayForm', ($window, $timeout, $sce, $http, $compile, $document, $location, SettingsService) ->
 
   applyCustomPartials = (custom_partial_url, scope, element) ->
     if custom_partial_url?
@@ -29,6 +29,11 @@ angular.module('BB.Directives').directive 'bbPayForm', ($window, $timeout, $sce,
       link.href = href
       link.media = 'all'
       head.appendChild link
+      
+      # listen to load of css and trigger resize
+      link.onload = ->
+        parentIFrame.size() if 'parentIFrame' of $window
+      
 
   linker = (scope, element, attributes) ->
 
@@ -44,6 +49,7 @@ angular.module('BB.Directives').directive 'bbPayForm', ($window, $timeout, $sce,
               scope.referrer = data.message
               applyCustomPartials(event.data.custom_partial_url, scope, element) if data.custom_partial_url
               applyCustomStylesheet(data.custom_stylesheet) if data.custom_stylesheet
+              SettingsService.setScrollOffset(data.scroll_offset) if data.scroll_offset
     , false
 
   return {

@@ -64,6 +64,10 @@ angular.module('BBAdminMockE2E').run ($httpBackend) ->
          href: 'http://www.bookingbug.com/api/v1/admin/123/schedules'
        new_schedule:
          href: 'http://www.bookingbug.com/api/v1/admin/123/schedules/new'
+       queuers:
+         href: 'http://www.bookingbug.com/api/v1/admin/123/queuers'
+       new_queuer:
+         href: 'http://www.bookingbug.com/api/v1/admin/123/queuers/new'
        resources:
          href: 'http://www.bookingbug.com/api/v1/admin/123/resources'
        new_resource:
@@ -569,7 +573,7 @@ angular.module('BBAdminMockE2E').run ($httpBackend) ->
                href: "http://www.bookingbug.com/api/v1/admin/123/event_chains/1/edit"
            _embedded: {}
          }
-       ]
+       ] 
      _links:
        self:
          href: "http://www.bookingbug.com/api/v1/admin/123/event_chains"
@@ -668,4 +672,108 @@ angular.module('BBAdminMockE2E').run ($httpBackend) ->
      [200, schedule_schema, {}]
    $httpBackend.whenGET('http://www.bookingbug.com/api/v1/admin/123/schedules/edit').respond () ->
      [200, schedule_schema, {}]
+
+   queuers =
+     total_entries: 3
+     _embedded:
+       queuers: [
+         {
+           service_name: "Pro wrestling consultation"
+           member_name: "Joe Danger" 
+           ticket_number: 1
+           first_name: "Joe"
+           position: 1
+           status: "queueing"
+           due_time: moment('2015-04-30 10:00')
+           _links:
+             self:
+               href: "http://www.bookingbug.com/api/v1/queuers/1"
+             service:
+               href: "http://www.bookingbug.com/api/v1/123/services/30063"
+               templated: true
+             member:
+               href: "http://www.bookingbug.com/api/v1/123/members/123456{?embed}"
+               templated: true
+             space:
+               href: "http://www.bookingbug.com/api/v1/123/spaces/300"
+               templated: true
+             company:
+               href: "http://www.bookingbug.com/api/v1/companies/123"
+               templated: true
+               website: "http://www.google.com"
+           }
+           {
+             service_name: "Extreme yoga consultation"
+             member_name: "Jane Youwary" 
+             ticket_number: 240
+             first_name: "Jane"
+             position: 2
+             status: "queueing"
+             due_time: moment('2015-04-30 10:30')
+             _links:
+               self:
+                 href: "http://www.bookingbug.com/api/v1/queuers/240"
+               service:
+                 href: "http://www.bookingbug.com/api/v1/123/services/30063"
+                 templated: true
+               member:
+                 href: "http://www.bookingbug.com/api/v1/123/members/223456{?embed}"
+                 templated: true
+               space:
+                 href: "http://www.bookingbug.com/api/v1/123/spaces/301"
+                 templated: true
+               company:
+                 href: "http://www.bookingbug.com/api/v1/companies/123"
+                 templated: true
+           }
+           {
+             service_name: "Chess gymnastics consultation"
+             member_name: "Shanikwa Jones" 
+             ticket_number: 176
+             first_name: "Shanikwa"
+             position: 3
+             status: "queueing"
+             due_time: moment('2015-04-30 11:00')
+             _links:
+               self:
+                 href: "http://www.bookingbug.com/api/v1/queuers/176"
+               service:
+                 href: "http://www.bookingbug.com/api/v1/123/services/30063"
+                 templated: true
+               member:
+                 href: "http://www.bookingbug.com/api/v1/123/members/323456{?embed}"
+                 templated: true
+               space:
+                 href: "http://www.bookingbug.com/api/v1/123/spaces/302"
+                 templated: true
+               company:
+                 href: "http://www.bookingbug.com/api/v1/companies/123"
+                 templated: true
+                 website: "http://www.google.com"
+           }
+         ]
+   $httpBackend.whenGET('http://www.bookingbug.com/api/v1/admin/queuers').respond(queuers)
+   $httpBackend.whenGET('http://www.bookingbug.com/api/v1/queuers/1').respond(queuers._embedded.queuers[0])
+
+   queuer_schema =
+     form: [
+       {key:'first_name', type:'text', feedback:false},
+       {key:'last_name', type:'text', feedback:false},
+       {type:'submit', title:'Save'}
+     ]
+     schema:
+       properties:
+         first_name:
+           title: 'First Name *'
+           type: 'string'
+         last_name:
+           title: 'Last Name *'
+           type: 'string'
+       required: ['name']
+       title: 'Customer'
+       type: 'object'
+   $httpBackend.whenGET('http://www.bookingbug.com/api/v1/admin/123/queuers/new').respond () ->
+     [200, queuer_schema, {}]
+   $httpBackend.whenGET('http://www.bookingbug.com/api/v1/admin/123/queuers/edit').respond () ->
+     [200, queuer_schema, {}]
 

@@ -44,7 +44,7 @@ app.directive 'bbWaitFor', ($compile) ->
     return
 
 
-app.directive 'bbScrollTo', ($rootScope, AppConfig, BreadcrumbService, $bbug) ->
+app.directive 'bbScrollTo', ($rootScope, AppConfig, BreadcrumbService, $bbug, $window, SettingsService) ->
   transclude: false,
   restrict: 'A',
   link: (scope, element, attrs) ->
@@ -68,22 +68,17 @@ app.directive 'bbScrollTo', ($rootScope, AppConfig, BreadcrumbService, $bbug) ->
         scroll_to_element = $bbug(element)
 
       current_step = BreadcrumbService.getCurrentStep()
+      
       # if the event is page:loaded or the element is not in view, scroll to it
       if (scroll_to_element)
         if (evnt == "page:loaded" and current_step > 1) or always_scroll or (evnt == "widget:restart") or
           (not scroll_to_element.is(':visible') and scroll_to_element.offset().top != 0)
-            if inIframe()
-              parent.postMessage('scrollToOffset:' + scroll_to_element.offset().top, '*') # '*' for any domain
+            if 'parentIFrame' of $window
+              parentIFrame.scrollToOffset(0, scroll_to_element.offset().top - SettingsService.getScrollOffset())
             else
               $bbug("html, body").animate
                 scrollTop: scroll_to_element.offset().top
                 , bb_transition_time
-
-    inIframe = () ->
-      try
-        return window.self isnt window.top;
-      catch error
-        return true;
 
 
 # bbSlotGrouper
@@ -103,7 +98,7 @@ app.directive  'bbSlotGrouper', () ->
 # bbForm
 # Adds behaviour to select first invalid input 
 # TODO more all form behaviour to this directive, initilising options as parmas
-app.directive 'bbForm', ($bbug) ->
+app.directive 'bbForm', ($bbug, $window, SettingsService) ->
   restrict: 'A'
   require: '^form'
   link: (scope, elem, attrs, ctrls) ->
@@ -113,8 +108,8 @@ app.directive 'bbForm', ($bbug) ->
       invalid_form_group = elem.find('.has-error:first')
       
       if invalid_form_group && invalid_form_group.length > 0
-        if inIframe()
-          parent.postMessage('scrollToOffset:' + invalid_form_group.offset().top, '*')
+        if 'parentIFrame' of $window
+          parentIFrame.scrollToOffset(0, invalid_form_group.offset().top - SettingsService.getScrollOffset())
         else 
           $bbug("html, body").animate
             scrollTop: invalid_form_group.offset().top
@@ -124,12 +119,6 @@ app.directive 'bbForm', ($bbug) ->
         invalid_input.focus()
         return false
       return true
-
-    inIframe = () ->
-      try
-        return window.self isnt window.top;
-      catch error
-        return true;
 
 
 # bbAddressMap
@@ -168,3 +157,27 @@ app.directive 'bbAddressMap', ($document) ->
           longitude: map_item.long
         }
       }
+
+
+angular.module('BB.Directives').directive 'bbMergeDuplicateQuestions', () ->
+  restrict: 'A'
+  scope: true
+  controller: ($scope, $rootScope) ->
+
+    debugger
+
+    questions = {}
+
+    for item in $scope.bb.stacked_items
+      if item.item_details and item.item_details.questions
+        item.item_details.hide_questions = false
+        for question in item.item_details.questions
+          if questions[question.id]
+            # this is a duplicate, setup clone and hide it
+            item.setCloneAnswers(questions[question.id].item)
+            item.item_details.hide_questions = true
+            break
+          else
+            questions[question.id] = {question: question, item: item}
+
+    $scope.has_questions = _.pluck(questions, 'question').length > 0

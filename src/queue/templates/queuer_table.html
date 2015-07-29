@@ -1,0 +1,13 @@
+<div ng-show="loading"><img src='/BB_wait.gif' class="loader"></div>
+<div ng-hide="loading">
+  <button class="btn btn-default" ng-click="newQueuerModal()">New Queuer</button>
+  <table tr-ng-grid="" items="queuers" fields="fields" ng-if="queuers">
+    <tbody>
+      <tr>
+        <td>
+          <button class="btn btn-default btn-sm" ng-click="edit(gridItem)">Edit</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

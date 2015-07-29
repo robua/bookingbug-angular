@@ -192,6 +192,7 @@ angular.module('BB.Models').factory "ClientModel", ($q, BBModel, BaseModel, Loca
         , (err) ->
           defer.reject(err)
       else
-        defer.reject('missing pre_paid_bookings link')
+        defer.resolve([])
+#        defer.reject('missing pre_paid_bookings link')
       defer.promise
 

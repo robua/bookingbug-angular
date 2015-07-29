@@ -70,7 +70,7 @@ angular.module('BBAdmin.Services').factory "AdminLoginService", ($q, halClient,
     defer.resolve() if $rootScope.user
     user = $sessionStorage.getItem("user")
     if user
-      $rootScope.user = halClient.createResource(user)
+      $rootScope.user = new BBModel.Admin.User(halClient.createResource(user))
       defer.resolve()
     else
       auth_token = $cookies['Auth-Token']

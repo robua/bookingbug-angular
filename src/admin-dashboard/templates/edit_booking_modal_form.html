@@ -1,0 +1,17 @@
+<div class="modal-header">
+  <h3 class="modal-title">{{title}}</h3>
+</div>
+<form name="modal_form" ng-submit="submit(modal_form)">
+  <div ng-show="loading" class="loader"></div>
+  <div class="modal-body" sf-schema="schema" sf-form="form"
+    sf-model="form_model" sf-options="{formDefaults: {feedback: false}}"
+    ng-hide="loading">
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-danger pull-left"
+      ng-click="cancelBooking($event)">Cancel Booking</button>
+    <input type="submit" class="btn btn-primary" ng-disabled="loading"
+    value="Save Booking">
+    <button class="btn btn-default" ng-click="cancel($event)">Dismiss</button>
+  </div>
+</form>

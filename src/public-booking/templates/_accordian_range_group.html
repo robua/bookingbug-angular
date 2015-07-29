@@ -1,0 +1,21 @@
+<div accordion-group is-open="is_open" ng-disabled="!has_availability && !is_selected" ng-class="{'expanded': is_open, 'selected': is_selected}">
+
+  <div accordion-heading>
+    <div class="accordian-header">
+      <span class="period-label">
+        <span ng-show="has_availability && !is_open" class="period-label-icon">+</span>
+        <span ng-show="has_availability && is_open" class="period-label-icon">-</span>
+        Morning
+      </span>
+      <span class="period-detail" ng-hide="is_selected || (is_open && has_availability)">{{accordian_slots.length}} available</span>
+      <span class="period-detail selected-time" ng-show="is_selected && !is_open">{{selected_slot.time_12}}</span>
+    </div>
+  </div>
+
+  <ul class="time-slots" ng-if="has_availability">
+    <li class="time-slot" ng-class="{'selected': slot.selected, 'disabled': slot.disabled}" ng-disabled="slot.disabled" ng-click="highlightSlot(day, slot)" ng-repeat="slot in accordian_slots">
+      <span>{{slot.time_12}}</span>
+    </li>
+  </ul>
+
+</div>  

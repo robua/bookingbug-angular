@@ -28,12 +28,13 @@ angular.module('BB.Directives').directive 'bbMonthPicker', () ->
 
       date = cur_month.startOf('week')
       last_date = _.last dates
-      diff = last_date.date.diff(date, 'months') + 1
+      diff = last_date.date.diff(date, 'months')
+      diff = if diff > 0 then diff else 1
       # use picker settings or diff between first and last date to determine number of months to display
-      num_months = if $scope.picker_settings and $scope.picker_settings.months then $scope.picker_settings.months else diff
+      $scope.num_months = if $scope.picker_settings and $scope.picker_settings.months then $scope.picker_settings.months else diff
 
       months = []
-      for m in [1..diff]
+      for m in [1..$scope.num_months]
         date = cur_month.clone().startOf('week')
         month = {weeks: []}
         for w in [1..6]
@@ -73,7 +74,7 @@ angular.module('BB.Directives').directive 'bbMonthPicker', () ->
         for week in month.weeks
           for day in week.days
             if (day.data && day.data.spaces > 0) and (day.date.isSame(month.start_date, 'day') or day.date.isAfter(month.start_date, 'day')) 
-              $scope.showDate(day.date) 
+              $scope.showDay(day) 
               return
 
 

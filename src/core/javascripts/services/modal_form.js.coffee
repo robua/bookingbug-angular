@@ -1,4 +1,4 @@
-angular.module('BB.Services').factory 'ModalForm', ($modal, $log) ->
+angular.module('BB.Services').factory 'ModalForm', ($modal, $log, Dialog) ->
 
   newForm = ($scope, $modalInstance, company, title, new_rel, post_rel,
       success, fail) ->
@@ -49,20 +49,42 @@ angular.module('BB.Services').factory 'ModalForm', ($modal, $log) ->
     $scope.submit = (form) ->
       $scope.$broadcast('schemaFormValidate')
       $scope.loading = true
-      $scope.model.$put('self', {}, $scope.form_model).then (model) ->
-        $scope.loading = false
-        $modalInstance.close(model)
-        success(model) if success
-      , (err) ->
-        $scope.loading = false
-        $modalInstance.close(err)
-        $log.error 'Failed to create'
-        fail() if fail
+      if $scope.model.$update
+        $scope.model.$update($scope.form_model).then () ->
+          $scope.loading = false
+          $modalInstance.close($scope.model)
+          success($scope.model) if success
+        , (err) ->
+          $scope.loading = false
+          $modalInstance.close(err)
+          $log.error 'Failed to create'
+          fail() if fail
+      else
+        $scope.model.$put('self', {}, $scope.form_model).then (model) ->
+          $scope.loading = false
+          $modalInstance.close(model)
+          success(model) if success
+        , (err) ->
+          $scope.loading = false
+          $modalInstance.close(err)
+          $log.error 'Failed to create'
+          fail() if fail
 
     $scope.cancel = (event) ->
       event.preventDefault()
       event.stopPropagation()
       $modalInstance.dismiss('cancel')
+
+    $scope.cancelBooking = (event) ->
+      event.preventDefault()
+      event.stopPropagation()
+      $modalInstance.close()
+      Dialog.confirm
+        model: model
+        body: "Are you sure you want to cancel this booking?"
+        success: (model) ->
+          model.$del('self').then (response) ->
+            success(response) if success
 
   new: (config) ->
     templateUrl = config.templateUrl if config.templateUrl

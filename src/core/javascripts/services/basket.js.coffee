@@ -158,6 +158,7 @@ angular.module('BB.Services').factory "BasketService", ($q, $rootScope, BBModel,
       deferred.reject("rel checkout not found for basket")
     else
       data = basket.getPostData()
+      data.qudini_booking_id = params.bb.qudini_booking_id if params.bb.qudini_booking_id
       data.affiliate_id = $rootScope.affiliate_id
       MutexService.getLock().then (mutex) ->
         basket.$post('checkout', params, data).then (total) ->

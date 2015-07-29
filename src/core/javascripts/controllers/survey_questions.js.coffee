@@ -1,7 +1,7 @@
 angular.module('BB.Directives').directive 'bbSurveyQuestions', () ->
   restrict: 'AE'
   replace: true
-  scope : true
+  scope: true
   controller : 'SurveyQuestions'
 
 angular.module('BB.Controllers').controller 'SurveyQuestions', ($scope,  $rootScope,
@@ -49,6 +49,7 @@ angular.module('BB.Controllers').controller 'SurveyQuestions', ($scope,  $rootSc
         $scope.setClient(new BBModel.Client(client))
 
     $scope.purchase.getBookingsPromise().then (bookings) =>
+      params = {}
       $scope.bookings = bookings
       for booking in $scope.bookings
         if booking.datetime
@@ -57,7 +58,9 @@ angular.module('BB.Controllers').controller 'SurveyQuestions', ($scope,  $rootSc
           address = new BBModel.Address(booking.address)
           pretty_address = address.addressSingleLine()
           booking.pretty_address = pretty_address
-        booking.$get("survey_questions").then (details) =>
+        if $rootScope.user
+          params.admin_only = true
+        booking.$get("survey_questions", params).then (details) =>
           item_details = new BBModel.ItemDetails(details)
           booking.survey_questions = item_details.survey_questions
           booking.getSurveyAnswersPromise().then (answers) =>
@@ -180,5 +183,8 @@ angular.module('BB.Controllers').controller 'SurveyQuestions', ($scope,  $rootSc
       if id
         $scope.loadSurveyFromPurchaseID(id)
       else
-        return
+        if $scope.bb.total
+          $scope.loadSurveyFromPurchaseID($scope.bb.total.long_id)
+        else
+          return
 

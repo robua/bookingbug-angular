@@ -1,0 +1,75 @@
+<div bb-survey-questions>
+ 
+  <div bb-question-setup>
+    <div bb-question-id="text_field">
+      <div ng-form name="question_form">
+        <input type="text" ng-model="question.answer" name="{{'q'+question.id}}" id="{{question.id}}" ng-maxlength="250" ng-required="question.currentlyShown && (false || (question.required && !bb.isAdmin))" class="form-question form-control">
+      </div>
+    </div>
+    <div bb-question-id="text_area">
+      <div ng-form name="question_form">
+        <textarea ng-model="question.answer" name="{{'q'+question.id}}" id="{{question.id}}" ng-maxlength="1000" ng-required="question.currentlyShown && (false || (question.required && !bb.isAdmin))" class="form-question form-control"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="bb-frame" ng-if="completed" style="margin:10% 3% 10%;">
+    <h2 style="text-align:center; margin:10% 3% 10%;"> Thank you for filling out the survey!</h2>
+  </div>
+
+  <div ng-if="purchase" ng-show="bookings[0].survey_questions">
+    <div ng-hide="completed">
+
+      <div class="survey-intro">
+      </div>
+
+
+
+      <form name="survey_form" class="form-horizontal" role="form" novalidate bb-form>
+
+        <!--         <h2 class="booking-form-header">Booking Details</h2> -->
+
+        <ul class="summary-list">
+          <li class="row">
+            <div class="col-xs-3 col-sm-2 summary-label">Session:</div>
+            <div class="col-xs-9 col-sm-10 summary-value"><span class="bold-small">{{bookings[0].service_name}}</span>
+            </div>
+          </li>
+          <li class="row">
+            <div class="col-xs-3 col-sm-2 summary-label">Date:</div>
+            <div class="col-xs-9 col-sm-10 summary-value">
+              <span class="bold-small">{{bookings[0].pretty_date}}</span>
+            </div>
+          </li>
+        </ul>
+
+        <div ng-show="bookings[0].survey_questions && bookings[0].survey_questions.length > 0">
+          <h2 class="booking-form-header">Survey Questions</h2>
+
+          <div class="form-group" ng-repeat="question in bookings[0].survey_questions" bb-question-line ng-class="{'check': question.detail_type == 'check', 'has-error': survey_form['q' + question.id].$invalid && (survey_form['q' + question.id].$dirty || survey_form.submitted)}">
+            <label ng-if="question.detail_type != 'check'" for="{{question.id}}" class="control-label col-sm-4">{{question.name}}<span ng-if="question.required" class="text-warning">*</span>:</label>
+            <div ng-if="question.detail_type == 'check'" class="col-sm-4 hidden-xs">&nbsp;</div>
+            <div class="col-sm-8">
+              <input bb-question="question" />
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row step-navigation">
+          <div class="col-sm-3 col-sm-offset-9">
+            <button type="submit" class="btn btn-primary" ng-click="submitSurvey(survey_form)" bb-debounce>Submit Answers</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+    <h2 ng-if="bookings[0].survey_questions.length < 1">No survey questions for this session.</h2>
+
+  </div>
+  <div bb-loading class="bb-loader">
+  <div id="loading_icon">
+    <div id="wait_graphic">&nbsp;</div>
+  </div>
+</div>
+</div>

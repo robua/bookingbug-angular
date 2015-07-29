@@ -21,6 +21,10 @@ angular.module('BB.Controllers').controller 'Total', ($scope,  $rootScope, $q, $
         $scope.total = total
         $scope.setLoaded $scope
 
+        # emit checkout:success event if the amount paid matches the total price
+        $scope.$emit("checkout:success", total) if total.paid == total.total_price
+
+
   , (err) ->
     $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
 

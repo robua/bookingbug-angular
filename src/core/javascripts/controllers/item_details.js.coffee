@@ -41,7 +41,7 @@ angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $roo
   confirming = false
 
 
-  $rootScope.connection_started.then ->
+  $rootScope.connection_started.then () ->
     $scope.product = $scope.bb.current_item.product
     $scope.loadItem($scope.bb.current_item) if !confirming
   , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
@@ -50,11 +50,12 @@ angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $roo
   $scope.loadItem = (item) ->
     confirming = true
     $scope.item = item
+    $scope.item.private_note = $scope.bb.private_note if $scope.bb.private_note
     if $scope.item.item_details
       setItemDetails $scope.item.item_details
       # this will add any values in the querystring
       QuestionService.addDynamicAnswersByName($scope.item_details.questions)
-      QuestionService.addAnswersByKey($scope.item_details.questions, $scope.bb.item_defaults.answers) if $scope.bb.item_defaults.answers
+      QuestionService.addAnswersFromDefaults($scope.item_details.questions, $scope.bb.item_defaults.answers) if $scope.bb.item_defaults.answers
       $scope.recalc_price()
       $scope.setLoaded $scope
     else
@@ -62,7 +63,8 @@ angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $roo
       ItemDetailsService.query(params).then (details) ->
         setItemDetails details
         $scope.item.item_details = $scope.item_details
-        QuestionService.addAnswersByKey($scope.item_details.questions, $scope.bb.item_defaults.answers) if $scope.bb.item_defaults.answers
+        QuestionService.addDynamicAnswersByName($scope.item_details.questions)
+        QuestionService.addAnswersFromDefaults($scope.item_details.questions, $scope.bb.item_defaults.answers) if $scope.bb.item_defaults.answers
         $scope.recalc_price()
         $scope.setLoaded $scope
       , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')

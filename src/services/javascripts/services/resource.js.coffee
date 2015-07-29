@@ -1,12 +1,12 @@
-angular.module('BBAdminServices').factory 'AdminResourceService',
-($q, $window, halClient, SlotCollections, BBModel) ->
+angular.module('BBAdmin.Services').factory 'AdminResourceService',
+($q, UriTemplate, halClient, SlotCollections, BBModel) ->
 
   query: (params) ->
     company = params.company
     defer = $q.defer()
     company.$get('resources').then (collection) ->
       collection.$get('resources').then (resources) ->
-        models = (new BBModel.Resource(r) for r in resources)
+        models = (new BBModel.Admin.Resource(r) for r in resources)
         defer.resolve(models)
       , (err) ->
         defer.reject(err)
@@ -19,7 +19,7 @@ angular.module('BBAdminServices').factory 'AdminResourceService',
 
     deferred = $q.defer()
     href = "/api/v1/admin/{company_id}/resource/{id}/block"
-    uri = new $window.UriTemplate.parse(href).expand(prms || {})
+    uri = new UriTemplate(href).fillFromObject(prms || {})
 
     halClient.$put(uri, {}, data).then  (slot) =>
       slot = new BBModel.Admin.Slot(slot)
