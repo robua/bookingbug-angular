@@ -29,7 +29,7 @@ angular.module('BB.Directives').directive 'bbMonthPicker', () ->
       date = cur_month.startOf('week')
       last_date = _.last dates
       diff = last_date.date.diff(date, 'months')
-      diff = if diff > 0 then diff else 1
+      diff = if diff > 0 then diff + 1 else 1
       # use picker settings or diff between first and last date to determine number of months to display
       $scope.num_months = if $scope.picker_settings and $scope.picker_settings.months then $scope.picker_settings.months else diff
 

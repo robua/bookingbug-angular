@@ -58,6 +58,7 @@ angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $roo
       QuestionService.addAnswersFromDefaults($scope.item_details.questions, $scope.bb.item_defaults.answers) if $scope.bb.item_defaults.answers
       $scope.recalc_price()
       $scope.setLoaded $scope
+      $scope.$emit "item_details:loaded"
     else
       params = {company: $scope.bb.company, cItem: $scope.item}
       ItemDetailsService.query(params).then (details) ->
@@ -67,6 +68,7 @@ angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $roo
         QuestionService.addAnswersFromDefaults($scope.item_details.questions, $scope.bb.item_defaults.answers) if $scope.bb.item_defaults.answers
         $scope.recalc_price()
         $scope.setLoaded $scope
+        $scope.$emit "item_details:loaded"
       , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
     
 

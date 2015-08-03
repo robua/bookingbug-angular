@@ -242,12 +242,13 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
     if $window.bb_setup || prms.client
       # if setup is defined - blank the member -a s we're probably setting it - unless specifically defined as false
       prms.clear_member ||= true
-    $scope.bb.client_defaults = prms.client if prms.client
+    $scope.bb.client_defaults = prms.client or {}
     
     if $scope.bb.client_defaults && $scope.bb.client_defaults.name
-      result = $scope.bb.client_defaults.name.match(/^(\S+)\s(.*)/).slice(1)
-      $scope.bb.client_defaults.first_name =  result[0]
-      $scope.bb.client_defaults.last_name =  result[1]
+      match = $scope.bb.client_defaults.name.match(/^(\S+)(?:\s(\S+))?/)
+      if match
+        $scope.bb.client_defaults.first_name =  match[1]
+        $scope.bb.client_defaults.last_name = match[2] if match[2]?
 
     if prms.clear_member
       $scope.bb.clear_member = prms.clear_member

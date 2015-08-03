@@ -104,7 +104,7 @@ angular.module('BB.Controllers').controller 'ServiceList',($scope, $rootScope, $
     if ($scope.booking_item.person && !$scope.booking_item.anyPerson()) ||
        ($scope.booking_item.resource && !$scope.booking_item.anyResource())
 
-      # if we've lready picked a service or a resource - get a more limited service selection
+      # if we've already picked a service or a resource - get a more limited service selection
       ItemService.query({company: $scope.bb.company, cItem: $scope.booking_item, wait: ppromise, item: 'service'}).then (items) =>
         if $scope.booking_item.service_ref
           items = items.filter (x) -> x.api_ref == $scope.booking_item.service_ref

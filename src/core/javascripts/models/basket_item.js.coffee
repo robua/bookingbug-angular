@@ -500,6 +500,8 @@ angular.module('BB.Models').factory "BasketItemModel",
           for m_question in @item_details.questions
             if m_question.id == o_question.id
               m_question.answer = o_question.answer
+              # mark questionds as asked if we're cloning
+              @setAskedQuestions()
 
       data = {}
       if @date

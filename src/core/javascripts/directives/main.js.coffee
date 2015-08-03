@@ -164,20 +164,20 @@ angular.module('BB.Directives').directive 'bbMergeDuplicateQuestions', () ->
   scope: true
   controller: ($scope, $rootScope) ->
 
-    debugger
+    $scope.questions = {}
 
-    questions = {}
+    $rootScope.$on "item_details:loaded", () ->
 
-    for item in $scope.bb.stacked_items
-      if item.item_details and item.item_details.questions
-        item.item_details.hide_questions = false
-        for question in item.item_details.questions
-          if questions[question.id]
-            # this is a duplicate, setup clone and hide it
-            item.setCloneAnswers(questions[question.id].item)
-            item.item_details.hide_questions = true
-            break
-          else
-            questions[question.id] = {question: question, item: item}
+      for item in $scope.bb.stacked_items
+        if item.item_details and item.item_details.questions
+          item.item_details.hide_questions = false
+          for question in item.item_details.questions
+            if $scope.questions[question.id]
+              # this is a duplicate, setup clone and hide it
+              item.setCloneAnswers($scope.questions[question.id].item)
+              item.item_details.hide_questions = true
+              break
+            else
+              $scope.questions[question.id] = {question: question, item: item}
 
-    $scope.has_questions = _.pluck(questions, 'question').length > 0
+      $scope.has_questions = _.pluck($scope.questions, 'question').length > 0

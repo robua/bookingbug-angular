@@ -132,13 +132,7 @@ angular.module('BBAdminDashboard').directive 'bbResourceCalendar', (
           $scope.pusher_channel = $scope.pusher.subscribe(channelName)
           pusherEvent = (res) =>
             if res.id?
-              setTimeout (->
-                prms =
-                  company: $scope.company
-                  id: res.id
-                AdminBookingService.getBooking(prms).then (booking) ->
-                  return
-              ), 2000
+              uiCalendarConfig.calendars.resourceCalendar.fullCalendar('refetchEvents')
           $scope.pusher_channel.bind 'booking', pusherEvent
           $scope.pusher_channel.bind 'cancellation', pusherEvent
           $scope.pusher_channel.bind 'updating', pusherEvent
