@@ -244,9 +244,7 @@ angular.module('BB.Controllers').controller 'MultiServiceSelect',
         templateUrl: $scope.getPartial('_select_duration_modal')
         scope: $scope
         controller: ($scope, $modalInstance, service) ->
-          range = _.range(service.max_bookings)
-          #$scope.durations = service.durations
-          $scope.durations = _.map(range, (x) -> service.listed_durations * (x + 1))
+          $scope.durations = service.durations
           $scope.duration = $scope.durations[0]
           $scope.service = service
 
