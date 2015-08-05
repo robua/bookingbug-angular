@@ -4,7 +4,7 @@
     <table>
       <thead>
         <tr>
-          <th colspan="7" class="months">{{month.start_date.format("MMMM")}}</th>
+          <th colspan="7" class="months">{{month.start_date | datetime: "MMMM":false }}</th>
         </tr>
         <tr>
           <th ng-repeat="day in month.weeks[0].days" class="days">{{day.date | datetime: "ddd" : false}}</th>
