@@ -127,7 +127,7 @@
               <ul class="event-summary-list">
                 <li class="date-time">
                   <span class="bb-icon icon-calendar"></span>
-                  <span>{{item.date.format('dddd Do MMMM YYYY')}} at <span class="event-time">{{item.date.format('h[:]mma')}}</span></span>
+                  <span>{{item.date | datetime: "dddd Do MMMM YYYY [at] h[:]mma":false }}</span>
                 </li>
                 <li class="location" ng-show="item.chain.address">
                   <span class="bb-icon icon-location"></span>
