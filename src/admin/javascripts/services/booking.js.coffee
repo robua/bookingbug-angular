@@ -7,6 +7,10 @@ angular.module('BBAdmin.Services').factory 'AdminBookingService', ($q, $window,
     if prms.date
       prms.start_date = prms.date
       prms.end_date = prms.date
+    if prms.company
+      company = prms.company
+      delete prms.company
+      prms.company_id = company.id
       
     prms.per_page = 1024 if !prms.per_page?
     prms.include_cancelled = false if !prms.include_cancelled?
@@ -15,11 +19,13 @@ angular.module('BBAdmin.Services').factory 'AdminBookingService', ($q, $window,
     existing = BookingCollections.find(prms)
     if existing
       deferred.resolve(existing)
-    else if prms.company
-      prms.company.$get('bookings', prms).then (collection) ->
-        collection.$get('bookings').then (bookings) ->
+    else if company
+      company.$get('bookings', prms).then (collection) ->
+        collection.$get('bookings').then (bookings) -> 
           models = (new BBModel.Admin.Booking(b) for b in bookings)
-          deferred.resolve(models)
+          spaces = new $window.Collection.Booking(collection, models, prms)
+          BookingCollections.add(spaces)
+          deferred.resolve(spaces)
         , (err) ->
           deferred.reject(err)
       , (err) ->

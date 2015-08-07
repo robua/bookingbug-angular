@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('BB.Models').factory "Admin.BookingModel", ($q, BBModel, BaseModel) ->
+angular.module('BB.Models').factory "Admin.BookingModel", ($q, BBModel, BaseModel, BookingCollections) ->
 
   class Admin_Booking extends BaseModel
 
@@ -61,4 +61,6 @@ angular.module('BB.Models').factory "Admin.BookingModel", ($q, BBModel, BaseMode
     $update: (data) ->
       data ||= @getPostData()
       @$put('self', {}, data).then (res) =>
-        @constructor(res)
+        @constructor(res) 
+        BookingCollections.checkItems(@)
+ 
