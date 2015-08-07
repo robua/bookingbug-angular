@@ -236,7 +236,7 @@ angular.module('BB.Controllers').controller 'MultiServiceSelect',
 
   $scope.selectDuration = (service) ->
 
-    if service.max_bookings is 1
+    if service.durations.length is 1
       $scope.addItem(service)
     else
 
