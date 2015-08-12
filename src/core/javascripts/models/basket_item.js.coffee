@@ -534,7 +534,7 @@ angular.module('BB.Models').factory "BasketItemModel",
         data.event_id = @event.id
         if @event.pre_paid_booking_id?
           data.pre_paid_booking_id = @event.pre_paid_booking_id
-        else if @tickets.pre_paid_booking_id?
+        else if @tickets && @tickets.pre_paid_booking_id?
           data.pre_paid_booking_id = @tickets.pre_paid_booking_id
         data.tickets = @tickets
       data.pre_paid_booking_id = @pre_paid_booking_id if @pre_paid_booking_id?
@@ -689,7 +689,7 @@ angular.module('BB.Models').factory "BasketItemModel",
 
     # price including discounts
     totalPrice: =>
-      if @tickets.pre_paid_booking_id
+      if @tickets && @tickets.pre_paid_booking_id
         return 0
       if @discount_price?
         return @discount_price + @questionPrice()
