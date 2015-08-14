@@ -1,14 +1,14 @@
 
 'use strict';
 
-angular.module('BB.Models').factory "EventModel", ($q, BBModel, BaseModel, DateTimeUlititiesService) ->
+angular.module('BB.Models').factory "EventModel", ($q, BBModel, BaseModel, DateTimeUtilitiesService) ->
 
 
   class Event extends BaseModel
     constructor: (data) ->
       super(data)
       @getDate()
-      @time = new BBModel.TimeSlot(time: DateTimeUlititiesService.convertMomentToTime(@date))
+      @time = new BBModel.TimeSlot(time: DateTimeUtilitiesService.convertMomentToTime(@date))
       @end_datetime = @date.clone().add(@duration, 'minutes') if @duration
 
     getGroup: () ->

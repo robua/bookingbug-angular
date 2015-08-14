@@ -7,7 +7,7 @@ angular.module('BB.Directives').directive 'bbTimeRangeStacked', () ->
   controller : 'TimeRangeListStackedController',
 
 
-angular.module('BB.Controllers').controller 'TimeRangeListStackedController', ($scope, $element, $attrs, $rootScope, $q, TimeService, AlertService, BBModel, FormDataStoreService, PersonService, PurchaseService, DateTimeUlititiesService) ->
+angular.module('BB.Controllers').controller 'TimeRangeListStackedController', ($scope, $element, $attrs, $rootScope, $q, TimeService, AlertService, BBModel, FormDataStoreService, PersonService, PurchaseService, DateTimeUtilitiesService) ->
 
   $scope.controller = "public.controllers.TimeRangeListStacked"
  
@@ -240,9 +240,9 @@ angular.module('BB.Controllers').controller 'TimeRangeListStackedController', ($
   spliceExistingDateTimes = (stacked_item, slots) ->
 
     return if !stacked_item.datetime and !stacked_item.date 
-    datetime = stacked_item.datetime or DateTimeUlititiesService.convertTimeSlotToMoment(stacked_item.date, stacked_item.time)
+    datetime = stacked_item.datetime or DateTimeUtilitiesService.convertTimeSlotToMoment(stacked_item.date, stacked_item.time)
     if $scope.start_date <= datetime && $scope.end_date >= datetime
-      time = DateTimeUlititiesService.convertMomentToTime(datetime)
+      time = DateTimeUtilitiesService.convertMomentToTime(datetime)
       time_slot = _.findWhere(slots[datetime.toISODate()], {time: time})
       if !time_slot
         time_slot = stacked_item.time

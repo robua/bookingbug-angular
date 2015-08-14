@@ -1,4 +1,4 @@
-angular.module('BB.Services').factory "DateTimeUlititiesService", () ->
+angular.module('BB.Services').factory "DateTimeUtilitiesService", () ->
 
   # converts date and time belonging to BBModel.Day and BBModel.TimeSlot into
   # a valid moment object
