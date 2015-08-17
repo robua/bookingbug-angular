@@ -302,8 +302,8 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
     if prms.private_note
       $scope.bb.private_note = prms.private_note
 
-    if prms.qudini_booking_id
-      $scope.bb.qudini_booking_id = prms.qudini_booking_id
+    if prms.affiliate_booking_id
+      $scope.bb.affiliate_booking_id = prms.affiliate_booking_id
 
 
     # this is used by the bbScrollTo directive so that we can account of
