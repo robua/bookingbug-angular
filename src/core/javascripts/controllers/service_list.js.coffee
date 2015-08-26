@@ -46,15 +46,17 @@ angular.module('BB.Controllers').controller 'ServiceList',($scope, $rootScope, $
     else
       $scope.all_categories = []
 
-    # check any curretn service is valid for the current company
+    # check any current service is valid for the current company
     if $scope.service && $scope.service.company_id != $scope.bb.company.id
       $scope.service = null
 
     ppromise = comp.getServicesPromise()
+
+    # not all service lists need filtering. check for attribute first
+    filterItems = if $attrs.filterServices is 'false' then false else true
+
     @skipped = false
     ppromise.then (items) =>
-      # not all service lists need filtering. check for attribute first
-      filterItems = if $attrs.filterServices is 'false' then false else true
 
       if filterItems
         if $scope.booking_item.service_ref && !$scope.show_all
@@ -96,13 +98,13 @@ angular.module('BB.Controllers').controller 'ServiceList',($scope, $rootScope, $
 
       $scope.setLoaded $scope
 
-      if $scope.booking_item.service || !(($scope.booking_item.person && !$scope.booking_item.anyPerson()) || ($scope.booking_item.resource && !$scope.booking_item.anyResource()))
+      if $scope.booking_item.service || !(($scope.booking_item.person && !$scope.booking_item.anyPerson()) || ($scope.booking_item.resource && !$scope.booking_item.anyResource())) || !filterItems
         # the "bookable services" are the service unless we've pre-selected something!
         $scope.bookable_services = $scope.items
     , (err) -> $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
 
-    if ($scope.booking_item.person && !$scope.booking_item.anyPerson()) ||
-       ($scope.booking_item.resource && !$scope.booking_item.anyResource())
+    if (($scope.booking_item.person && !$scope.booking_item.anyPerson()) ||
+       ($scope.booking_item.resource && !$scope.booking_item.anyResource())) && filterItems
 
       # if we've already picked a service or a resource - get a more limited service selection
       ItemService.query({company: $scope.bb.company, cItem: $scope.booking_item, wait: ppromise, item: 'service'}).then (items) =>
