@@ -29,6 +29,7 @@ angular.module('BBAdminBooking').directive 'bbAdminBooking', (AdminCompanyServic
     if attrs.companyId
       AdminCompanyService.query(attrs).then (company) ->
         scope.company = company
+        # TODO persist admin comp with param (config.admin?) or scope check
         scope.initWidget(config)
         renderTemplate(scope, element, config.design_mode, config.template)
 
