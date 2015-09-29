@@ -1,4 +1,3 @@
-
 angular.module('BB.Services').factory "CategoryService", ($q, BBModel) ->
   query: (company) ->
     deferred = $q.defer()

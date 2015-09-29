@@ -22,9 +22,20 @@ angular.module('BBAdmin.Services').factory 'AdminPurchaseService',  ($q, halClie
 
     if params.company
       company_id = params.company.id
-
+      
     uri = params.url_root+"/api/v1/admin/#{company_id}/purchases/#{params.purchase.id}/pay"
-    halClient.$put(uri, params).then (purchase) ->
+
+    data = {}
+    data.company_id = params.company.id if params.company
+    data.notify_admin = params.notify_admin if params.notify_admin
+    data.payment_status = params.payment_status  if params.payment_status
+    data.amount = params.amount if params.amount
+    data.notes = params.notes if params.notes
+    data.transaction_id = params.transaction_id if params.transaction_id
+    data.notify = params.notify if params.notify
+    data.payment_type = params.payment_type if params.payment_type
+
+    halClient.$put(uri, params, data).then (purchase) ->
       purchase = new BBModel.Purchase.Total(purchase)
       defer.resolve(purchase)
     , (err) ->

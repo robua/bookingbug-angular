@@ -245,9 +245,13 @@ angular
         }));
 
         var linkHref = hrefLink(link, params);
-
         if(method === 'GET') {
-          if(embedded.has(linkHref)) return embedded.get(linkHref);
+          if (params) {
+            if (params.hasOwnProperty('no_cache')) {
+              options['no_cache'] = params['no_cache'];
+            }
+          }
+          if(embedded.has(linkHref) && (!options || !options.no_cache)) return embedded.get(linkHref);
           
           return embedded.set(linkHref, callService(method, linkHref, options, data));
         }
@@ -340,7 +344,7 @@ angular
         .then(function(res){
 
           // copy out the auth token from the header if there was one and make sure the child commands use it
-          if (res.headers('auth-token')){
+          if (res.headers('auth-token') && res.status != 304){
             options.auth_token = res.headers('Auth-Token')
             shared_header.set('auth_token', res.headers('Auth-Token'))
           }

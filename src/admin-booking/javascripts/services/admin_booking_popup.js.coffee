@@ -15,7 +15,6 @@ angular.module('BBAdminBooking').factory 'AdminBookingPopup', ($modal, $timeout)
           merge_resources: true
           merge_people: false
         , config.item_defaults
-        console.log $scope.config
         $scope.cancel = () ->
           $modalInstance.dismiss('cancel')
       templateUrl: 'admin_booking_popup.html'

@@ -3,11 +3,11 @@
     <div class="col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8">
       <div class="bb-subcontent">
         <div class="confirmation-header bb-confirmation-border-margin">
-          <div ng-if="total && !total.containsWaitlistItems()">
+          <div ng-show="total && !total.containsWaitlistItems()">
             <h2>Booking Confirmation</h2>
             <p class="bb-confirmation-p-alignment">Thanks {{ total.client.first_name }}. Your booking is now confirmed. We have emailed you the details below.</p>
           </div>
-          <div ng-if="total && total.containsWaitlistItems()">
+          <div ng-show="total && total.containsWaitlistItems()">
             <h2>Confirmation</h2>
             <p class="bb-confirmation-p-alignment">Thanks {{ total.client.first_name }}. You have successfully made the following bookings. We have you emailed you the details below.</p>
           </div>
@@ -18,39 +18,39 @@
         </div>
 
         <div ng-show="total">
-          <ul ng-if="total.id" class="confirmation-summary">
+          <ul ng-show="total.id" class="confirmation-summary">
             <li class="row confirmation-summary-item">
               <div class="col-sm-3">Booking Reference:</div>
               <div class="col-sm-9">{{total.id}}</div>
             </li>
           </ul>
           <ul class="confirmation-summary" ng-repeat="i in total.items track by $index">
-            <li ng-if="i.name" class="row confirmation-summary-item">
+            <li ng-show="i.name" class="row confirmation-summary-item">
               <div class="col-sm-3">Name:</div>
               <div class="col-sm-9">{{i.name}}</div>
             </li>
-            <li ng-if="i.description" class="row confirmation-summary-item">
+            <li ng-show="i.description" class="row confirmation-summary-item">
               <div class="col-sm-3">Description:</div>
               <div class="col-sm-9">{{i.description}}</div>
             </li>
-            <li ng-if="i.full_describe" class="row confirmation-summary-item">
+            <li ng-show="i.full_describe" class="row confirmation-summary-item">
               <div class="col-sm-3">Service:</div>
               <div class="col-sm-9">{{i.full_describe}}</div>
             </li>
-            <li ng-if="i.describe" class="row confirmation-summary-item">
+            <li ng-show="i.describe" class="row confirmation-summary-item">
               <div class="col-sm-3">Date/Time:</div>
               <div class="col-sm-9">{{i.describe}}</div>
             </li>
-            <li ng-if="i.price" class="row confirmation-summary-item">
+            <li ng-show="i.price" class="row confirmation-summary-item">
               <div class="col-sm-3">Price:</div>
               <div class="col-sm-9">{{i.price | currency }}</div>
             </li>
-            <li ng-if="i.due_now != 0" class="row confirmation-summary-item">
+            <li ng-show="i.due_now != 0" class="row confirmation-summary-item">
               <div class="col-sm-3">Due Now:</div>
               <div class="col-sm-9">{{i.due_now | currency }}</div>
             </li>
             <span ng-repeat="prepaid in available_prepaid_bookings">
-            <li ng-if="i.due_now > 0" class="row confirmation-summary-item">
+            <li ng-show="i.due_now > 0" class="row confirmation-summary-item">
               <div class="col-sm-3">PrePaid Booking:</div>
               <div class="col-sm-9">{{prepaid}}</div>
             </li>

@@ -182,7 +182,7 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
       if $scope.bb.api_url
         url = document.createElement('a')
         url.href = $scope.bb.api_url
-        if url.host == $location.host() || url.host == "#{$location.host()}:#{$location.port()}"
+        if url.host == '' || url.host == $location.host() || url.host == "#{$location.host()}:#{$location.port()}"
           $scope.initWidget2()
           return
       if $rootScope.iframe_proxy_ready
@@ -531,6 +531,13 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
         category.then (res) =>
           $scope.bb.item_defaults.category = new BBModel.Category(res)    
 
+      if $scope.bb.item_defaults.clinic
+        clinic = halClient.$get($scope.bb.api_url + '/api/v1/' + company_id + '/clinics/' + $scope.bb.item_defaults.clinic )
+        $scope.bb.default_setup_promises.push(clinic)
+        clinic.then (res) =>
+          $scope.bb.item_defaults.clinic = new BBModel.Clinic(res)
+
+
 
       if $scope.bb.item_defaults.duration
         $scope.bb.item_defaults.duration = parseInt($scope.bb.item_defaults.duration)
@@ -610,7 +617,6 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
 
 
   $scope.decideNextPage = (route) ->
-
     if route
       if route == 'none'
         return
@@ -738,7 +744,6 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
       basket.setSettings($scope.bb.basket.settings)
 
       $scope.setBasket(basket)
-      #$scope.setUsingBasket(true) Luke - removed Jack's change as we don't want to flag that we're using the basket unless bbMiniBasket has been invoked
       $scope.setBasketItem(basket.items[0])
       # check if item has been added to the basket
       if !$scope.bb.current_item
@@ -838,7 +843,7 @@ angular.module('BB.Controllers').controller 'BBCtrl', ($scope, $location,
     $scope.bb.basket.company_id = $scope.bb.company_id
     # were there stacked items - if so reset the stack items to the basket contents
     if $scope.bb.stacked_items
-      $scope.bb.setStackedItems(basket.items)
+      $scope.bb.setStackedItems(basket.timeItems())
 
 
   # clear the user and logout

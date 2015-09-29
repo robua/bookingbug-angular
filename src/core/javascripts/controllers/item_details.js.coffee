@@ -8,11 +8,12 @@ angular.module('BB.Directives').directive 'bbItemDetails', () ->
   link : (scope, element, attrs) ->
     if attrs.bbItemDetails
       item = scope.$eval(attrs.bbItemDetails)
+      $scope.item_from_param = item
       scope.loadItem(item)
     return
 
 
-angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $rootScope, ItemDetailsService, PurchaseBookingService, AlertService, BBModel, FormDataStoreService, ValidatorService, QuestionService, $modal, $location, $upload) ->
+angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $rootScope, ItemDetailsService, PurchaseBookingService, AlertService, BBModel, FormDataStoreService, ValidatorService, QuestionService, $modal, $location, $upload, $translate, SettingsService) ->
 
   $scope.controller = "public.controllers.ItemDetails"
 
@@ -42,7 +43,6 @@ angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $roo
 
 
   $rootScope.connection_started.then () ->
-    $scope.product = $scope.bb.current_item.product
     $scope.loadItem($scope.bb.current_item) if !confirming
   , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
 
@@ -51,6 +51,8 @@ angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $roo
     confirming = true
     $scope.item = item
     $scope.item.private_note = $scope.bb.private_note if $scope.bb.private_note
+    $scope.product = item.product
+
     if $scope.item.item_details
       setItemDetails $scope.item.item_details
       # this will add any values in the querystring
@@ -90,9 +92,13 @@ angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $roo
         search = _.findWhere(oldQuestions, { name: item.name })
         if search
           item.answer = search.answer
-
     $scope.item_details = details
 
+  $scope.$on 'currentItemUpdate', (service) ->
+    if $scope.item_from_param
+      $scope.loadItem($scope.item_from_param)
+    else
+      $scope.loadItem($scope.bb.current_item)
 
   $scope.recalc_price = ->
     qprice = $scope.item_details.questionPrice($scope.item.getQty())
@@ -144,7 +150,14 @@ angular.module('BB.Controllers').controller 'ItemDetails', ($scope, $attrs, $roo
         $scope.item.move_done = true
         $rootScope.$broadcast "booking:moved"
         $scope.decideNextPage(route)
-        AlertService.add("info", { msg: "Your booking has been moved to #{b.datetime.format('dddd Do MMMM [at] h.mma')}" })
+
+        # TODO remove whedn translate enabled by default
+        if SettingsService.isInternationalizatonEnabled()
+          $translate('MOVE_BOOKINGS_MSG', { datetime:b.datetime.format('dddd Do MMMM[,] h.mma') }).then (translated_text) ->
+            AlertService.add("info", { msg: translated_text })
+        else
+          AlertService.add("info", { msg: "Your booking has been moved to #{b.datetime.format('dddd Do MMMM[,] h.mma')}" })
+
        , (err) =>
         $scope.setLoaded $scope
         AlertService.add("danger", { msg: "Failed to move booking. Please try again." })

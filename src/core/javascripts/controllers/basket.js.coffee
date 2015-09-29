@@ -34,11 +34,11 @@ angular.module('BB.Directives').directive 'bbBasketList', () ->
   controller : 'BasketList'
 
 
-angular.module('BB.Controllers').controller 'BasketList', ($scope,  $rootScope, BasketService, $q, AlertService, ErrorService, FormDataStoreService) ->
+angular.module('BB.Controllers').controller 'BasketList', ($scope,  $rootScope, BasketService, $q, AlertService, ErrorService, FormDataStoreService, LoginService) ->
   $scope.controller = "public.controllers.BasketList"
   $scope.setUsingBasket(true)
   $scope.items = $scope.bb.basket.items
-
+  $scope.show_wallet = $scope.bb.company_settings.hasOwnProperty('has_wallets') && $scope.bb.company_settings.has_wallets && $scope.client.valid() && LoginService.isLoggedIn() && LoginService.member().id == $scope.client.id
 
   $scope.$watch 'basket', (newVal, oldVal) =>
     $scope.items = _.filter $scope.bb.basket.items, (item) -> !item.is_coupon
@@ -62,6 +62,7 @@ angular.module('BB.Controllers').controller 'BasketList', ($scope,  $rootScope, 
       return false
 
 
+  
   $scope.applyCoupon = (coupon) =>
     AlertService.clear()
     $scope.notLoaded $scope
@@ -113,6 +114,9 @@ angular.module('BB.Controllers').controller 'BasketList', ($scope,  $rootScope, 
       if err && err.data && err.data.error
         AlertService.clear()
         AlertService.add("danger", { msg: err.data.error })
+  
+  $scope.topUpWallet = () ->
+    $scope.decideNextPage("basket_wallet")
 
 
   $scope.setReady = ->

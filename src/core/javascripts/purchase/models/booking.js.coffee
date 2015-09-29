@@ -63,6 +63,14 @@ angular.module('BB.Models').factory "Purchase.BookingModel", ($q, $window, BBMod
       defer.promise
 
 
+    answer: (q) ->
+      if @answers
+        for a in @answers
+          if a.name == q
+            return a.answer
+      return null
+
+
     getPostData: () ->
       data = {}
 

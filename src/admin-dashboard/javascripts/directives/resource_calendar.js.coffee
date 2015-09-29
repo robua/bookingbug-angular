@@ -1,8 +1,8 @@
 angular.module('BBAdminDashboard').directive 'bbResourceCalendar', (
     uiCalendarConfig, AdminCompanyService, AdminBookingService,
     AdminPersonService, $q, $sessionStorage, ModalForm, BBModel,
-    AdminBookingPopup, $window, $bbug, ColorPalette, AppConfig, Dialog,
-    $timeout, $compile, $templateCache) ->
+    AdminBookingPopup, $window, $bbug, ColorPalette, AppConfig, Dialog,$interval,$http,
+    $timeout, $compile, $templateCache, BookingCollections) ->
 
   controller = ($scope, $attrs) ->
 
@@ -17,7 +17,8 @@ angular.module('BBAdminDashboard').directive 'bbResourceCalendar', (
           AdminBookingService.query(params).then (bookings) ->
             $scope.loading = false
             b.resourceId = b.person_id for b in bookings.items
-            callback(bookings.items)
+            $scope.bookings = bookings.items
+            callback($scope.bookings)
     ]
 
 
@@ -123,23 +124,38 @@ angular.module('BBAdminDashboard').directive 'bbResourceCalendar', (
             uiCalendarConfig.calendars.resourceCalendar.fullCalendar('updateEvent', booking)
 
     $scope.pusherSubscribe = () =>
-      if $scope.company? && Pusher? && !$scope.pusher?
-        $scope.pusher = new Pusher 'c8d8cea659cc46060608',
-          authEndpoint: $scope.company.$link('pusher').href
-          auth:
-            headers:
-              'App-Id' : AppConfig.appId
-              'App-Key' : AppConfig.appKey
-              'Auth-Token' : $sessionStorage.getItem('auth_token')
-        channelName = "private-c#{$scope.company.id}-w#{$scope.company.numeric_widget_id}"
-        if !$scope.pusher.channel(channelName)?
-          $scope.pusher_channel = $scope.pusher.subscribe(channelName)
-          pusherEvent = (res) =>
-            if res.id?
-              uiCalendarConfig.calendars.resourceCalendar.fullCalendar('refetchEvents')
-          $scope.pusher_channel.bind 'booking', pusherEvent
-          $scope.pusher_channel.bind 'cancellation', pusherEvent
-          $scope.pusher_channel.bind 'updating', pusherEvent
+      if $scope.company
+    #    $interval () ->
+    #      $http.get($scope.bb.api_url + "/api/v1/audit/bookings/?id=#{$scope.company.id}&channel_id=#{$scope.company.numeric_widget_id}").then (res) ->
+    #        if res && res.data 
+    #          for id in res.data
+    #            console.log id
+    #            booking = _.first(uiCalendarConfig.calendars.resourceCalendar.fullCalendar('clientEvents', id))
+    #            if booking
+    #              booking.$refetch().then () ->
+    #                booking.resourceId = booking.person_id
+    #                uiCalendarConfig.calendars.resourceCalendar.fullCalendar('updateEvent', booking)
+    #            else
+    #              $scope.company.$get('bookings', {id: id}).then (response) ->
+    #                booking = new BBModel.Admin.Booking(response)
+    #                BookingCollections.checkItems(booking)
+    #                $timeout ->
+    #                  uiCalendarConfig.calendars.resourceCalendar.fullCalendar('refetchEvents')
+    #                , 100
+    #     , 5000
+
+        $scope.company.pusherSubscribe((res) =>
+          if res.id?
+            booking = _.first(uiCalendarConfig.calendars.resourceCalendar.fullCalendar('clientEvents', res.id))
+            if booking
+              booking.$refetch().then () ->
+                uiCalendarConfig.calendars.resourceCalendar.fullCalendar('updateEvent', booking)
+            else
+              $scope.company.$get('bookings', {id: res.id}).then (response) ->
+                booking = new BBModel.Admin.Booking(response)
+                BookingCollections.checkItems(booking)
+                uiCalendarConfig.calendars.resourceCalendar.fullCalendar('refetchEvents')
+        , {encrypted: false})
 
     $scope.openDatePicker = ($event) ->
         $event.preventDefault()
@@ -167,7 +183,6 @@ angular.module('BBAdminDashboard').directive 'bbResourceCalendar', (
       else
         AdminCompanyService.query(attrs).then (company) ->
           scope.company = company
-          scope.pusherSubscribe()
           defer.resolve(scope.company)
       defer.promise
 
@@ -176,6 +191,9 @@ angular.module('BBAdminDashboard').directive 'bbResourceCalendar', (
         collection.$get('services').then (services) ->
           scope.services = (new BBModel.Admin.Service(s) for s in services)
           ColorPalette.setColors(scope.services)
+
+    scope.getCompanyPromise().then (company) ->
+      scope.pusherSubscribe()
 
     $timeout () ->
       uiCalElement = angular.element(element.children()[1])

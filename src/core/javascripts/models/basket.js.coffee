@@ -41,7 +41,7 @@ angular.module('BB.Models').factory "BasketModel", ($q, BBModel, BaseModel) ->
     timeItems: ->
       titems = []
       for i in @items
-        titems.push(i) if !i.is_coupon and !i.ready
+        titems.push(i) if !i.is_coupon #and !i.ready
       titems
 
     couponItems: ->
@@ -51,10 +51,7 @@ angular.module('BB.Models').factory "BasketModel", ($q, BBModel, BaseModel) ->
       citems
 
     removeCoupons: ->
-      for item, i in @items
-        if item.is_coupon
-          @items.splice(i, 1)
-      @items
+      @items = _.reject @items, (x) -> x.is_coupon
 
     setSettings: (set) ->
       return if !set

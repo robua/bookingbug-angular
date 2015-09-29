@@ -12,7 +12,7 @@ angular.module('BB.Models').service "BBModel", ($q, $injector) ->
     'BookableItem', 'Category', 'Client', 'ClientDetails', 'Company',
     'CompanySettings', 'Day', 'Event', 'EventChain', 'EventGroup',
     'EventTicket', 'EventSequence', 'ItemDetails', 'Person', 'PurchaseItem',
-    'PurchaseTotal', 'Question', 'Resource', 'Service', 'Slot', 'Space',
+    'PurchaseTotal', 'Question', 'Resource', 'Service', 'Slot', 'Space', 'Clinic',
     'SurveyQuestion','TimeSlot', 'BusinessQuestion', 'Image', 'Deal',
     'PrePaidBooking']
 
@@ -33,7 +33,7 @@ angular.module('BB.Models').service "BBModel", ($q, $injector) ->
   funcs['Purchase'] = pfuncs
 
   # member models
-  member_models = ['Member', 'Booking', 'PrePaidBooking']
+  member_models = ['Member', 'Booking', 'PrePaidBooking', 'Wallet', 'WalletLog']
   mfuncs = {}
   for model in member_models
     do (model) =>  

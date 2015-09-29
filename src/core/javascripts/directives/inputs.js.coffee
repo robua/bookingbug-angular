@@ -33,7 +33,14 @@ app.directive 'bbQuestion', ($compile, $timeout) ->
   compile: (el,attr,trans) ->
       pre: (scope, element, attrs) ->
         adminRequired = attrs.bbAdminRequired ? false
-        
+
+        date_format = 'DD/MM/YYYY'  
+        date_format_2 = 'dd/MM/yyyy'
+
+        if attrs.bbDateFormat? && attrs.bbDateFormat is 'US'
+          date_format = 'MM/DD/YYYY' 
+          date_format_2 = 'MM/dd/yyyy'
+
         scope.$watch attrs.bbQuestion, (question) ->
           if question
             html = ''
@@ -80,7 +87,7 @@ app.directive 'bbQuestion', ($compile, $timeout) ->
             else if question.detail_type is "date"
               html = "
                 <div class='input-group date-picker'>
-                  <input type='text' class='form-question form-control' name='q#{question.id}' id='#{question.id}' bb-datepicker-popup='DD/MM/YYYY' datepicker-popup='dd/MM/yyyy' ng-model='question.answer' ng-required='question.currentlyShown && (#{adminRequired} || (question.required && !bb.isAdmin))' datepicker-options='{\"starting-day\": 1}' show-weeks='false' show-button-bar='false' is-open='opened' />
+                  <input type='text' class='form-question form-control' name='q#{question.id}' id='#{question.id}' bb-datepicker-popup='#{date_format}' datepicker-popup='#{date_format_2}' ng-model='question.answer' ng-required='question.currentlyShown && (#{adminRequired} || (question.required && !bb.isAdmin))' datepicker-options='{\"starting-day\": 1}' show-weeks='false' show-button-bar='false' is-open='opened' />
                   <span class='input-group-btn' ng-click='$event.preventDefault();$event.stopPropagation();opened=true'>
                     <button class='btn btn-default' type='submit'><span class='glyphicon glyphicon-calendar'></span></button>
                   </span>

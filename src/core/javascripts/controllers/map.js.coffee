@@ -65,7 +65,15 @@ angular.module('BB.Controllers').controller 'MapCtrl',
         latlong = new google.maps.LatLng(comp.address.lat,comp.address.long)
         $scope.mapBounds.extend(latlong)
 
-    $scope.mapOptions =  {center: $scope.mapBounds.getCenter(), zoom: 6, mapTypeId: google.maps.MapTypeId.ROADMAP}
+      $scope.mapOptions =  {
+          center: $scope.mapBounds.getCenter(), 
+          zoom: 6, 
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControl:true, 
+        mapTypeControlOptions: { 
+            style: window.google.maps.MapTypeControlStyle.DROPDOWN_MENU 
+        } 
+      }
 
     if options and options.map_options
       for key, value of options.map_options

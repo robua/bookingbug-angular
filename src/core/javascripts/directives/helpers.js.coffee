@@ -377,7 +377,7 @@ app.directive 'bbApiUrl', ($rootScope, $compile, $sniffer, $timeout, $window, $l
       url = document.createElement('a')
       url.href = scope.apiUrl
       if $sniffer.msie && $sniffer.msie < 10
-        unless url.host == $location.host() || url.host == "#{$location.host()}:#{$location.port()}"
+        unless url.host == '' || url.host == $location.host() || url.host == "#{$location.host()}:#{$location.port()}"
           if url.protocol[url.protocol.length - 1] == ':'
             src = "#{url.protocol}//#{url.host}/ClientProxy.html"
           else

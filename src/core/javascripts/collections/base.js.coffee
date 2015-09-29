@@ -10,9 +10,17 @@ class window.Collection.Base
     @items = items
     @params = params
     @callbacks = []
-    @jparams = JSON.stringify(@params) 
+
+    clean_params = {}
+    for key,val of params
+      if val?
+        if val.id?
+          clean_params[key+ "_id"] = val.id
+        else
+          clean_params[key] = val
+    @jparams = JSON.stringify(clean_params) 
     if res
-      for n,m of res
+      for n,m of res 
         @[n] = m
 
   checkItem: (item) ->
@@ -69,9 +77,16 @@ class window.BaseCollections
   deleteItems: (item) ->
    for col in @collections
      col.deleteItem(item) 
-
+ 
   find: (prms) ->
-    jprms =  JSON.stringify(prms)    
+    clean_params = {}
+    for key,val of prms
+      if val?
+        if val.id?
+          clean_params[key+ "_id"] = val.id
+        else
+          clean_params[key] = val
+    jprms =  JSON.stringify(clean_params)    
     for col in @collections
       if jprms == col.jparams
         return col    

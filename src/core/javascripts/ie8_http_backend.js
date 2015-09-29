@@ -21,6 +21,7 @@ angular.module('BB.Services').provider("ie8HttpBackend", function ie8HttpBackend
     var isLocalCall = function (reqUrl) {
       var reqHost = getHostName(reqUrl),
         localHost = getHostName($browser.url());
+      if (reqHost == '') return true;
  
       patt = new RegExp( localHost + "$", 'i'); 
       return patt.test(reqHost);
@@ -58,7 +59,7 @@ angular.module('BB.Services').provider("ie8HttpBackend", function ie8HttpBackend
           headers = 'Content-Type: ' + respObj.contentType;
           if (respObj.authToken)
             headers += '\r\n' + 'Auth-Token: ' + respObj.authToken; 
-          completeRequest(callback, 200, respObj.responseText, headers);
+          completeRequest(callback, respObj.statusCode.status, respObj.responseText, headers);
         },
         error: function (data) {
           completeRequest(callback, 500, 'Error', 'Content-Type: text/plain');

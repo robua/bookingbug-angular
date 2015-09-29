@@ -1,4 +1,4 @@
-angular.module('BB.Services').factory 'AlertService', ($rootScope, ErrorService) ->
+angular.module('BB.Services').factory 'AlertService', ($rootScope, ErrorService, $timeout) ->
 
   $rootScope.alerts = []
 
@@ -12,13 +12,19 @@ angular.module('BB.Services').factory 'AlertService', ($rootScope, ErrorService)
     title
 
   alertService =
-    add: (type, {title, msg}) ->
+    add: (type, {title, msg, persist}) ->
+      persist = true if !persist?
       $rootScope.alerts = []
-      $rootScope.alerts.push
+      alert = 
         type: type
         title: titleLookup(type, title)
         msg: msg
         close: -> alertService.closeAlert(this)
+      $rootScope.alerts.push(alert)
+      if !persist
+        $timeout ->
+          $rootScope.alerts.splice($rootScope.alerts.indexOf(alert), 1)
+        , 3000
       $rootScope.$broadcast "alert:raised"
 
 
@@ -32,13 +38,21 @@ angular.module('BB.Services').factory 'AlertService', ($rootScope, ErrorService)
       $rootScope.alerts = []
 
     error: (alert) ->
-      @add('error', {title: alert.title, msg: alert.msg})
+      return if !alert
+      @add('error', {title: alert.title, msg: alert.msg, persist: alert.persist})
 
     danger: (alert) ->
-      @add('danger', {title: alert.title, msg: alert.msg})
+      return if !alert
+      @add('danger', {title: alert.title, msg: alert.msg, persist: alert.persist})
 
     info: (alert) ->
-      @add('info', {title: alert.title, msg: alert.msg})
+      return if !alert
+      @add('info', {title: alert.title, msg: alert.msg, persist: alert.persist})
 
     warning: (alert) ->
-      @add('warning', {title: alert.title, msg: alert.msg})
+      return if !alert
+      @add('warning', {title: alert.title, msg: alert.msg, persist: alert.persist})
+
+    raise: (alert) ->
+     return if !alert
+     @add(alert.type, {title: alert.title, msg: alert.msg, persist: alert.persist})

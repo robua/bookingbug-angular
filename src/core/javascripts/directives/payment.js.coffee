@@ -44,6 +44,7 @@ angular.module('BB.Directives').directive 'bbPaymentButton', ($compile, $sce, $h
         $log.warn err.data
         element.remove()
 
+
   return {
     restrict: 'EA'
     replace: true

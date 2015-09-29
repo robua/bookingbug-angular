@@ -106,6 +106,15 @@
 						</tr>
 					</tbody>
 				</table>
+				<div ng-if="show_wallet">
+					<h4> Wallet </h4>
+					<div ng-show="client.has_active_wallet">
+						<p> Current Wallet Balance: {{client.wallet_amount | icurrency}} </p> <small style="color:#ff1919;"ng-if="client.wallet_amount < basket.total_due_price"> (-{{basket.total_due_price - client.wallet_amount | icurrency }})</small>
+						<small ng-if="client.wallet_amount < basket.total_due_price"><i> Oh no! You do not currently have enough money in your wallet account. You can either pay the full amount, or top up to add more money to your wallet. </i></small>
+						<small ng-if="client.wallet_amount >= basket.total_due_price"><i> You will have {{(client.wallet_amount - basket.total_price) | icurrency }} left in your wallet after this purchase. </i></small>
+					  <button ng-if="client.wallet_amount < basket.total_due_price" type="button" class="btn btn-primary btn-xs" ng-click="topUpWallet()">Top Up</button>
+					</div>
+      	</div>
 
 				<div ng-if="bb.company_settings.has_coupons" class="bb-coupon-box">
 					<span>Apply a coupon </span>

@@ -122,7 +122,8 @@ angular.module('BB.Controllers').controller 'ServiceList',($scope, $rootScope, $
             $scope.skipThisStep()
             @skipped = true  
         else
-          setServiceItem items
+          # The ServiceModel is more relevant than the BookableItem when price and duration needs to be listed in the view pages. 
+          setServiceItem services
         
         $scope.setLoaded($scope)
       , (err) ->  

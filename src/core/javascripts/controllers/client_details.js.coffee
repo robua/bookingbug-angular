@@ -81,17 +81,16 @@ angular.module('BB.Controllers').controller 'ClientDetails', ($scope,  $rootScop
   $scope.setReady = () =>
     $scope.client.setClientDetails($scope.client_details)
 
-    ClientService.create_or_update($scope.bb.company, $scope.client).then (client) =>
+    prom = ClientService.create_or_update($scope.bb.company, $scope.client)
+    prom.then (client) =>
       $scope.setLoaded $scope
-
       $scope.setClient(client)
       if client.waitingQuestions
         client.gotQuestions.then () ->
           $scope.client_details = client.client_details
      
     , (err) ->  $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
-
-    return true
+    return prom
 
 
   $scope.clientSearch = () ->

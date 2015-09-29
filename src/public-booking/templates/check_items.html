@@ -102,21 +102,24 @@
         </div><!--booking_questions_form-->
 
 
+        <div class="bb-step-navigation">
+          <div class="row">
+            <div class="col-sm-9 col-sm-push-3 text-right">
+              <button type="submit" class="btn btn-primary pull-right" ng-click="confirm(booking_form) && validator.validateForm(booking_form) && checkReady() && routeReady()">Confirm</button>
+            </div>
+            <div class="col-sm-3 col-sm-pull-9">
+              <button type="button" class="btn btn-default pull-left" bb-debounce ng-click="loadPreviousStep()" ng-show="bb.current_step > 1">Back</button>
+            </div>
+          </div>
+        </div>
+
+
       </form><!--booking_form-->
 
 
     </div>
 
-    <div class="bb-step-navigation">
-      <div class="row">
-        <div class="col-sm-9 col-sm-push-3 text-right">
-          <button type="button"  class="btn btn-primary pull-right" ng-click="confirm(booking_form) && validator.validateForm(booking_form) && checkReady() && routeReady()">Confirm</button>
-        </div>
-        <div class="col-sm-3 col-sm-pull-9">
-          <button type="button" class="btn btn-default pull-left" bb-debounce ng-click="loadPreviousStep()" ng-show="bb.current_step > 1">Back</button>
-        </div>
-      </div>
-    </div>
+
 
   </div>
 </div>

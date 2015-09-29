@@ -50,7 +50,7 @@ angular.module('BB.Models').factory "Admin.PersonModel", ($q, BBModel, BaseModel
       str = start.format("YYYY-MM-DD") + "-" + end.format("YYYY-MM-DD")
       @availability ||= {}
       
-      return @availability[str] if @availability[str]
+      return @availability[str] == "Yes" if @availability[str]
       @availability[str] = "-"
 
       if @$has('schedule')
@@ -61,7 +61,7 @@ angular.module('BB.Models').factory "Admin.PersonModel", ($q, BBModel, BaseModel
       else
         @availability[str] = "Yes"
 
-      return @availability[str]  
+      return @availability[str] == "Yes" 
 
     startServing: (queuer) ->
       defer = $q.defer()
@@ -96,3 +96,16 @@ angular.module('BB.Models').factory "Admin.PersonModel", ($q, BBModel, BaseModel
         defer.reject('queuers link not available')
       defer.promise
 
+    getPostData: () ->
+      data = {}
+      data.id = @id
+      data.name = @name
+      data.extra = @extra
+      data.description = @description
+      data
+
+ 
+    $update: (data) -> 
+      data ||= @getPostData()
+      @$put('self', {}, data).then (res) =>
+        @constructor(res) 

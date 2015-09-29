@@ -12,7 +12,7 @@ angular.module('BB.Models').factory "Admin.ResourceModel", ($q, BBModel, BaseMod
       str = start.format("YYYY-MM-DD") + "-" + end.format("YYYY-MM-DD")
       @availability ||= {}
       
-      return @availability[str] if @availability[str]
+      return @availability[str] == "Yes" if @availability[str]
       @availability[str] = "-"
 
       if @$has('schedule')
@@ -23,4 +23,4 @@ angular.module('BB.Models').factory "Admin.ResourceModel", ($q, BBModel, BaseMod
       else
         @availability[str] = "Yes"
 
-      return @availability[str]  
+      return @availability[str] == "Yes" 

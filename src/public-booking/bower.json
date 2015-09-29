@@ -1,0 +1,29 @@
+{
+  "name": "bookingbug-angular-public-booking",
+  "homepage": "https://github.com/BookingBug/bookingbug-angular-public-booking-bower",
+  "authors": [
+    "Glenn Shoosmith <glenn@bookingbug.com>",
+    "Ed Clements <ed@bookingbug.com>"
+  ],
+  "main": [
+    "bookingbug-angular-public-booking.js",
+    "bookingbug-angular-public-booking-templates.js",
+    "bookingbug-angular-public-booking.css"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bookingbug-angular-core": "master",
+    "angular-recaptcha": "~2.2.3",
+    "angular-slick": "https://github.com/BookingBug/angular-slick.git#~0.2.2"
+  },
+  "resolutions": {
+    "angular": "1.2.28"
+  }
+}

@@ -51,21 +51,15 @@ angular.module('BB.Controllers').controller 'MultiServiceSelect',
 
       initialiseCategories(result[0])
 
-      if ($scope.bb.basket and $scope.bb.basket.items.length > 0) || ($scope.bb.stacked_items and $scope.bb.stacked_items.length > 0)
-        # if the basket already has some items, set the stacked items
-        if $scope.bb.basket and $scope.bb.basket.items.length > 0 and $scope.bb.basket.items[0].service
-          if !$scope.bb.stacked_items || $scope.bb.stacked_items.length == 0
-            $scope.bb.setStackedItems($scope.bb.basket.items)
-
-        # if there's already some stacked items (i.e. we've come back to this page,
-        # make sure they're selected)
-        if $scope.bb.stacked_items and $scope.bb.stacked_items.length > 0
-          for stacked_item in $scope.bb.stacked_items
-            for item in $scope.items
-              if item.self is stacked_item.service.self
-                stacked_item.service = item
-                stacked_item.service.selected = true
-                break
+      # if there's already some stacked items (i.e. we've come back to this page,
+      # make sure they're selected)
+      if $scope.bb.stacked_items and $scope.bb.stacked_items.length > 0
+        for stacked_item in $scope.bb.stacked_items
+          for item in $scope.items
+            if item.self is stacked_item.service.self
+              stacked_item.service = item
+              stacked_item.service.selected = true
+              break
       else
         # check item defaults
         checkItemDefaults()
@@ -73,6 +67,9 @@ angular.module('BB.Controllers').controller 'MultiServiceSelect',
       # if we're moving the booking, just move to the next step
       if $scope.bb.moving_booking
         $scope.nextStep()
+
+
+      $scope.$broadcast "multi_service_select:loaded"
 
       $scope.setLoaded $scope
 
@@ -177,6 +174,7 @@ angular.module('BB.Controllers').controller 'MultiServiceSelect',
       iitem.setGroup(item.group)
       $scope.bb.stackItem(iitem)
       $rootScope.$broadcast "multi_service_select:item_added"
+      AlertService.info({msg: "#{item.name} added to your treatment selection", persist:false}) if $scope.options.raise_alerts
     else
       for i in $scope.items
         i.popover = "Sorry, you can only book a maximum of #{$scope.options.max_services} treatments"

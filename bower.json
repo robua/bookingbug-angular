@@ -40,7 +40,8 @@
     "fontawesome": "~4.2.0",
     "ng-idle": "~0.3.5",
     "underscore": "~1.7.0",
-    "fullcalendar": "~2.3.1",
+    "fullcalendar": "~2.4.0",
+    "fullcalendar-scheduler": "~1.0.0",
     "angular-ui-calendar": "latest",
     "sprintf": "~1.0.2",
     "angular-bootstrap": "https://github.com/BookingBug/bootstrap-bower.git#774d6a295da0813aac23cd1cf6e9ca396a461232",
@@ -66,7 +67,7 @@
     "jquery": "~1.11.2",
     "moment": "master",
     "momentjs": "~2.9.0",
-    "fullcalendar": "~2.3.1",
+    "fullcalendar": ">=2.4.0",
     "angular-translate": "~2.7.0",
     "humanize-duration": "~2.8.0"
   }

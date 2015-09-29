@@ -10,7 +10,7 @@ angular.module('BB.Directives').directive 'bbTimeRanges', () ->
 
 # TODO Get the add/subtract functions to respect the current time range. Get the time range length to adjust if display mode is preset
 angular.module('BB.Controllers').controller 'TimeRangeList',
-($scope, $element, $attrs, $rootScope, $q, TimeService, AlertService, BBModel, FormDataStoreService) ->
+($scope, $element, $attrs, $rootScope, $q, TimeService, AlertService, BBModel, FormDataStoreService, ErrorService) ->
 
   $scope.controller = "public.controllers.TimeRangeList"
  
@@ -75,8 +75,9 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
       else
         setTimeRange($scope.last_selected_date)
     # the current item already has a date
-    else if $scope.bb.current_item.date
-      setTimeRange($scope.bb.current_item.date.date)
+    else if $scope.bb.current_item.date || $scope.bb.current_item.requested_date
+      date = if $scope.bb.current_item.date then $scope.bb.current_item.date.date else $scope.bb.current_item.requested_date
+      setTimeRange(date)
     # selected day has been provided, use this to set the time
     else if $scope.selected_day
       $scope.original_start_date = $scope.original_start_date or moment($scope.selected_day)
@@ -153,7 +154,7 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
 
   # deprecated due to performance issues, use $scope.is_subtract_valid and $scope.subtract_length instead
   $scope.isSubtractValid = (type, amount) ->
-    return true if !$scope.start_date
+    return true if !$scope.start_date || $scope.isAdmin()
     date = $scope.start_date.clone().subtract(amount, type)
     return !date.isBefore(moment(), 'day')
 
@@ -260,16 +261,17 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
 
     # has a service been selected?
     if current_item.service and !$scope.options.ignore_min_advance_datetime
+
       $scope.min_date = current_item.service.min_advance_datetime
       $scope.max_date = current_item.service.max_advance_datetime
       # if the selected day is before the services min_advance_datetime, adjust the time range
-      setTimeRange(current_item.service.min_advance_datetime) if $scope.selected_day && $scope.selected_day.isBefore(current_item.service.min_advance_datetime, 'day')
+      setTimeRange(current_item.service.min_advance_datetime) if $scope.selected_day && $scope.selected_day.isBefore(current_item.service.min_advance_datetime, 'day') && !$scope.isAdmin()
 
 
     date = $scope.start_date
     edate = moment(date).add($scope.time_range_length, 'days')
     $scope.end_date = moment(edate).add(-1, 'days')
-
+ 
     AlertService.clear()
     # We may not want the current item duration to be the duration we query by
     # If min_duration is set, pass that into the api, else pass in the duration
@@ -360,7 +362,7 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
 
       if !found_time
         current_item.requestedTimeUnavailable()
-        AlertService.add("danger", { msg: "The requested time slot is not available. Please choose a different time." })
+        AlertService.raise(ErrorService.getAlert('REQ_TIME_NOT_AVAIL'))
 
 
 
@@ -370,10 +372,10 @@ angular.module('BB.Controllers').controller 'TimeRangeList',
 
   $scope.setReady = () ->
     if !$scope.bb.current_item.time
-      AlertService.add("danger", { msg: "You need to select a time slot" })
+      AlertService.raise(ErrorService.getAlert('TIME_SLOT_NOT_SELECTED'))
       return false
     else if $scope.bb.moving_booking && $scope.bb.current_item.start_datetime().isSame($scope.bb.current_item.original_datetime)
-      AlertService.add("danger", { msg: "Your appointment is already booked for this time." })
+      AlertService.raise(ErrorService.getAlert('APPT_AT_SAME_TIME'))
       return false
     else if $scope.bb.moving_booking
       # set a 'default' person and resource if we need them, but haven't picked any in moving

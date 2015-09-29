@@ -29,7 +29,7 @@ angular.module('BB.Directives').directive 'bbPayment', ($window, $location, $sce
     scope.payment_options = scope.$eval(attributes.bbPayment) or {}
 
     element.find('iframe').bind 'load', (event) =>
-      url = scope.bb.total.$href('new_payment')
+      url = scope.bb.total.$href('new_payment') if scope.bb && scope.bb.total && scope.bb.total.$href('new_payment')
       origin = getHost(url)
       sendLoadEvent(element, origin, scope)
       scope.$apply ->
@@ -51,6 +51,7 @@ angular.module('BB.Directives').directive 'bbPayment', ($window, $location, $sce
             when "payment_complete"
               scope.callSetLoaded()
               scope.paymentDone()
+
     , false
 
   return {
@@ -71,7 +72,7 @@ angular.module('BB.Controllers').controller 'Payment', ($scope,  $rootScope, $q,
 
   $rootScope.connection_started.then =>
     $scope.bb.total = $scope.total if $scope.total
-    $scope.url = $sce.trustAsResourceUrl($scope.bb.total.$href('new_payment'))
+    $scope.url = $sce.trustAsResourceUrl($scope.bb.total.$href('new_payment')) if $scope.bb && $scope.bb.total && $scope.bb.total.$href('new_payment')
   
   $scope.callNotLoaded = () =>
     $scope.notLoaded $scope

@@ -192,7 +192,7 @@ angular.module('BB.Controllers').controller 'TimeRangeListStackedController', ($
 
     pslots = []
     # group BasketItems's by their service id so that we only call the time data api once for each service
-    grouped_items = _.groupBy $scope.bb.stacked_items, (item) -> return item.service.id
+    grouped_items = _.groupBy $scope.bb.stacked_items, (item) -> item.service.id
     grouped_items = _.toArray grouped_items
 
     for items in grouped_items
@@ -229,6 +229,7 @@ angular.module('BB.Controllers').controller 'TimeRangeListStackedController', ($
         setEnabledSlots()
         updateHideStatus()
         $rootScope.$broadcast "TimeRangeListStacked:loadFinished"
+        $scope.$broadcast "dataReloaded"
       else
         # raise error
 
@@ -303,8 +304,7 @@ angular.module('BB.Controllers').controller 'TimeRangeListStackedController', ($
       return $scope.start_date.format(month_year_format)
 
 
-  $scope.confirm = (route) ->
-
+  $scope.confirm = (route, options = {}) ->
     # first check all of the stacked items
     for item in $scope.bb.stacked_items
       if !item.time
@@ -327,11 +327,12 @@ angular.module('BB.Controllers').controller 'TimeRangeListStackedController', ($
 
     # empty the current basket quickly
     $scope.bb.basket.clear()
-    for item in $scope.bb.stacked_items
-      $scope.bb.basket.addItem(item)
+
+    # add all the stacked items
+    $scope.bb.pushStackToBasket()
 
     if $scope.bb.moving_booking
-      # if we're moving - confuirm everything in teh basket right now
+      # if we're moving - confirm everything in the basket right now
       $scope.notLoaded $scope
 
       prom = PurchaseService.update({purchase: $scope.bb.moving_booking, bookings: $scope.bb.basket.items})
@@ -353,7 +354,16 @@ angular.module('BB.Controllers').controller 'TimeRangeListStackedController', ($
       return
 
     $scope.notLoaded $scope
-    $scope.updateBasket().then ->
-      $scope.setLoaded $scope
-      $scope.decideNextPage(route)
-    , (err) -> $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
+
+    if options.do_not_route
+      return $scope.updateBasket()
+    else
+      $scope.updateBasket().then ->
+        $scope.setLoaded $scope
+        $scope.decideNextPage(route)
+      , (err) -> $scope.setLoadedAndShowError($scope, err, 'Sorry, something went wrong')
+
+
+  $scope.setReady = () ->
+    return $scope.confirm('', {do_not_route: true})
+

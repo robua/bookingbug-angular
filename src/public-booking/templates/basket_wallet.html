@@ -1,0 +1,49 @@
+<div bb-wallet-payment="{amount:((bb.basket.total_price - $root.member.wallet_amount) / 100),basket:bb.basket}">
+  <div ng-show="loading"><img src='/BB_wait.gif' class="loader"></div>
+  <div ng-hide="loading">
+  <div class="bb-head">
+    <h3>Make Payment</h3>
+  </div>
+    <div class="bb-content">
+      <div ng-if="error_message" class="alerts">
+        <p class="error_message" ng-bind-html="error_message"></p>
+      </div>
+
+      <div ng-form class="form-inline">
+        <div ng-show="!showTopUpBox()">
+          <button type="button" class="bb-bookings-action" ng-click="(show_topup_box = true);(error_message = false)">Top Up</button>
+        </div>
+        <div ng-show="showTopUpBox()" class="form-group">
+          <label for="amount">Amount:</label>
+          <div class=" input-group">
+            <input type="number" class="form-control input-sm" id="amount" name="amount" ng-model="amount" placeholder="Enter Top Up Amount">
+            <span class="input-group-btn">
+              <button type="submit" class="btn btn-primary btn-sm" ng-disabled="!amount && ((amount * 100) < wallet.min_amount)" ng-click="updateWallet(member, amount)">Top Up Wallet</button>
+            </span>
+          </div>
+          <br>
+          <small> Minimum top up amount must be greater than {{wallet.min_amount | icurrency }} </small>
+        </div>
+      </div>
+
+
+      <div class="bb-payment">
+        <div id="bb-payment">
+          <iframe id="bb-widget" ng-src="{{wallet_payment_url}}" width="100%"scrolling="no" frameborder="0"></iframe>
+        </div>
+        <script type="text/javascript">
+          iFrameResize([{log:true, checkOrigin:false}],['#bb-widget']);
+       </script> 
+      </div>
+
+    </div>
+    <div class="bb-step-navigation">
+      <div class="row">
+        <div class="col-sm-6 text-left">
+          <button type="button" class="btn btn-default" bb-debounce ng-click="loadPreviousStep()">Back</button>
+        </div>
+      </div>
+    </div> 
+
+  </div>
+</div>

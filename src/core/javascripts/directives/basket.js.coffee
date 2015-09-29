@@ -66,7 +66,7 @@ angular.module('BB.Directives').directive 'bbBasket', (PathSvc) ->
 angular.module('BB.Directives').directive 'bbMinSpend', () ->
   restrict: 'A'
   scope: true
-  controller: ($scope, $element, $attrs, AlertService) ->
+  controller: ($scope, $element, $attrs, AlertService, $filter) ->
 
     options = $scope.$eval $attrs.bbMinSpend or {}
     $scope.min_spend = options.min_spend or 0
@@ -85,5 +85,6 @@ angular.module('BB.Directives').directive 'bbMinSpend', () ->
         return true
       else
         AlertService.clear()
-        AlertService.add("warning", { msg: "You need to spend at least &pound;#{$scope.min_spend/100} to make a booking." })
+        price = $filter('ipretty_price')($scope.min_spend)
+        AlertService.add("warning", { msg: "You need to spend at least #{price} to make a booking."})
         return false

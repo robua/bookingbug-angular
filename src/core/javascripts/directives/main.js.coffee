@@ -77,7 +77,7 @@ app.directive 'bbScrollTo', ($rootScope, AppConfig, BreadcrumbService, $bbug, $w
               parentIFrame.scrollToOffset(0, scroll_to_element.offset().top - SettingsService.getScrollOffset())
             else
               $bbug("html, body").animate
-                scrollTop: scroll_to_element.offset().top
+                scrollTop: scroll_to_element.offset().top - SettingsService.getScrollOffset()
                 , bb_transition_time
 
 
@@ -112,10 +112,10 @@ app.directive 'bbForm', ($bbug, $window, SettingsService) ->
           parentIFrame.scrollToOffset(0, invalid_form_group.offset().top - SettingsService.getScrollOffset())
         else 
           $bbug("html, body").animate
-            scrollTop: invalid_form_group.offset().top
+            scrollTop: invalid_form_group.offset().top - SettingsService.getScrollOffset()
             , 1000
 
-        invalid_input      = invalid_form_group.find('.ng-invalid')
+        invalid_input = invalid_form_group.find('.ng-invalid')
         invalid_input.focus()
         return false
       return true
